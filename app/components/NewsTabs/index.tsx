@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, ChevronLeft } from "lucide-react";
+import { Calendar, Image as ImageIcon } from "lucide-react";
 
 const tabs = [
   { id: "news", label: "اخبار" },
@@ -10,7 +10,6 @@ const tabs = [
   { id: "conferences", label: "همایش‌ها" },
 ];
 
-// محتوای متفاوت برای هر تب
 const tabContent = {
   news: {
     featured: {
@@ -25,15 +24,17 @@ const tabContent = {
         date: "1404/10/2",
         title: "نشست تخصصی فناوری‌های دیجیتال و هوش مصنوعی",
         description:
-          "سازمان نظام مهندسی ساختمان استان تهران، در راستای توسعه فناوری‌های نوین، هوشمندسازی صنعت ساختمان و بهره‌گیری هدفمند از ظرفیت‌های هوش مصنوعی، میزبان جلسه‌ای تخصصی...",
+          "سازمان نظام مهندسی ساختمان استان تهران، در راستای توسعه فناوری‌های نوین، هوشمندسازی صنعت ساختمان و بهره‌گیری هدفمند ازمشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمیمشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمیمشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمیمشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمی ظرفیت‌های هوش مصنوعی، میزبان جلسه‌ای تخصصی...",
+        image: "/api/placeholder/80/80",
       },
       {
         id: 2,
         date: "1404/10/2",
         title:
-          "نشست مشترک سازمان نظام مهندسی ساختمان استان تهران و مرکز بازرسی و مبارزه با فرار مالیاتی و پول‌شویی",
+          "نشست مشترک سازمان نظام مهندسی ساختمان استان تهران و مرکز بازرسی و مبارزه با فرار ",
         description:
-          "چهارشنبه 19 آذر 1404 نشستی تخصصی با حضور مهندس مهدی محرمی شام‌اسبی رییس سازمان نظام مهندسی ساختمان استان تهران و همچنین دکتر شاهین مستوفی...",
+          "چهارشنبه 19 آذر 1404 نشستی تخصصی با حضور مهندس مهدی محرمی شام‌اسبی رییس سازمان نظام مهندسی ساختمامشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمیمشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمیمشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمیمشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمیمشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمین استان تهران و همچنین دکتر شاهین مستوفی...",
+        image: "/api/placeholder/80/80",
       },
       {
         id: 3,
@@ -41,7 +42,8 @@ const tabContent = {
         title:
           "گزارش جلسه هماهنگی پروژه ساختمان در حال احداث سازمان (مهستان ۲ «ارغوان»)",
         description:
-          "جلسه هماهنگی میان کارفرما، مشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمی شام اسبی...",
+          "جلسه هماهنگی میان کارفرما، مشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمیمشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمیمشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمیمشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمیمشاور و پیمانکاران پروژه ساختمان در حال احداث سازمان (مهستان دو «ارغوان») با حضور مهندس مهدی محرمی شام اسبی...",
+        image: "/api/placeholder/80/80",
       },
     ],
   },
@@ -58,6 +60,7 @@ const tabContent = {
         date: "1404/10/1",
         title: "اطلاعیه ثبت نام آزمون ورود به حرفه",
         description: "زمان ثبت نام از ۱۵ دی ماه لغایت ۳۰ دی ماه می‌باشد...",
+        image: "/api/placeholder/80/80",
       },
     ],
   },
@@ -83,18 +86,37 @@ export function NewsTabs() {
   const [activeTab, setActiveTab] = useState("news");
   const currentContent = tabContent[activeTab as keyof typeof tabContent];
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [linePosition, setLinePosition] = useState({ top: 16, height: 48 });
+
+  useEffect(() => {
+    const activeIndex = tabs.findIndex((t) => t.id === activeTab);
+    const activeButton = buttonRefs.current[activeIndex];
+    const container = containerRef.current;
+
+    if (activeButton && container) {
+      const containerRect = container.getBoundingClientRect();
+      const buttonRect = activeButton.getBoundingClientRect();
+
+      setLinePosition({
+        top: buttonRect.top - containerRect.top,
+        height: buttonRect.height,
+      });
+    }
+  }, [activeTab]);
+
   return (
-    <div className="w-full bg-gray-50 py-16">
+    <div className="w-full bg-neutral-200 py-6">
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* سمت راست: تب‌ها */}
-          <div className="lg:w-56 flex-shrink-0">
-            <div className="sticky top-24">
-              <div className="relative">
-                <div className="absolute right-0 top-0 bottom-0 w-0.5 bg-gray-200 rounded-full" />
+          <div className="shrink-0">
+            <div className="sticky top-24 h-full">
+              <div ref={containerRef} className="relative h-full">
+                <div className="absolute right-0 top-0 bottom-0 w-1 bg-white rounded-full" />
 
                 <motion.div
-                  className="absolute right-0 w-0.5 bg-blue-600 rounded-full shadow-lg shadow-blue-300"
+                  className="absolute right-0 w-1 bg-blue-500 rounded-full shadow-lg shadow-blue-300"
                   layoutId="activeLineBackground"
                   transition={{
                     type: "spring",
@@ -102,38 +124,25 @@ export function NewsTabs() {
                     damping: 30,
                   }}
                   style={{
-                    height: 44,
-                    top: `${tabs.findIndex((t) => t.id === activeTab) * 52}px`,
+                    height: linePosition.height,
+                    top: linePosition.top,
                   }}
                 />
 
-                <div className="flex flex-row lg:flex-col gap-1">
-                  {tabs.map((tab) => (
+                <div className="flex flex-col gap-2 h-full justify-between">
+                  {tabs.map((tab, index) => (
                     <button
                       key={tab.id}
+                      ref={(el) => {
+                        buttonRefs.current[index] = el;
+                      }}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`
-                        relative px-4 py-2.5 text-right rounded-lg font-medium transition-all duration-300
-                        flex items-center gap-3 w-full
-                        ${
-                          activeTab === tab.id
-                            ? "text-blue-700 bg-blue-50"
-                            : "text-gray-700 hover:bg-gray-100"
-                        }
-                      `}
+                      className={` ${activeTab === tab.id && "text-blue-500"}
+                    relative px-4 py-3 text-right rounded-xl font-medium transition-all duration-300
+                    flex items-center gap-3 w-full
+                    `}
                     >
-                      {activeTab === tab.id && (
-                        <motion.div
-                          layoutId="activeDot"
-                          className="absolute right-[-7px] w-3 h-3 rounded-full bg-blue-600 border-2 border-white shadow-md"
-                          transition={{
-                            type: "spring",
-                            stiffness: 500,
-                            damping: 30,
-                          }}
-                        />
-                      )}
-                      <span className="flex-1 text-right pr-4 text-sm md:text-base">
+                      <span className="flex-1 text-right pr- text-sm md:text-base font-medium">
                         {tab.label}
                       </span>
                     </button>
@@ -142,9 +151,7 @@ export function NewsTabs() {
               </div>
             </div>
           </div>
-
-          {/* وسط: عکس اصلی - با ارتفاع ثابت */}
-          <div className="flex-1 lg:flex-[2]">
+          <div className="flex-[1.2]">
             <div className="relative rounded-2xl overflow-hidden shadow-xl h-80 md:h-96">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -155,23 +162,19 @@ export function NewsTabs() {
                   transition={{ duration: 0.3 }}
                   className="absolute inset-0"
                 >
-                  <div className="w-full h-full bg-gradient-to-r from-blue-900 to-blue-700">
+                  <div className="w-full h-full bg-linear-to-r from-blue-900 to-blue-700">
                     <img
                       src={currentContent.featured.image}
                       alt={currentContent.featured.title}
                       className="w-full h-full object-cover opacity-60"
                     />
-                    <div className="absolute bottom-0 right-0 left-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6">
+                    <div className="absolute bottom-0 right-0 left-0 bg-linear-to-t from-black/90 via-black/50 to-transparent p-6">
                       <h3 className="text-white text-xl md:text-2xl font-bold mb-2 line-clamp-2">
                         {currentContent.featured.title}
                       </h3>
                       <p className="text-white/90 text-sm md:text-base line-clamp-3">
                         {currentContent.featured.description}
                       </p>
-                      <button className="mt-4 flex items-center gap-2 text-blue-300 hover:text-blue-200 transition-colors">
-                        <span>بیشتر بخوانید</span>
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
                     </div>
                   </div>
                 </motion.div>
@@ -179,55 +182,61 @@ export function NewsTabs() {
             </div>
           </div>
 
-          {/* سمت چپ: لیست اخبار - با ارتفاع ثابت */}
-          <div className="flex-1 lg:flex-[2]">
-            <div className="bg-white rounded-2xl shadow-lg p-5 h-[500px] md:h-[550px] flex flex-col">
-              <h3 className="text-lg md:text-xl font-bold text-gray-800 border-b border-gray-200 pb-3 mb-4 flex-shrink-0">
-                آخرین {tabs.find((t) => t.id === activeTab)?.label}
-              </h3>
-              <div className="flex-1 overflow-y-auto custom-scrollbar">
-                <div className="space-y-5">
-                  {currentContent.list.map((news, index) => (
-                    <motion.div
-                      key={news.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="group cursor-pointer"
-                    >
-                      <div className="flex gap-3">
-                        <div className="flex-shrink-0 w-14 text-center">
-                          <div className="bg-blue-50 rounded-lg p-1.5">
-                            <Calendar className="w-4 h-4 text-blue-600 mx-auto mb-1" />
-                            <span className="text-xs font-medium text-gray-700">
-                              {news.date}
-                            </span>
-                          </div>
+          <div className="flex-[1.2]">
+            <div className=" flex justify-between h-full max-h-96 overflow-y- custom-scrollbar">
+              <div className=" space-y-4 w-full relative flex flex-col justify-between h-full">
+                {currentContent.list.map((news, index) => (
+                  <motion.div
+                    key={news.id}
+                    className="group cursor-pointer rounded-xl bg-white p-3 relative overflow-hidden"
+                  >
+                    <div className="flex gap-3">
+                      <div className="shrink-0 relative">
+                        <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 shadow-md relative z-10">
+                          {news.image ? (
+                            <img
+                              src={news.image}
+                              alt={news.title.slice(0, 5)}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <ImageIcon className="w-6 h-6 text-gray-400" />
+                            </div>
+                          )}
                         </div>
-                        <div className="flex-1">
-                          <h4 className="text-gray-800 font-bold text-sm md:text-base line-clamp-2 group-hover:text-blue-600 transition-colors">
-                            {news.title}
-                          </h4>
-                          <p className="text-gray-600 text-xs md:text-sm mt-1 line-clamp-2">
-                            {news.description}
-                          </p>
-                          <button className="mt-2 text-blue-600 text-xs font-medium hover:underline">
-                            مطالعه بیشتر
-                          </button>
-                        </div>
-                      </div>
-                      {index < currentContent.list.length - 1 && (
-                        <div className="border-b border-gray-100 mt-3 pt-3"></div>
-                      )}
-                    </motion.div>
-                  ))}
 
-                  {currentContent.list.length === 0 && (
-                    <div className="text-center py-12 text-gray-500">
-                      <p>هیچ موردی یافت نشد</p>
+                        {/* <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-6 rounded-b-full bg-blue-500 shadow-md" /> */}
+                        <div className="absolute  -right-8 -bottom-7 w-24 h-24 rounded-full bg-blue-200/70" />
+                      </div>
+
+                      <div className="flex-1 min-w-0 z-10">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-3 h-3 text-blue-500" />
+                          <span className="text-xs text-gray-500">
+                            {news.date}
+                          </span>
+                        </div>
+                        <h4 className="text-gray-800 font-bold text-sm md:text-base line-clamp-2 group-hover:text-blue-600 transition-colors">
+                          {news.title}
+                        </h4>
+                        <p className="text-gray-500 text-xs mt-1 line-clamp-2">
+                          {news.description}
+                        </p>
+                      </div>
                     </div>
-                  )}
-                </div>
+
+                    <div className="absolute  -left-3 -top-7 w-18 h-18 rounded-full bg-blue-100/70" />
+
+                    <div className="absolute  -left-9 -top-1 w-18 h-18 rounded-full  bg-blue-50/90" />
+                  </motion.div>
+                ))}
+
+                {currentContent.list.length === 0 && (
+                  <div className="text-center py-12 text-gray-500">
+                    <p>هیچ موردی یافت نشد</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

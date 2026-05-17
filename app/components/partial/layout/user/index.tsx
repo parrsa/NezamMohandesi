@@ -16,7 +16,7 @@ const UserLayout: React.FC<LayoutsInterface> = ({ children }) => {
           aria-label="Main content"
           className="flex flex-col w-full  gap-8"
         >
-          <div className="mb-5 min-h-screen max-h-fit">{children}</div>
+          <div className="mb-5 min-h- max-h-fit">{children}</div>
         </main>
       </div>
       <div className="w-full">
