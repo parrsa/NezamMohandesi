@@ -100,7 +100,7 @@ export default function LandingPage() {
               className={`h-1 rounded-full transition-all duration-300 ${
                 currentIndex === index
                   ? "w-8 bg-white"
-                  : "w-4 bg-white/50 hover:bg-white/70"
+                  : "w-8 bg-white/50 hover:bg-white/70"
               }`}
             />
           </button>
