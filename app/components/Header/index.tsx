@@ -51,7 +51,7 @@ export function Header() {
 
   const mainMenuItems = [
     { id: "home", label: "صفحه اصلی", href: "/" },
-    { id: "about", label: "معرفی سازمان", href: "/about" }, // تغییر مسیر
+    { id: "about", label: "معرفی سازمان", href: "/introduction" },
     {
       id: "news",
       label: "اخبار و اطلاعیه‌ها",

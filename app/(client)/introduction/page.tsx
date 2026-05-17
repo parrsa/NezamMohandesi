@@ -13,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Moharami from "@/public/assets/Frame 14.png";
 
-function AboutOrganization() {
+function Introduction() {
   const stats = [
     { icon: Users, label: "اعضای سازمان", value: "۲۵,۰۰۰+", color: "blue" },
     { icon: Award, label: "پروژه‌های موفق", value: "۱۲,۵۰۰+", color: "green" },
@@ -27,15 +27,15 @@ function AboutOrganization() {
   ];
 
   const subMenuItems = [
-    "بازرسان",
-    "مدیریت سازمان",
-    "اعضای هیئت رئیسه",
-    "دفتر ریاست",
-    "شورای انتظامی",
-    "چارت سازمان",
-    "مصوبات",
-    "معاونت‌ها",
-    "مجمع سالیانه",
+    { label: "بازرسان", href: "/introduction/inspectors" },
+    { label: "مدیریت سازمان", href: "/introduction/management" },
+    { label: "اعضای هیئت رئیسه", href: "/introduction/board" },
+    { label: "دفتر ریاست", href: "/introduction/president-office" },
+    { label: "شورای انتظامی", href: "/introduction/disciplinary-council" },
+    { label: "چارت سازمان", href: "/introduction/organizational-chart" },
+    { label: "مصوبات", href: "/introduction/ratifications" },
+    { label: "معاونت‌ها", href: "/introduction/deputies" },
+    { label: "مجمع سالیانه", href: "/introduction/annual-meeting" },
   ];
 
   return (
@@ -105,16 +105,17 @@ function AboutOrganization() {
 
         <div className="grid grid-cols-3 gap-4">
           {subMenuItems.map((item, index) => (
-            <motion.button
-              key={index}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="bg-white  hover:border-blue-300 hover:shadow-md rounded-xl px-4 hover:py-3 text-right transition-all duration-200"
-            >
-              <span className="text-gray-700 font-medium text-sm md:text-base">
-                {item}
-              </span>
-            </motion.button>
+            <Link key={index} href={item.href}>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full bg-white border border-gray-200 hover:border-blue-300 hover:shadow-md rounded-xl px-4 py-3 text-right transition-all duration-200"
+              >
+                <span className="text-gray-700 font-medium text-sm md:text-base">
+                  {item.label}
+                </span>
+              </motion.button>
+            </Link>
           ))}
         </div>
       </div>
@@ -122,4 +123,4 @@ function AboutOrganization() {
   );
 }
 
-export default AboutOrganization;
+export default Introduction;
