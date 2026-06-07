@@ -36,10 +36,9 @@
 "use client";
 import React from "react";
 import UserLayout from "./user";
-import ProtectedRoute from "@/app/core/provider/ProtectedRoute";
 import AdminLayout from "./admin";
 import { useAuthContext } from "@/app/core/provider/Auth";
-import { PermissionsProvider } from "@/app/core/provider/PermissonProvider";
+import ProtectedRoute from "@/app/core/provider/ProtectedRoute";
 
 interface ClientLayoutSelectorProps {
   children: React.ReactNode;

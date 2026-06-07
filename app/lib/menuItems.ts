@@ -56,16 +56,16 @@ export const menuItemsDashboard: any[] = [
     href: "/admin",
   },
   {
-    id: "publications",
-    label: "نشریات",
-    icon: ShoppingBag,
-    href: "/admin/publications",
-  },
-  {
     id: "news",
     label: "اخبار",
     icon: Newspaper,
     href: "/admin/news",
+  },
+  {
+    id: "category",
+    label: "دسته بندی اخبار",
+    icon: Video,
+    href: "/admin/news-categories"
   },
   {
     id: "videos",

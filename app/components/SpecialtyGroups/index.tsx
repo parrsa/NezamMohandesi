@@ -80,7 +80,7 @@ export function SpecialtyGroups() {
           </h2>
         </div>
 
-        <div className="flex gap-8 p-3 overflow-x-auto pb- justify-start md:justify-between">
+        <div className="flex gap-8 p-3 overflow-x-auto  pb- justify-start md:justify-between">
           {specialtyGroups.map((group, index) => (
             <motion.div
               key={group.id}

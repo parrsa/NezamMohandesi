@@ -3,6 +3,9 @@ import QueryProvider from "./core/provider/ReactQuery";
 import { YekanBakh } from "./lib/font";
 import "./globals.css";
 import UserLayout from "./components/partial/layout/user";
+import SessionHandler from "./components/SessionGuard";
+import { AuthProvider } from "./core/provider/Auth";
+import ClientLayoutSelector from "./components/partial/layout/ClientLayoutSelector";
 
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -18,9 +21,15 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         style={{ backgroundColor: "var(--main-bg-color)" }}
       >
         <ToastContainer />
-        <QueryProvider>
-          <UserLayout>{children}</UserLayout>
-        </QueryProvider>
+        <SessionHandler>
+          <QueryProvider>
+            <AuthProvider>
+              <ClientLayoutSelector>
+                {children}
+              </ClientLayoutSelector>
+            </AuthProvider>
+          </QueryProvider>
+        </SessionHandler>
       </body>
     </html>
   );
