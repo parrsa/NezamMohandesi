@@ -25,7 +25,6 @@ import { useHeaderAction } from '@/app/core/provider/HeaderActionProvider/Header
 import Modal from '@/app/components/Modal';
 import { Input } from '@/app/components/Input';
 
-// Types
 interface NewsCategory {
     id: string;
     title: string;
@@ -36,8 +35,6 @@ interface NewsCategory {
     isActive: boolean;
 }
 
-// API Services (قسمت services رو بعداً اضافه می‌کنیم)
-// فعلاً از state محلی استفاده می‌کنیم - بعداً با API واقعی جایگزین کن
 
 export default function NewsCategoriesPage() {
     const { setAction, setActionSecound } = useHeaderAction();
@@ -185,11 +182,9 @@ export default function NewsCategoriesPage() {
 
         setIsLoading(true);
         try {
-            // شبیه‌سازی درخواست API
             await new Promise(resolve => setTimeout(resolve, 500));
 
             if (editingCategory) {
-                // ویرایش
                 setCategories(prev =>
                     prev.map(cat =>
                         cat.id === editingCategory.id
@@ -204,7 +199,6 @@ export default function NewsCategoriesPage() {
                 );
                 toastify('success', 'دسته‌بندی با موفقیت ویرایش شد');
             } else {
-                // ایجاد جدید
                 const newCategory: NewsCategory = {
                     id: Date.now().toString(),
                     title: formData.title,
@@ -257,7 +251,6 @@ export default function NewsCategoriesPage() {
     return (
         <div className="w-full bg-linear-to-br from-slate-50 via-white to-slate-50 min-h-screen" dir="rtl">
             <div className="p-6">
-                {/* آمار دسته‌بندی‌ها */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -302,7 +295,6 @@ export default function NewsCategoriesPage() {
                     </div>
                 </motion.div>
 
-                {/* لیست دسته‌بندی‌ها */}
                 {isLoading && !isModalOpen ? (
                     <div className="flex flex-col items-center justify-center py-20">
                         <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity }}>
@@ -400,7 +392,6 @@ export default function NewsCategoriesPage() {
                 )}
             </div>
 
-            {/* Modal افزودن/ویرایش دسته‌بندی */}
             <Modal
                 isVisible={isModalOpen}
                 onClose={closeModal}
@@ -501,7 +492,6 @@ export default function NewsCategoriesPage() {
                 </div>
             </Modal>
 
-            {/* Modal حذف */}
             <Modal
                 isVisible={!!deleteTarget}
                 onClose={() => setDeleteTarget(null)}
