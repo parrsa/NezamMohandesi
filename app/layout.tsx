@@ -17,8 +17,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       <body
         dir="rtl"
         suppressHydrationWarning
-        className="bg-black overflow-x-hidden"
-        style={{ backgroundColor: "var(--main-bg-color)" }}
+        className="bg- overflow-x-hidden bg-blue-50"
       >
         <ToastContainer />
         <SessionHandler>

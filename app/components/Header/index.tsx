@@ -130,7 +130,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
-      <div className="bg-neutral-200 border-b border-gray-200">
+      <div className="bg-blue-50 border-b border-gray-200">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             {/* لوگو و نام سازمان - لینک به صفحه اصلی */}

@@ -48,7 +48,7 @@ function Introduction() {
         <span className="font-medium text-gray-700">معرفی سازمان</span>
       </div>
 
-      <div className="bg-neutral-200 rounded-2xl p-6 md:p-8 shadow-xl">
+      <div className="bg-blue-100 rounded-t-2xl p-6 md:p-8 shadow-xl">
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="lg:w-1/3 bg-white backdrop-blur-md rounded-xl p-6">
             <div className="flex flex-col items-center text-center">
@@ -95,7 +95,7 @@ function Introduction() {
         </div>
       </div>
 
-      <div className="mt-10">
+      <div className="mt- bg-white rounded-b-2xl p-6 md:p-8">
         <div className="mb-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
             معرفی سازمان
