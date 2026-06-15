@@ -29,9 +29,6 @@ import { useHeaderAction } from "@/app/core/provider/HeaderActionProvider/Header
 import { showErrorToasts } from "@/app/lib/showErrorToastify";
 import { formatDateForBackend } from "@/app/lib/persianToEnglishNumber";
 
-// ──────────────────────────────────────────────
-// Utility Functions
-// ──────────────────────────────────────────────
 
 const formatDateToBackend = (dateString: string): string => {
   if (!dateString) return "";
@@ -59,10 +56,6 @@ const getTodayJalali = (): string => {
   return `${year}/${month}/${day}`;
 };
 
-// ──────────────────────────────────────────────
-// Main Component
-// ──────────────────────────────────────────────
-
 export default function CreatePublication(): JSX.Element {
   const [previewCover, setPreviewCover] = useState<string>("");
   const [isSubmittingOnce, setIsSubmittingOnce] = useState(false);
@@ -71,7 +64,6 @@ export default function CreatePublication(): JSX.Element {
 
   const createPublicationMutation = useCreatePublication();
 
-  // ── Formik Setup ──
   const formik = useFormik<PublicationFormData>({
     initialValues: {
       publicationTitle: "",
@@ -93,7 +85,6 @@ export default function CreatePublication(): JSX.Element {
 
       setIsSubmittingOnce(true);
 
-      // ── ساخت FormData ──
       const formDataToSend = new FormData();
       const textFields: Array<keyof PublicationFormData> = [
         "publicationTitle",
@@ -121,7 +112,6 @@ export default function CreatePublication(): JSX.Element {
         formDataToSend.append("publicationCover", values.publicationCover);
       }
 
-      // ── ارسال درخواست ──
       createPublicationMutation.mutate(formDataToSend, {
         onSuccess: () => {
           toastify("success", "نشریه با موفقیت ایجاد شد ✓");
@@ -135,21 +125,17 @@ export default function CreatePublication(): JSX.Element {
     },
   });
 
-  // ── Derived States ──
   const isLoading = createPublicationMutation.isPending || isSubmittingOnce;
   const isDirty = formik.dirty;
 
-  // ── ریست کامل فرم ──
   const handleFormReset = () => {
     formik.resetForm();
     setPreviewCover("");
     setIsSubmittingOnce(false);
-    // ریست فایل input ها
     if (imageInputRef.current) imageInputRef.current.value = "";
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // ── آپلود تصویر ──
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -174,7 +160,6 @@ export default function CreatePublication(): JSX.Element {
     reader.readAsDataURL(file);
   };
 
-  // ── آپلود فایل ──
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -194,7 +179,6 @@ export default function CreatePublication(): JSX.Element {
     formik.setFieldValue("publicationFile", file);
   };
 
-  // ── حذف تصویر ──
   const removeImage = (): void => {
     formik.setFieldValue("publicationCover", null);
     setPreviewCover("");
@@ -202,14 +186,12 @@ export default function CreatePublication(): JSX.Element {
     toastify("info", "تصویر جلد حذف شد");
   };
 
-  // ── حذف فایل ──
   const removeFile = (): void => {
     formik.setFieldValue("publicationFile", null);
     if (fileInputRef.current) fileInputRef.current.value = "";
     toastify("info", "فایل نشریه حذف شد");
   };
 
-  // ── Header Action ──
   const { setAction } = useHeaderAction();
   useEffect(() => {
     setAction(
@@ -227,7 +209,6 @@ export default function CreatePublication(): JSX.Element {
             </p>
           </div>
         </div>
-        {/* ── وضعیت لودینگ در هدر ── */}
         {isLoading && (
           <div className="flex items-center gap-3 px-4 py-2 bg-blue-50 rounded-xl border border-blue-200">
             <Loader2 size={20} className="text-blue-600 animate-spin" />
@@ -242,7 +223,6 @@ export default function CreatePublication(): JSX.Element {
     return () => setAction(null);
   }, [isLoading]);
 
-  // ── Field Config ──
   const technicalFields = [
     {
       name: "volume",
@@ -266,13 +246,8 @@ export default function CreatePublication(): JSX.Element {
       color: "text-purple-500",
     },
   ];
-
-  // ──────────────────────────────────────────────
-  // Render
-  // ──────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-50 p-4 flex flex-col gap-3">
-      {/* ── موبایل هدر ── */}
       <div className="w-full md:hidden flex">
         <div className="flex items-center gap-4">
           <div className="p-3 rounded-2xl bg-linear-to-br from-blue-500 to-purple-500">
@@ -289,7 +264,6 @@ export default function CreatePublication(): JSX.Element {
         </div>
       </div>
 
-      {/* ── اسپینر تمام‌صفحه هنگام سابمیت ── */}
       {isLoading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
           <div className="bg-white rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4 min-w-[300px]">
@@ -318,7 +292,6 @@ export default function CreatePublication(): JSX.Element {
       )}
 
       <form onSubmit={formik.handleSubmit} className="space-y-6">
-        {/* ── بخش ۱: اطلاعات اصلی ── */}
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6 md:p-8">
           <div className="flex items-center gap-4 mb-8 pb-6 border-b border-gray-100">
             <div className="p-3 bg-blue-500 rounded-xl shadow">
@@ -335,7 +308,6 @@ export default function CreatePublication(): JSX.Element {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-            {/* عنوان نشریه */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 mb-2">
                 <Hash className="w-5 h-5 text-blue-500" />
@@ -364,7 +336,6 @@ export default function CreatePublication(): JSX.Element {
                 )}
             </div>
 
-            {/* شماره نشریه */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 mb-2">
                 <Hash className="w-5 h-5 text-green-500" />
@@ -392,7 +363,6 @@ export default function CreatePublication(): JSX.Element {
               )}
             </div>
 
-            {/* شرح مختصر */}
             <div className="lg:col-span-2 space-y-2">
               <div className="flex items-center gap-2 mb-2">
                 <FileText className="w-5 h-5 text-purple-500" />
@@ -424,7 +394,6 @@ export default function CreatePublication(): JSX.Element {
           </div>
         </div>
 
-        {/* ── بخش ۲: اطلاعات فنی ── */}
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6 md:p-8">
           <div className="flex items-center gap-4 mb-8 pb-6 border-b border-gray-100">
             <div className="p-3 bg-green-500 rounded-xl shadow">
@@ -471,7 +440,6 @@ export default function CreatePublication(): JSX.Element {
               </div>
             ))}
 
-            {/* تاریخ انتشار */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 mb-2">
                 <Calendar className="w-5 h-5 text-emerald-500" />
@@ -507,9 +475,7 @@ export default function CreatePublication(): JSX.Element {
           </div>
         </div>
 
-        {/* ── بخش ۳: فایل‌ها ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* تصویر جلد */}
           <div className="bg-white rounded-xl shadow border border-gray-200 p-6 flex flex-col h-full">
             <div className="flex items-center gap-4 mb-6">
               <div className="p-3 bg-amber-500 rounded-xl shadow">
@@ -593,7 +559,6 @@ export default function CreatePublication(): JSX.Element {
             )}
           </div>
 
-          {/* فایل نشریه */}
           <div className="bg-white rounded-xl shadow border border-gray-200 p-6 flex flex-col h-full">
             <div className="flex items-center gap-4 mb-6">
               <div className="p-3 bg-purple-500 rounded-xl shadow">
@@ -683,9 +648,7 @@ export default function CreatePublication(): JSX.Element {
           </div>
         </div>
 
-        {/* ── بخش ۴: دکمه‌های اقدام ── */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          {/* نمایش وضعیت فرم */}
           <div className="flex items-center gap-2 text-sm text-gray-500">
             {isDirty ? (
               <>
@@ -712,7 +675,6 @@ export default function CreatePublication(): JSX.Element {
               پاک کردن فرم
             </button>
 
-            {/* ایجاد نشریه */}
             <button
               type="submit"
               disabled={isLoading}
