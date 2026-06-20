@@ -37,7 +37,7 @@ const approvalsList = [
   {
     id: 3,
     name: "ورود و خروج اعضای هیات مدیره",
-    path: "/login-logout",
+    path: "/entry-exit-of-board",
   },
 ];
 
@@ -47,7 +47,7 @@ export default function ApprovalsLayout({ children }: LayoutsInterface) {
       <div className="w-full">
         <Header />
       </div>
-      <div className="w-full h-full xl:w-[1230px] 2xl:w-[1450px] font-vazir mt- flex   font-vazirflex flex-col">
+      <div className="w-full h-full xl:w-[1230px] 2xl:w-[1450px] font-vazir flex flex-col">
         <div className="flex flex-col gap-1 bg-white rounded-tl-2xl rounded-bl-2xl py-3 px-1">
           {approvalsList.map((item) => {
             return (

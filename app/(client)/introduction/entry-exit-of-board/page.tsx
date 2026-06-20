@@ -73,21 +73,6 @@ const approvalsListItem = [
         title: "مصوبات صد و سی و هشتمين",
         creationDate: "1403/08/19",
       },
-      {
-        id: 12,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
-      {
-        id: 13,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
-      {
-        id: 14,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
     ],
   },
   {
@@ -99,21 +84,6 @@ const approvalsListItem = [
         title: "مصوبات صد و سی و هشتمين",
         creationDate: "1403/08/19",
       },
-      {
-        id: 22,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
-      {
-        id: 23,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
-      {
-        id: 24,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
     ],
   },
   {
@@ -122,21 +92,6 @@ const approvalsListItem = [
     list: [
       {
         id: 31,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
-      {
-        id: 32,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
-      {
-        id: 33,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
-      {
-        id: 34,
         title: "مصوبات صد و سی و هشتمين",
         creationDate: "1403/08/19",
       },
@@ -151,21 +106,6 @@ const approvalsListItem = [
         title: "مصوبات صد و سی و هشتمين",
         creationDate: "1403/08/19",
       },
-      {
-        id: 12,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
-      {
-        id: 13,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
-      {
-        id: 14,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
     ],
   },
   {
@@ -174,21 +114,6 @@ const approvalsListItem = [
     list: [
       {
         id: 21,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
-      {
-        id: 22,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
-      {
-        id: 23,
-        title: "مصوبات صد و سی و هشتمين",
-        creationDate: "1403/08/19",
-      },
-      {
-        id: 24,
         title: "مصوبات صد و سی و هشتمين",
         creationDate: "1403/08/19",
       },
@@ -203,18 +128,69 @@ const approvalsListItem = [
         title: "مصوبات صد و سی و هشتمين",
         creationDate: "1403/08/19",
       },
+    ],
+  },
+  {
+    id: 1,
+    name: "مصوبات هيئت مديره دوره دهم",
+    list: [
       {
-        id: 32,
+        id: 11,
         title: "مصوبات صد و سی و هشتمين",
         creationDate: "1403/08/19",
       },
+    ],
+  },
+  {
+    id: 2,
+    name: "مصوبات هيئت مديره دوره دهم",
+    list: [
       {
-        id: 33,
+        id: 21,
         title: "مصوبات صد و سی و هشتمين",
         creationDate: "1403/08/19",
       },
+    ],
+  },
+  {
+    id: 3,
+    name: "مصوبات هيئت مديره دوره دهم",
+    list: [
       {
-        id: 34,
+        id: 31,
+        title: "مصوبات صد و سی و هشتمين",
+        creationDate: "1403/08/19",
+      },
+    ],
+  },
+  {
+    id: 1,
+    name: "مصوبات هيئت مديره دوره دهم",
+    list: [
+      {
+        id: 11,
+        title: "مصوبات صد و سی و هشتمين",
+        creationDate: "1403/08/19",
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: "مصوبات هيئت مديره دوره دهم",
+    list: [
+      {
+        id: 21,
+        title: "مصوبات صد و سی و هشتمين",
+        creationDate: "1403/08/19",
+      },
+    ],
+  },
+  {
+    id: 3,
+    name: "مصوبات هيئت مديره دوره دهم",
+    list: [
+      {
+        id: 31,
         title: "مصوبات صد و سی و هشتمين",
         creationDate: "1403/08/19",
       },
@@ -222,7 +198,7 @@ const approvalsListItem = [
   },
 ];
 
-export default function Ratifications() {
+export default function EntryExitOfBoard() {
   return (
     <div className="grid grid-cols-3 gap-6 bg-white rounded-2xl p-3 mt-5">
       {approvalsListItem.map((item, index) => {
