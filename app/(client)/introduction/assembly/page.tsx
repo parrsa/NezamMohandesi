@@ -1,10 +1,11 @@
 import React from "react";
 import { BorderIcon, DocumentIcon } from "../ratifications/page";
+import Link from "next/link";
 
 const approvalsListItem = [
   {
     id: 1,
-    name: "مصوبات هيئت مديره دوره دهم",
+    name: "مجمع عمومی عادی سالیانه سال 1402",
     list: [
       {
         id: 11,
@@ -15,7 +16,7 @@ const approvalsListItem = [
   },
   {
     id: 2,
-    name: "مصوبات هيئت مديره دوره دهم",
+    name: "مجمع عمومی عادی سالیانه سال 1402",
     list: [
       {
         id: 21,
@@ -26,7 +27,7 @@ const approvalsListItem = [
   },
   {
     id: 3,
-    name: "مصوبات هيئت مديره دوره دهم",
+    name: "مجمع عمومی عادی سالیانه سال 1402",
     list: [
       {
         id: 31,
@@ -37,7 +38,7 @@ const approvalsListItem = [
   },
   {
     id: 1,
-    name: "مصوبات هيئت مديره دوره دهم",
+    name: "مجمع عمومی عادی سالیانه سال 1402",
     list: [
       {
         id: 11,
@@ -48,7 +49,7 @@ const approvalsListItem = [
   },
   {
     id: 2,
-    name: "مصوبات هيئت مديره دوره دهم",
+    name: "مجمع عمومی عادی سالیانه سال 1402",
     list: [
       {
         id: 21,
@@ -59,7 +60,7 @@ const approvalsListItem = [
   },
   {
     id: 3,
-    name: "مصوبات هيئت مديره دوره دهم",
+    name: "مجمع عمومی عادی سالیانه سال 1402",
     list: [
       {
         id: 31,
@@ -70,7 +71,7 @@ const approvalsListItem = [
   },
   {
     id: 1,
-    name: "مصوبات هيئت مديره دوره دهم",
+    name: "مجمع عمومی عادی سالیانه سال 1402",
     list: [
       {
         id: 11,
@@ -81,7 +82,7 @@ const approvalsListItem = [
   },
   {
     id: 2,
-    name: "مصوبات هيئت مديره دوره دهم",
+    name: "مجمع عمومی عادی سالیانه سال 1402",
     list: [
       {
         id: 21,
@@ -92,7 +93,7 @@ const approvalsListItem = [
   },
   {
     id: 3,
-    name: "مصوبات هيئت مديره دوره دهم",
+    name: "مجمع عمومی عادی سالیانه سال 1402",
     list: [
       {
         id: 31,
@@ -103,7 +104,7 @@ const approvalsListItem = [
   },
   {
     id: 1,
-    name: "مصوبات هيئت مديره دوره دهم",
+    name: "مجمع عمومی عادی سالیانه سال 1402",
     list: [
       {
         id: 11,
@@ -114,7 +115,7 @@ const approvalsListItem = [
   },
   {
     id: 2,
-    name: "مصوبات هيئت مديره دوره دهم",
+    name: "مجمع عمومی عادی سالیانه سال 1402",
     list: [
       {
         id: 21,
@@ -125,7 +126,7 @@ const approvalsListItem = [
   },
   {
     id: 3,
-    name: "مصوبات هيئت مديره دوره دهم",
+    name: "مجمع عمومی عادی سالیانه سال 1402",
     list: [
       {
         id: 31,
@@ -136,7 +137,7 @@ const approvalsListItem = [
   },
 ];
 
-export default function EntryExitOfBoard() {
+export default function AssemblyPage() {
   return (
     <div className="grid grid-cols-3 gap-6 bg-white rounded-2xl p-3 mt-5">
       {approvalsListItem.map((item, index) => {
@@ -147,14 +148,12 @@ export default function EntryExitOfBoard() {
               {item.name}
             </h2>
             <div className="flex flex-col gap-5">
-              {item.list.map((child, childIndex) => (
-                <div key={childIndex} className="flex items-center gap-1">
-                  <DocumentIcon />
-                  <p className="text-[#334155]">
-                    {child.title} <span>{child.creationDate}</span>
-                  </p>
-                </div>
-              ))}
+              <div className="flex items-center gap-1">
+                <DocumentIcon />
+                <Link href={`assembly/${item.id}`} className="text-[#334155]">
+                  نمایش مصوبات
+                </Link>
+              </div>
             </div>
           </div>
         );

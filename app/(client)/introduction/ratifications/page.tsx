@@ -1,6 +1,6 @@
 import React from "react";
 
-const DocumentIcon = () => (
+export const DocumentIcon = () => (
   <svg
     width="24"
     height="24"
@@ -43,7 +43,7 @@ const DocumentIcon = () => (
   </svg>
 );
 
-const BorderIcon = () => (
+export const BorderIcon = () => (
   <svg
     width="2"
     height="37"
