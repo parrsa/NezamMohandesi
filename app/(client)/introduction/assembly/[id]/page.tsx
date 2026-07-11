@@ -58,7 +58,7 @@ export default function AssemblyDetailsPage() {
           >
             <h2 className="text-sm text-gray-600">{item.title}</h2>
             <p className="text-[13px] font-bold text-gray-600 leading-7 text-start">
-              {item.description}{" "}
+              {item.description}
             </p>
           </div>
         ))}
