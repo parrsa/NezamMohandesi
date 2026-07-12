@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
 
-const ArrowIcon = () => (
+export const ArrowIcon = () => (
   <svg
     width="24"
     height="24"
