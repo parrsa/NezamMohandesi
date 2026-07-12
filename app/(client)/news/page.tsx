@@ -283,7 +283,7 @@ export default function NewsPage() {
                     <Link
                       href={`/news/${item.id}`}
                       key={itemIndex}
-                      className="flex items-center gap-3 px-2 py-1 border border-gray-100 shadow-md rounded-xl"
+                      className="flex items-center gap-3 p-3 border border-gray-100 shadow-md rounded-xl"
                     >
                       <Image
                         src={item.image}
@@ -302,7 +302,9 @@ export default function NewsPage() {
                         <p className="text-sm font-bold text-gray-800">
                           {item.title}
                         </p>
-                        <p className="text-sm text-gray-600">{item.content}</p>
+                        <p className="text-sm text-gray-600 leading-7">
+                          {item.content}
+                        </p>
                       </div>
                     </Link>
                   ))}
