@@ -100,7 +100,7 @@ export default function Categories() {
     }
   };
 
-  const handleAddSubmit = async (formData: FormData) => {
+  const handleAddSubmit = async (formData: any) => {
     await createCategories(formData, {
       onSuccess: () => {
         toastify("success", "خبر با موفقیت ایجاد شد");

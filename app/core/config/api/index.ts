@@ -19,7 +19,9 @@ api.interceptors.request.use(
 
     const sessionId =
       getCookie("sessionId") ||
-      (typeof window !== "undefined" ? localStorage.getItem("sessionId") : null);
+      (typeof window !== "undefined"
+        ? localStorage.getItem("sessionId")
+        : null);
 
     if (!isPublic && sessionId) {
       // config.headers["User-Session-ID"] = sessionId;
@@ -28,9 +30,8 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
-
 
 api.interceptors.response.use(
   (response) => response,
@@ -47,7 +48,8 @@ api.interceptors.response.use(
           setCookie("accessToken", res.accessToken, 30);
           setCookie("refreshToken", res.refreshToken, 360);
 
-          originalRequest.headers["Authorization"] = `Bearer ${res.accessToken}`;
+          originalRequest.headers["Authorization"] =
+            `Bearer ${res.accessToken}`;
           return api(originalRequest);
         } else {
           // clearTokens();
@@ -58,21 +60,22 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error?.response?.data || error.Message);
-  }
+  },
 );
 
 export default api;
-
-
 
 const getNewTokens = async () => {
   const refreshToken = getCookie("refreshToken");
   if (!refreshToken) return {};
 
   try {
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}auth/refresh-token`, {
-      refresh_token: refreshToken,
-    });
+    const res = await axios.post(
+      `http://10.0.1.141:9095/api/auth/refresh-token`,
+      {
+        refresh_token: refreshToken,
+      },
+    );
 
     return res?.data || {};
   } catch {

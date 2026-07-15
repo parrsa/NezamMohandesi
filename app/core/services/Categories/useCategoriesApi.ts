@@ -6,7 +6,7 @@ export const AllCategoriesListApi = async (
 ) => {
   try {
     const response = await api.get(
-      `Categories?page=${PageNumber}&pageSize=${PageSize}}&sortBy=Name&sortDescending=false`,
+      `api/Categories?page=${PageNumber}&pageSize=${PageSize}}&sortBy=Name&sortDescending=false`,
     );
     return response.data;
   } catch (error) {
@@ -25,14 +25,14 @@ export const GetCategoryByIdApi = async (id: string) => {
   }
 };
 
-export const CreateCategoriesApi = async (formData: FormData) => {
+export const CreateCategoriesApi = async (formData: any) => {
   try {
-    const response = await api.post("CreateCategory", formData, {
+    const response = await api.post("/CreateCategory", formData, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
       },
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.error("Failed to create categories:", error);
     throw error;
@@ -55,7 +55,7 @@ export const UpdateCategoriesApi = async (id: string, formData: FormData) => {
 
 export const DeleteCategories = async (id: string) => {
   try {
-    const response = await api.delete(`Categories/${id}`);
+    const response = await api.delete(`api/Categories/${id}`);
     return response.data;
   } catch (error) {
     console.error("Failed to delete categories:", error);

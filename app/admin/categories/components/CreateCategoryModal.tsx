@@ -1,68 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import {
-  X,
   Upload,
-  Star,
-  Pin,
   Image as ImageIcon,
   AlertCircle,
   Loader2,
-  Calendar,
-  Clock,
+  X,
 } from "lucide-react";
 import { categoriesSchema, CategoriesFormData } from "./categoriesSchema";
 import { Input, TextArea } from "@/app/components/Input";
 import Modal from "@/app/components/Modal";
-import DatePicker from "react-multi-date-picker";
-import persian from "react-date-object/calendars/persian";
-import persian_fa from "react-date-object/locales/persian_fa";
+import Switch from "@/app/components/Input/Switch";
 
 interface AddCategoriesModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (formData: FormData) => Promise<void>;
+  onSubmit: (data: any) => Promise<void>;
   isSubmitting: boolean;
 }
 
 const initialValues: CategoriesFormData = {
-  headline: "",
-  shortTitle: "",
-  leadParagraph: "",
-  body: "",
-  credit: "",
-  caption: "",
-  seoTitle: "",
-  isExclusive: false,
-  isSticky: false,
-};
-
-const convertPersianDateToNumber = (date: any): number => {
-  if (!date) return 0;
-
-  if (date.year && date.month && date.day) {
-    return parseInt(
-      `${date.year}${date.month.toString().padStart(2, "0")}${date.day.toString().padStart(2, "0")}`,
-    );
-  }
-
-  if (typeof date === "string") {
-    const parts = date.split("/");
-    if (parts.length === 3) {
-      return parseInt(
-        `${parts[0]}${parts[1].padStart(2, "0")}${parts[2].padStart(2, "0")}`,
-      );
-    }
-  }
-
-  return 0;
-};
-
-const convertTimeToNumber = (time: string): number => {
-  if (!time) return 0;
-  return parseInt(time.replace(":", ""));
+  name: "",
+  description: "",
+  isActive: false,
 };
 
 export default function AddCategoriesModal({
@@ -71,87 +32,18 @@ export default function AddCategoriesModal({
   onSubmit,
   isSubmitting,
 }: AddCategoriesModalProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
-  const [publishDate, setPublishDate] = useState<any>(null);
-  const [publishTime, setPublishTime] = useState<string>("");
-  const [expireDate, setExpireDate] = useState<any>(null);
-  const [expireTime, setExpireTime] = useState<string>("");
-
-  useEffect(() => {
-    if (!isOpen) {
-      if (previewUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(previewUrl);
-      }
-      setSelectedFile(null);
-      setPreviewUrl(null);
-      setPublishDate(null);
-      setPublishTime("");
-      setExpireDate(null);
-      setExpireTime("");
-    }
-  }, [isOpen, previewUrl]);
-
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    setFieldValue: any,
+  const handleSubmit = async (
+    values: CategoriesFormData,
+    { setSubmitting }: any,
   ) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (previewUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(previewUrl);
-      }
+    const payload = {
+      name: values.name,
+      description: values.description,
+      isActive: values.isActive,
+      parentId: null,
+    };
 
-      setSelectedFile(file);
-      setFieldValue("newsFile", file);
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleRemoveImage = (setFieldValue: any) => {
-    if (previewUrl?.startsWith("blob:")) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    setSelectedFile(null);
-    setPreviewUrl(null);
-    setFieldValue("newsFile", null);
-  };
-
-  const handleSubmit = async (values: NewsFormData, { setSubmitting }: any) => {
-    const formData = new FormData();
-
-    Object.entries(values).forEach(([key, value]) => {
-      if (key !== "isExclusive" && key !== "isSticky") {
-        formData.append(key, value as string);
-      }
-    });
-
-    formData.append("IsExclusive", String(values.isExclusive));
-    formData.append("IsSticky", String(values.isSticky));
-
-    formData.append(
-      "PublishDate",
-      convertPersianDateToNumber(publishDate).toString(),
-    );
-    formData.append("PublishTime", convertTimeToNumber(publishTime).toString());
-
-    formData.append(
-      "ExpireDate",
-      convertPersianDateToNumber(expireDate).toString(),
-    );
-    formData.append("ExpireTime", convertTimeToNumber(expireTime).toString());
-
-    if (selectedFile) {
-      formData.append("NewsFile", selectedFile);
-    }
-
-    await onSubmit(formData);
+    await onSubmit(payload);
     setSubmitting(false);
   };
 
@@ -177,24 +69,24 @@ export default function AddCategoriesModal({
         validationSchema={categoriesSchema}
         onSubmit={handleSubmit}
       >
-        {({ errors, values }) => (
+        {({ errors, setFieldValue }) => (
           <Form className="p-6 space-y-6 max-h-[calc(95vh-80px)]">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   عنوان اصلی *
                 </label>
                 <Field
-                  name="headline"
+                  name="name"
                   type="text"
                   as={Input}
                   variant="form"
                   rounded="xl"
                   inputSize="lg"
-                  error={errors.headline}
-                  placeholder="عنوان اصلی خبر"
+                  error={errors.name}
+                  placeholder="عنوان دسته بندی"
                 />
-                <ErrorMessage name="headline">
+                <ErrorMessage name="name">
                   {(msg) => (
                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
                       <AlertCircle size={14} />
@@ -203,140 +95,20 @@ export default function AddCategoriesModal({
                   )}
                 </ErrorMessage>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  عنوان کوتاه *
-                </label>
-                <Field
-                  as={Input}
-                  variant="form"
-                  name="shortTitle"
-                  rounded="xl"
-                  inputSize="lg"
-                  type="text"
-                  error={errors.shortTitle}
-                  placeholder="عنوان کوتاه برای نمایش"
-                />
-                <ErrorMessage name="shortTitle">
-                  {(msg) => (
-                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle size={14} />
-                      {msg}
-                    </p>
-                  )}
-                </ErrorMessage>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  نویسنده *
-                </label>
-                <Field
-                  name="credit"
-                  type="text"
-                  as={Input}
-                  variant="form"
-                  rounded="xl"
-                  inputSize="lg"
-                  error={errors.credit}
-                  placeholder="نام نویسنده"
-                />
-                <ErrorMessage name="credit">
-                  {(msg) => (
-                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle size={14} />
-                      {msg}
-                    </p>
-                  )}
-                </ErrorMessage>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  توضیح تصویر *
-                </label>
-                <Field
-                  name="caption"
-                  type="text"
-                  as={Input}
-                  variant="form"
-                  rounded="xl"
-                  inputSize="lg"
-                  error={errors.caption}
-                  placeholder="توضیح تصویر"
-                />
-                <ErrorMessage name="caption">
-                  {(msg) => (
-                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle size={14} />
-                      {msg}
-                    </p>
-                  )}
-                </ErrorMessage>
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  عنوان سئو *
-                </label>
-                <Field
-                  name="seoTitle"
-                  type="text"
-                  as={Input}
-                  variant="form"
-                  rounded="xl"
-                  inputSize="lg"
-                  error={errors.seoTitle}
-                  placeholder="عنوان برای موتورهای جستجو"
-                />
-                <ErrorMessage name="seoTitle">
-                  {(msg) => (
-                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle size={14} />
-                      {msg}
-                    </p>
-                  )}
-                </ErrorMessage>
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  خلاصه خبر *
+                  توضیحات*
                 </label>
                 <Field
                   as={TextArea}
-                  name="leadParagraph"
+                  name="description"
                   rows={4}
                   rounded="xl"
                   inputSize="lg"
-                  error={errors.leadParagraph}
-                  placeholder="خلاصه خبر برای نمایش در کارت..."
+                  error={errors.description}
+                  placeholder="توضیحات دسته بندی..."
                 />
-                <ErrorMessage name="leadParagraph">
-                  {(msg) => (
-                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle size={14} />
-                      {msg}
-                    </p>
-                  )}
-                </ErrorMessage>
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  متن کامل خبر *
-                </label>
-                <Field
-                  name="body"
-                  rows={6}
-                  as={TextArea}
-                  rounded="xl"
-                  inputSize="lg"
-                  error={errors.body}
-                  placeholder="متن کامل خبر..."
-                />
-                <ErrorMessage name="body">
+                <ErrorMessage name="description">
                   {(msg) => (
                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
                       <AlertCircle size={14} />
@@ -346,35 +118,28 @@ export default function AddCategoriesModal({
                 </ErrorMessage>
               </div>
             </div>
-
-            <div className="flex gap-6 p-4 bg-linear-to-r from-blue-50 to-purple-50 rounded-xl">
-              <label className="flex items-center gap-3 cursor-pointer">
+            <div className="w-full border-b pb-4 border-neutral-300">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  فعال/غیرفعال *
+                </label>
                 <Field
-                  type="checkbox"
-                  name="isExclusive"
-                  className="w-5 h-5 text-yellow-500 rounded border-gray-300 focus:ring-yellow-500"
+                  name="isActive"
+                  as={Switch}
+                  error={errors.isActive}
+                  onChange={(value: boolean) => {
+                    setFieldValue("isActive", value);
+                  }}
                 />
-                <Star
-                  size={20}
-                  className={
-                    values.isExclusive ? "text-yellow-500" : "text-gray-400"
-                  }
-                />
-                <span className="font-medium text-gray-700">خبر انحصاری</span>
-              </label>
-
-              <label className="flex items-center gap-3 cursor-pointer">
-                <Field
-                  type="checkbox"
-                  name="isSticky"
-                  className="w-5 h-5 text-red-500 rounded border-gray-300 focus:ring-red-500"
-                />
-                <Pin
-                  size={20}
-                  className={values.isSticky ? "text-red-500" : "text-gray-400"}
-                />
-                <span className="font-medium text-gray-700">خبر مهم</span>
-              </label>
+                <ErrorMessage name="isActive">
+                  {(msg) => (
+                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                      <AlertCircle size={14} />
+                      {msg}
+                    </p>
+                  )}
+                </ErrorMessage>
+              </div>
             </div>
 
             <div className="flex justify-end gap-4 pb-4 pt-6 border-t border-gray-200">
@@ -396,7 +161,7 @@ export default function AddCategoriesModal({
                     <span>در حال ثبت...</span>
                   </>
                 ) : (
-                  "ثبت خبر"
+                  "ثبت دسته بندی"
                 )}
               </button>
             </div>

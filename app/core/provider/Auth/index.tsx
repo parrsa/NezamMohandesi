@@ -30,8 +30,10 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   isLoggingOut: false,
-  refreshUser: async () => { },
-  Logout: () => { }, login: () => { }, logout: () => { },
+  refreshUser: async () => {},
+  Logout: () => {},
+  login: () => {},
+  logout: () => {},
   isLoggedIn: false,
   isAdmin: false,
 });
@@ -49,7 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
 
-      const res = await api.get(`Account/Login?sessionId=${sessionId}`);
+      const res = await api.get(`api/Account/Login?sessionId=${sessionId}`);
 
       if (res.data) {
         setUser(res.data);
@@ -73,17 +75,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const returnUrl = encodeURIComponent(window.location.href);
     window.location.href = `${SSO_BASE}/account/login?returnUrl=${returnUrl}`;
   };
-  const router = useRouter()
+  const router = useRouter();
 
   const logout = () => {
     setIsLoggingOut(true);
     removeCookie(SESSION_COOKIE_NAME);
     try {
       localStorage.removeItem(SESSION_COOKIE_NAME);
-    } catch (e) { }
+    } catch (e) {}
     setUser(null);
-    router.push('/')
-
+    router.push("/");
   };
 
   const isLoggedIn = !!user;
@@ -92,7 +93,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoggingOut(true);
     removeCookie(SESSION_COOKIE_NAME);
     setUser(null);
-    router.push('/')
+    router.push("/");
   };
 
   return (
@@ -106,7 +107,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         refreshUser,
         Logout,
         isLoggedIn,
-        isAdmin
+        isAdmin,
       }}
     >
       {children}
