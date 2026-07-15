@@ -426,7 +426,6 @@
 //     );
 // }
 
-
 // 'use client';
 
 // import { useState, useEffect } from 'react';
@@ -483,7 +482,7 @@
 
 //     // Filter news based on search and filter type
 //     const filteredNews = newsWithImages.filter(news => {
-//         const matchesSearch = 
+//         const matchesSearch =
 //             news.headline?.toLowerCase().includes(searchTerm.toLowerCase()) ||
 //             news.shortTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
 //             news.credit?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -749,645 +748,714 @@
 //         </div>
 //     );
 // }
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-    Newspaper,
-    Plus,
-    Star,
-    Pin,
-    Eye,
-    ThumbsUp,
-    ThumbsDown,
-    Calendar,
-    User,
-    Image as ImageIcon,
-    Edit,
-    Trash2,
-    ChevronLeft,
-    ChevronRight,
-    AlertCircle,
-    Loader2,
-    Scale,
-    Gavel,
-    FileText,
-    Award,
-    TrendingUp,
-    Bookmark,
-    Share2,
-    MoreHorizontal,
-} from 'lucide-react';
+  Newspaper,
+  Plus,
+  Star,
+  Pin,
+  Eye,
+  ThumbsUp,
+  ThumbsDown,
+  Calendar,
+  User,
+  Image as ImageIcon,
+  Edit,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  AlertCircle,
+  Loader2,
+  Scale,
+  Gavel,
+  FileText,
+  Award,
+  TrendingUp,
+  Bookmark,
+  Share2,
+  MoreHorizontal,
+} from "lucide-react";
 
-import { useGetAllNews, useCreateNews, useUpdateNews, useDeleteNews } from '@/app/core/services/News/useNews';
-import { NewsWithImage } from '@/app/core/services/News/type';
-import { generatePageNumbers } from '@/app/lib/generatePageNumbers';
-import useTruncateText from '@/app/lib/useTruncateText';
+import {
+  useGetAllNews,
+  useCreateNews,
+  useUpdateNews,
+  useDeleteNews,
+} from "@/app/core/services/News/useNews";
+import { NewsWithImage } from "@/app/core/services/News/type";
+import { generatePageNumbers } from "@/app/lib/generatePageNumbers";
+import useTruncateText from "@/app/lib/useTruncateText";
 
-import AddNewsModal from './components/AddNews';
-import EditNewsModal from './components/EditNews';
-import DeleteConfirmModal from './components/DeleteConfirmationModal';
-import { useHeaderAction } from '@/app/core/provider/HeaderActionProvider/HeaderAction';
-import { toastify } from '@/app/components/Toasts';
-import { showErrorToasts } from '@/app/lib/showErrorToastify';
+import AddNewsModal from "./components/AddNews";
+import EditNewsModal from "./components/EditNews";
+import DeleteConfirmModal from "./components/DeleteConfirmationModal";
+import { useHeaderAction } from "@/app/core/provider/HeaderActionProvider/HeaderAction";
+import { toastify } from "@/app/components/Toasts";
+import { showErrorToasts } from "@/app/lib/showErrorToastify";
 
 interface NewsCardProps {
-    news: NewsWithImage;
-    onEdit: (id: string) => void;
-    onDelete: (id: string) => void;
+  news: NewsWithImage;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
 const StatCard = ({ title, value, icon: Icon, color, trend }: any) => (
-    <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        whileHover={{ y: -5 }}
-        transition={{ duration: 0.3 }}
-        className="relative group overflow-hidden"
-    >
-        <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-        <div className="relative bg-white rounded-2xl p-5 shadow-lg border border-slate-100 hover:shadow-xl transition-all duration-300">
-            <div className="flex items-center justify-between">
-                <div>
-                    <p className="text-slate-400 text-xs font-medium mb-1">{title}</p>
-                    <h3 className="text-3xl font-bold bg-linear-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">
-                        {value.toLocaleString('fa-IR')}
-                    </h3>
-                    {trend && (
-                        <div className="flex items-center gap-1 mt-2">
-                            <TrendingUp size={12} className="text-emerald-500" />
-                            <span className="text-emerald-600 text-xs font-medium">{trend}</span>
-                            <span className="text-slate-400 text-xs">نسبت به ماه قبل</span>
-                        </div>
-                    )}
-                </div>
-                <div className={`relative p-4 rounded-2xl bg-linear-to-br ${color} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon size={24} className="text-white" />
-                    <div className="absolute inset-0 bg-white/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
+  <motion.div
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    whileHover={{ y: -5 }}
+    transition={{ duration: 0.3 }}
+    className="relative group overflow-hidden"
+  >
+    <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+    <div className="relative bg-white rounded-2xl p-5 shadow-lg border border-slate-100 hover:shadow-xl transition-all duration-300">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-slate-400 text-xs font-medium mb-1">{title}</p>
+          <h3 className="text-3xl font-bold bg-linear-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">
+            {value.toLocaleString("fa-IR")}
+          </h3>
+          {trend && (
+            <div className="flex items-center gap-1 mt-2">
+              <TrendingUp size={12} className="text-emerald-500" />
+              <span className="text-emerald-600 text-xs font-medium">
+                {trend}
+              </span>
+              <span className="text-slate-400 text-xs">نسبت به ماه قبل</span>
             </div>
+          )}
         </div>
-    </motion.div>
+        <div
+          className={`relative p-4 rounded-2xl bg-linear-to-br ${color} shadow-lg group-hover:scale-110 transition-transform duration-300`}
+        >
+          <Icon size={24} className="text-white" />
+          <div className="absolute inset-0 bg-white/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+        </div>
+      </div>
+    </div>
+  </motion.div>
 );
 
 const NewsCard = ({ news, onEdit, onDelete }: NewsCardProps) => {
-    const [imageUrl, setImageUrl] = useState<string | null>(news.imageSrc || null);
-    const [isImageLoading, setIsImageLoading] = useState(!news.imageSrc && !!news.newsFileId);
-    const [showActions, setShowActions] = useState(false);
-    const [isBookmarked, setIsBookmarked] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(
+    news.imageSrc || null,
+  );
+  const [isImageLoading, setIsImageLoading] = useState(
+    !news.imageSrc && !!news.newsFileId,
+  );
+  const [showActions, setShowActions] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
-    const leadParagraph = useTruncateText(news.leadParagraph, 100);
-    const title = useTruncateText(news.headline || news.shortTitle, 50);
+  const leadParagraph = useTruncateText(news.leadParagraph, 100);
+  const title = useTruncateText(news.headline || news.shortTitle, 50);
 
-    useEffect(() => {
-        const loadImage = async () => {
-            if (!news.newsFileId || news.imageSrc) return;
+  useEffect(() => {
+    const loadImage = async () => {
+      if (!news.newsFileId || news.imageSrc) return;
 
-            try {
-                setIsImageLoading(true);
-                const response = await fetch(
-                    `http://10.0.1.141:8082/Api/File/DownloadFileById?fileId=${news.newsFileId}`,
-                    { method: 'POST' }
-                );
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = URL.createObjectURL(blob);
-                    setImageUrl(url);
-                }
-            } catch (error) {
-                showErrorToasts(error);
-            } finally {
-                setIsImageLoading(false);
-            }
-        };
-
-        loadImage();
-
-        return () => {
-            if (imageUrl && imageUrl.startsWith('blob:')) {
-                URL.revokeObjectURL(imageUrl);
-            }
-        };
-    }, [news.newsFileId]);
-
-    const formatDate = (timestamp: number) => {
-        if (!timestamp) return 'نامشخص';
-        const date = new Date(timestamp);
-        const now = new Date();
-        const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 0) return 'امروز';
-        if (diffDays === 1) return 'دیروز';
-        if (diffDays < 7) return `${diffDays} روز پیش`;
-        return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
+      try {
+        setIsImageLoading(true);
+        const response = await fetch(
+          `http://10.0.1.141:8082/Api/File/DownloadFileById?fileId=${news.newsFileId}`,
+          { method: "POST" },
+        );
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          setImageUrl(url);
+        }
+      } catch (error) {
+        showErrorToasts(error);
+      } finally {
+        setIsImageLoading(false);
+      }
     };
 
-    const getCategoryStyle = () => {
-        if (news.isExclusive) {
-            return {
-                bg: 'bg-linear-to-r from-amber-500 to-orange-500',
-                text: 'text-amber-100',
-                icon: <Award size={12} />,
-                label: 'انحصاری'
-            };
-        }
-        if (news.isSticky) {
-            return {
-                bg: 'bg-linear-to-r from-red-500 to-pink-500',
-                text: 'text-red-100',
-                icon: <Pin size={12} />,
-                label: 'مهم'
-            };
-        }
-        return {
-            bg: 'bg-linear-to-r from-slate-600 to-slate-700',
-            text: 'text-slate-100',
-            icon: <FileText size={12} />,
-            label: 'عمومی'
-        };
+    loadImage();
+
+    return () => {
+      if (imageUrl && imageUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(imageUrl);
+      }
     };
+  }, [news.newsFileId]);
 
-    const categoryStyle = getCategoryStyle();
-
-    return (
-        <motion.div
-            layout
-            initial={{ opacity: 0, scale: 0.8, rotateY: 90 }}
-            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-            exit={{ opacity: 0, scale: 0.8, rotateY: -90 }}
-            transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
-            className="group relative"
-            onMouseEnter={() => setShowActions(true)}
-            onMouseLeave={() => setShowActions(false)}
-        >
-            <div className="relative bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                <div className={`absolute top-0 left-0 right-0 h-1 bg-linear-to-r ${categoryStyle.bg} z-10`} />
-                <div className="relative h-52 overflow-hidden bg-linear-to-br from-slate-800 to-slate-900">
-                    {isImageLoading ? (
-                        <div className="w-full h-full flex items-center justify-center">
-                            <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            >
-                                <Loader2 size={36} className="text-slate-400" />
-                            </motion.div>
-                        </div>
-                    ) : imageUrl ? (
-                        <motion.img
-                            initial={{ scale: 1 }}
-                            whileHover={{ scale: 1.1 }}
-                            transition={{ duration: 0.6 }}
-                            src={imageUrl}
-                            alt={news.headline}
-                            className="w-full h-full object-cover"
-                            onError={() => setImageUrl(null)}
-                        />
-                    ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center gap-3">
-                            <motion.div
-                                animate={{
-                                    rotate: [0, 10, -10, 0],
-                                    scale: [1, 1.1, 1]
-                                }}
-                                transition={{ duration: 4, repeat: Infinity }}
-                            >
-                                <Scale size={48} className="text-slate-500" />
-                            </motion.div>
-                            <span className="text-sm text-slate-500 font-medium">سامانه نظام قضایی</span>
-                        </div>
-                    )}
-
-                    {/* برچسب دسته‌بندی با افکت */}
-                    <motion.div
-                        initial={{ x: 50, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        className={`absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-lg ${categoryStyle.bg} shadow-lg`}
-                    >
-                        {categoryStyle.icon}
-                        <span className={`text-xs font-bold ${categoryStyle.text}`}>
-                            {categoryStyle.label}
-                        </span>
-                    </motion.div>
-
-                    {/* نشانگر ویژه */}
-                    {news.viewCount > 1000 && (
-                        <motion.div
-                            initial={{ x: -50, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            className="absolute top-4 left-4 flex items-center gap-1 px-2 py-1 rounded-md bg-black/60 backdrop-blur-sm"
-                        >
-                            <TrendingUp size={10} className="text-emerald-400" />
-                            <span className="text-[10px] text-white">پربازدید</span>
-                        </motion.div>
-                    )}
-
-                    {/* آمار بازدید */}
-                    <motion.div
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        className="absolute bottom-4 left-4 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-sm"
-                    >
-                        <Eye size={11} className="text-slate-300" />
-                        <span className="text-xs text-white font-medium">
-                            {news.viewCount.toLocaleString('fa-IR')}
-                        </span>
-                    </motion.div>
-
-                    {/* دکمه‌های اکشن پیشرفته */}
-                    <AnimatePresence>
-                        {showActions && (
-                            <motion.div
-                                initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-                                animate={{ opacity: 1, backdropFilter: "blur(8px)" }}
-                                exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-                                className="absolute inset-0 bg-black/60 flex items-center justify-center gap-4"
-                            >
-                                <motion.button
-                                    initial={{ scale: 0, rotate: -180 }}
-                                    animate={{ scale: 1, rotate: 0 }}
-                                    whileHover={{ scale: 1.15 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    onClick={() => onEdit(news.id)}
-                                    className="p-3 bg-white rounded-xl shadow-xl hover:shadow-2xl transition-all"
-                                >
-                                    <Edit size={18} className="text-emerald-600" />
-                                </motion.button>
-                                <motion.button
-                                    initial={{ scale: 0, rotate: 180 }}
-                                    animate={{ scale: 1, rotate: 0 }}
-                                    whileHover={{ scale: 1.15 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    onClick={() => onDelete(news.id)}
-                                    className="p-3 bg-white rounded-xl shadow-xl hover:shadow-2xl transition-all"
-                                >
-                                    <Trash2 size={18} className="text-red-600" />
-                                </motion.button>
-                                <motion.button
-                                    initial={{ scale: 0, rotate: 0 }}
-                                    animate={{ scale: 1, rotate: 0 }}
-                                    whileHover={{ scale: 1.15 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    onClick={() => setIsBookmarked(!isBookmarked)}
-                                    className="p-3 bg-white rounded-xl shadow-xl hover:shadow-2xl transition-all"
-                                >
-                                    <Bookmark size={18} className={isBookmarked ? "fill-amber-500 text-amber-500" : "text-slate-600"} />
-                                </motion.button>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-
-                <div className="p-4 relative">
-                    <h3 className="font-bold text-slate-800 text-base line-clamp-2 leading-relaxed mb-2 group-hover:text-slate-600 transition-colors">
-                        {title}
-                    </h3>
-
-                    <div className="relative">
-                        <p className="text-slate-500 text-xs leading-relaxed line-clamp-2 mb-3">
-                            {leadParagraph || 'توضیحی برای این خبر ثبت نشده است.'}
-                        </p>
-                        {leadParagraph && leadParagraph.length > 80 && (
-                            <div className="absolute bottom-0 left-0 right-0 h-6 bg-linear-to-t from-white to-transparent pointer-events-none" />
-                        )}
-                    </div>
-
-                    <div className="flex items-center justify-between text-[11px] text-slate-400 mb-3">
-                        <div className="flex items-center gap-1.5">
-                            <div className="w-5 h-5 rounded-full bg-linear-to-br from-slate-600 to-slate-700 flex items-center justify-center">
-                                <User size={10} className="text-white" />
-                            </div>
-                            <span className="font-medium">{news.credit || 'قوه قضاییه'}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                            <Calendar size={10} />
-                            <span>{formatDate(news.publishDate)}</span>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 pt-3 border-t border-slate-100">
-                        <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            className="flex items-center gap-1.5 text-emerald-600 text-[11px] font-medium"
-                        >
-                            <ThumbsUp size={12} />
-                            <span>{news.likes.toLocaleString('fa-IR')}</span>
-                        </motion.div>
-                        <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            className="flex items-center gap-1.5 text-red-600 text-[11px] font-medium"
-                        >
-                            <ThumbsDown size={12} />
-                            <span>{news.disLikes.toLocaleString('fa-IR')}</span>
-                        </motion.div>
-                        <div className="mr-auto">
-                            <div className="px-2 py-0.5 rounded-md bg-slate-100">
-                                <span className="text-slate-400 text-[9px] font-mono">{news.code}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-slate-200 to-slate-300 rounded-full overflow-hidden">
-                        <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: `${Math.min((news.viewCount / 5000) * 100, 100)}%` }}
-                            transition={{ duration: 1, delay: 0.2 }}
-                            className={`h-full bg-linear-to-r ${categoryStyle.bg}`}
-                        />
-                    </div>
-                </div>
-
-                <div className="absolute inset-0 bg-linear-to-t from-white/0 via-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-            </div>
-        </motion.div>
+  const formatDate = (timestamp: number) => {
+    if (!timestamp) return "نامشخص";
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffDays = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
     );
+
+    if (diffDays === 0) return "امروز";
+    if (diffDays === 1) return "دیروز";
+    if (diffDays < 7) return `${diffDays} روز پیش`;
+    return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}`;
+  };
+
+  const getCategoryStyle = () => {
+    if (news.isExclusive) {
+      return {
+        bg: "bg-linear-to-r from-amber-500 to-orange-500",
+        text: "text-amber-100",
+        icon: <Award size={12} />,
+        label: "انحصاری",
+      };
+    }
+    if (news.isSticky) {
+      return {
+        bg: "bg-linear-to-r from-red-500 to-pink-500",
+        text: "text-red-100",
+        icon: <Pin size={12} />,
+        label: "مهم",
+      };
+    }
+    return {
+      bg: "bg-linear-to-r from-slate-600 to-slate-700",
+      text: "text-slate-100",
+      icon: <FileText size={12} />,
+      label: "عمومی",
+    };
+  };
+
+  const categoryStyle = getCategoryStyle();
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.8, rotateY: 90 }}
+      animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+      exit={{ opacity: 0, scale: 0.8, rotateY: -90 }}
+      transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
+      className="group relative"
+      onMouseEnter={() => setShowActions(true)}
+      onMouseLeave={() => setShowActions(false)}
+    >
+      <div className="relative bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+        <div
+          className={`absolute top-0 left-0 right-0 h-1 bg-linear-to-r ${categoryStyle.bg} z-10`}
+        />
+        <div className="relative h-52 overflow-hidden bg-linear-to-br from-slate-800 to-slate-900">
+          {isImageLoading ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              >
+                <Loader2 size={36} className="text-slate-400" />
+              </motion.div>
+            </div>
+          ) : imageUrl ? (
+            <motion.img
+              initial={{ scale: 1 }}
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.6 }}
+              src={imageUrl}
+              alt={news.headline}
+              className="w-full h-full object-cover"
+              onError={() => setImageUrl(null)}
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+              <motion.div
+                animate={{
+                  rotate: [0, 10, -10, 0],
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{ duration: 4, repeat: Infinity }}
+              >
+                <Scale size={48} className="text-slate-500" />
+              </motion.div>
+              <span className="text-sm text-slate-500 font-medium">
+                سامانه نظام قضایی
+              </span>
+            </div>
+          )}
+
+          {/* برچسب دسته‌بندی با افکت */}
+          <motion.div
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className={`absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-lg ${categoryStyle.bg} shadow-lg`}
+          >
+            {categoryStyle.icon}
+            <span className={`text-xs font-bold ${categoryStyle.text}`}>
+              {categoryStyle.label}
+            </span>
+          </motion.div>
+
+          {/* نشانگر ویژه */}
+          {news.viewCount > 1000 && (
+            <motion.div
+              initial={{ x: -50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              className="absolute top-4 left-4 flex items-center gap-1 px-2 py-1 rounded-md bg-black/60 backdrop-blur-sm"
+            >
+              <TrendingUp size={10} className="text-emerald-400" />
+              <span className="text-[10px] text-white">پربازدید</span>
+            </motion.div>
+          )}
+
+          {/* آمار بازدید */}
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="absolute bottom-4 left-4 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-sm"
+          >
+            <Eye size={11} className="text-slate-300" />
+            <span className="text-xs text-white font-medium">
+              {news.viewCount.toLocaleString("fa-IR")}
+            </span>
+          </motion.div>
+
+          {/* دکمه‌های اکشن پیشرفته */}
+          <AnimatePresence>
+            {showActions && (
+              <motion.div
+                initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                animate={{ opacity: 1, backdropFilter: "blur(8px)" }}
+                exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                className="absolute inset-0 bg-black/60 flex items-center justify-center gap-4"
+              >
+                <motion.button
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => onEdit(news.id)}
+                  className="p-3 bg-white rounded-xl shadow-xl hover:shadow-2xl transition-all"
+                >
+                  <Edit size={18} className="text-emerald-600" />
+                </motion.button>
+                <motion.button
+                  initial={{ scale: 0, rotate: 180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => onDelete(news.id)}
+                  className="p-3 bg-white rounded-xl shadow-xl hover:shadow-2xl transition-all"
+                >
+                  <Trash2 size={18} className="text-red-600" />
+                </motion.button>
+                <motion.button
+                  initial={{ scale: 0, rotate: 0 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setIsBookmarked(!isBookmarked)}
+                  className="p-3 bg-white rounded-xl shadow-xl hover:shadow-2xl transition-all"
+                >
+                  <Bookmark
+                    size={18}
+                    className={
+                      isBookmarked
+                        ? "fill-amber-500 text-amber-500"
+                        : "text-slate-600"
+                    }
+                  />
+                </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="p-4 relative">
+          <h3 className="font-bold text-slate-800 text-base line-clamp-2 leading-relaxed mb-2 group-hover:text-slate-600 transition-colors">
+            {title}
+          </h3>
+
+          <div className="relative">
+            <p className="text-slate-500 text-xs leading-relaxed line-clamp-2 mb-3">
+              {leadParagraph || "توضیحی برای این خبر ثبت نشده است."}
+            </p>
+            {leadParagraph && leadParagraph.length > 80 && (
+              <div className="absolute bottom-0 left-0 right-0 h-6 bg-linear-to-t from-white to-transparent pointer-events-none" />
+            )}
+          </div>
+
+          <div className="flex items-center justify-between text-[11px] text-slate-400 mb-3">
+            <div className="flex items-center gap-1.5">
+              <div className="w-5 h-5 rounded-full bg-linear-to-br from-slate-600 to-slate-700 flex items-center justify-center">
+                <User size={10} className="text-white" />
+              </div>
+              <span className="font-medium">{news.credit || "قوه قضاییه"}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Calendar size={10} />
+              <span>{formatDate(news.publishDate)}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 pt-3 border-t border-slate-100">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center gap-1.5 text-emerald-600 text-[11px] font-medium"
+            >
+              <ThumbsUp size={12} />
+              <span>{news.likes.toLocaleString("fa-IR")}</span>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center gap-1.5 text-red-600 text-[11px] font-medium"
+            >
+              <ThumbsDown size={12} />
+              <span>{news.disLikes.toLocaleString("fa-IR")}</span>
+            </motion.div>
+            <div className="mr-auto">
+              <div className="px-2 py-0.5 rounded-md bg-slate-100">
+                <span className="text-slate-400 text-[9px] font-mono">
+                  {news.code}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-slate-200 to-slate-300 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              whileInView={{
+                width: `${Math.min((news.viewCount / 5000) * 100, 100)}%`,
+              }}
+              transition={{ duration: 1, delay: 0.2 }}
+              className={`h-full bg-linear-to-r ${categoryStyle.bg}`}
+            />
+          </div>
+        </div>
+
+        <div className="absolute inset-0 bg-linear-to-t from-white/0 via-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      </div>
+    </motion.div>
+  );
 };
 
 export default function NewsManagementPage() {
-    const { setAction, setActionSecound } = useHeaderAction();
+  const { setAction, setActionSecound } = useHeaderAction();
 
-    useEffect(() => {
-        setAction(
-            <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="flex items-center gap-3"
-            >
-                <div className="p-2.5 rounded-xl bg-linear-to-br from-slate-700 to-slate-800 shadow-lg">
-                    <Scale size={22} className="text-white" />
-                </div>
-                <div>
-                    <h1 className="text-xl font-bold bg-linear-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">
-                        مدیریت اخبار
-                    </h1>
-                    <p className="text-xs text-slate-500">مدیریت اخبار و اطلاعیه‌های قضایی</p>
-                </div>
-            </motion.div>
-        );
-
-        setActionSecound(
-            <motion.button
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsAddModalOpen(true)}
-                className="relative group overflow-hidden flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-slate-700 to-slate-800 text-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 text-sm font-medium"
-            >
-                <span className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                <Plus size={16} />
-                <span>خبر جدید</span>
-            </motion.button>
-        );
-
-        return () => {
-            setAction(null);
-            setActionSecound(null);
-        };
-    }, [setAction, setActionSecound]);
-
-    const [currentPage, setCurrentPage] = useState(0);
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
-    const [newsToDelete, setNewsToDelete] = useState<string | null>(null);
-    const [newsWithImages, setNewsWithImages] = useState<NewsWithImage[]>([]);
-
-    const { data, isLoading, error, refetch } = useGetAllNews(currentPage, 12);
-    const { mutate: createNews, isPending: isCreating } = useCreateNews();
-    const { mutate: updateNews, isPending: isUpdating } = useUpdateNews();
-    const { mutate: deleteNews, isPending: isDeleting } = useDeleteNews();
-
-    useEffect(() => {
-        if (data?.data) {
-            setNewsWithImages(data.data);
-        }
-    }, [data]);
-
-    const stats = {
-        total: data?.totalRecord || 0,
-        exclusive: newsWithImages.filter(n => n.isExclusive).length,
-        sticky: newsWithImages.filter(n => n.isSticky).length,
-        totalViews: newsWithImages.reduce((acc, curr) => acc + curr.viewCount, 0),
-    };
-
-    const handleEdit = (id: string) => {
-        setSelectedNewsId(id);
-        setIsEditModalOpen(true);
-    };
-
-    const handleDelete = (id: string) => {
-        setNewsToDelete(id);
-        setIsDeleteModalOpen(true);
-    };
-
-    const handleAddSubmit = async (formData: FormData) => {
-        await createNews(formData, {
-            onSuccess: () => {
-                toastify("success", 'خبر با موفقیت ایجاد شد');
-                setIsAddModalOpen(false);
-                refetch();
-            },
-            onError: (error: any) => {
-                showErrorToasts(error);
-            }
-        });
-    };
-
-    const handleEditSubmit = async (formData: FormData) => {
-        await updateNews(formData, {
-            onSuccess: () => {
-                toastify("success", 'خبر با موفقیت بروزرسانی شد');
-                setIsEditModalOpen(false);
-                setSelectedNewsId(null);
-                refetch();
-            },
-            onError: (error: any) => {
-                showErrorToasts(error);
-            }
-        });
-    };
-
-    const handleConfirmDelete = async () => {
-        if (newsToDelete) {
-            await deleteNews(newsToDelete, {
-                onSuccess: () => {
-                    toastify("success", 'خبر با موفقیت حذف شد');
-                    setIsDeleteModalOpen(false);
-                    setNewsToDelete(null);
-                    refetch();
-                },
-                onError: (error: any) => {
-                    showErrorToasts(error);
-                }
-            });
-        }
-    };
-
-    const totalPages = data ? Math.ceil(data.totalRecord / data.pageSize) : 1;
-    const pageNumbers = generatePageNumbers(totalPages, currentPage + 1);
-
-    if (error) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100">
-                <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="text-center"
-                >
-                    <AlertCircle size={64} className="text-red-500 mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-slate-800 mb-2">خطا در بارگذاری</h2>
-                    <p className="text-slate-500 mb-6">مشکلی در دریافت اطلاعات رخ داده است</p>
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => refetch()}
-                        className="px-6 py-3 bg-linear-to-r from-slate-700 to-slate-800 text-white rounded-xl shadow-md hover:shadow-xl transition-all"
-                    >
-                        تلاش مجدد
-                    </motion.button>
-                </motion.div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="w-full bg-linear-to-br from-slate-50 via-white to-slate-50 min-h-screen" dir="rtl">
-            <div className="p-6">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
-                    <StatCard title="کل اخبار" value={stats.total} icon={Newspaper} color="from-slate-600 to-slate-700" trend="+12.5%" />
-                    <StatCard title="اخبار انحصاری" value={stats.exclusive} icon={Star} color="from-amber-500 to-orange-500" trend="+5.2%" />
-                    <StatCard title="اخبار مهم" value={stats.sticky} icon={Pin} color="from-red-500 to-pink-500" trend="+8.3%" />
-                    <StatCard title="تعداد بازدیدها" value={stats.totalViews} icon={Eye} color="from-emerald-500 to-teal-500" trend="+22.1%" />
-                </div>
-
-                <div className="md:hidden flex justify-end mb-4">
-                    <motion.button
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setIsAddModalOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-slate-700 to-slate-800 text-white rounded-lg shadow-md text-sm"
-                    >
-                        <Plus size={16} />
-                        <span>خبر جدید</span>
-                    </motion.button>
-                </div>
-
-                {isLoading ? (
-                    <div className="flex flex-col items-center justify-center py-20">
-                        <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        >
-                            <Loader2 size={48} className="text-slate-400" />
-                        </motion.div>
-                        <p className="text-slate-500 mt-4">در حال بارگذاری اخبار...</p>
-                    </div>
-                ) : (
-                    <>
-                        <motion.div
-                            layout
-                            className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                        >
-                            <AnimatePresence mode="popLayout">
-                                {data?.data.map((news: any, index: number) => (
-                                    <motion.div
-                                        key={news.id}
-                                        initial={{ opacity: 0, y: 50 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.05 }}
-                                    >
-                                        <NewsCard
-                                            news={news}
-                                            onEdit={handleEdit}
-                                            onDelete={handleDelete}
-                                        />
-                                    </motion.div>
-                                ))}
-                            </AnimatePresence>
-                        </motion.div>
-
-                        {data && data.totalRecord > data.pageSize && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="flex items-center justify-between mt-10 bg-white rounded-2xl shadow-lg border border-slate-100 p-4"
-                            >
-                                <motion.button
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
-                                    disabled={currentPage === 0}
-                                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 text-slate-600 disabled:opacity-50 hover:bg-slate-100 transition-all text-sm font-medium"
-                                >
-                                    <ChevronRight size={16} />
-                                    قبلی
-                                </motion.button>
-
-                                <div className="flex items-center gap-2">
-                                    {pageNumbers.map((page, index) => (
-                                        <motion.button
-                                            key={index}
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
-                                            onClick={() => typeof page === 'number' && setCurrentPage(page - 1)}
-                                            className={`w-9 h-9 rounded-xl font-medium text-sm transition-all ${currentPage === (typeof page === 'number' ? page - 1 : -1)
-                                                    ? 'bg-linear-to-r from-slate-700 to-slate-800 text-white shadow-md'
-                                                    : typeof page === 'number'
-                                                        ? 'hover:bg-slate-100 text-slate-600'
-                                                        : 'text-slate-300 cursor-default'
-                                                }`}
-                                            disabled={typeof page !== 'number'}
-                                        >
-                                            {page}
-                                        </motion.button>
-                                    ))}
-                                </div>
-
-                                <motion.button
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    onClick={() => setCurrentPage(prev => prev + 1)}
-                                    disabled={currentPage >= totalPages - 1}
-                                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 text-slate-600 disabled:opacity-50 hover:bg-slate-100 transition-all text-sm font-medium"
-                                >
-                                    بعدی
-                                    <ChevronLeft size={16} />
-                                </motion.button>
-                            </motion.div>
-                        )}
-                    </>
-                )}
-            </div>
-
-            <AddNewsModal
-                isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
-                onSubmit={handleAddSubmit}
-                isSubmitting={isCreating}
-            />
-
-            <EditNewsModal
-                isOpen={isEditModalOpen}
-                onClose={() => {
-                    setIsEditModalOpen(false);
-                    setSelectedNewsId(null);
-                }}
-                newsId={selectedNewsId}
-                onSubmit={handleEditSubmit}
-                isSubmitting={isUpdating}
-            />
-
-            <DeleteConfirmModal
-                isOpen={isDeleteModalOpen}
-                onClose={() => {
-                    setIsDeleteModalOpen(false);
-                    setNewsToDelete(null);
-                }}
-                onConfirm={handleConfirmDelete}
-                isDeleting={isDeleting}
-            />
+  useEffect(() => {
+    setAction(
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex items-center gap-3"
+      >
+        <div className="p-2.5 rounded-xl bg-linear-to-br from-slate-700 to-slate-800 shadow-lg">
+          <Scale size={22} className="text-white" />
         </div>
+        <div>
+          <h1 className="text-xl font-bold bg-linear-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">
+            مدیریت اخبار
+          </h1>
+          <p className="text-xs text-slate-500">
+            مدیریت اخبار و اطلاعیه‌های قضایی
+          </p>
+        </div>
+      </motion.div>,
     );
+
+    setActionSecound(
+      <motion.button
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setIsAddModalOpen(true)}
+        className="relative group overflow-hidden flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-slate-700 to-slate-800 text-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 text-sm font-medium"
+      >
+        <span className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+        <Plus size={16} />
+        <span>خبر جدید</span>
+      </motion.button>,
+    );
+
+    return () => {
+      setAction(null);
+      setActionSecound(null);
+    };
+  }, [setAction, setActionSecound]);
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
+  const [newsToDelete, setNewsToDelete] = useState<string | null>(null);
+  const [newsWithImages, setNewsWithImages] = useState<NewsWithImage[]>([]);
+
+  const { data, isLoading, error, refetch } = useGetAllNews(currentPage, 12);
+  const { mutate: createNews, isPending: isCreating } = useCreateNews();
+  const { mutate: updateNews, isPending: isUpdating } = useUpdateNews();
+  const { mutate: deleteNews, isPending: isDeleting } = useDeleteNews();
+
+  useEffect(() => {
+    if (data?.data) {
+      setNewsWithImages(data.data);
+    }
+  }, [data]);
+
+  const stats = {
+    total: data?.totalRecord || 0,
+    exclusive: newsWithImages.filter((n) => n.isExclusive).length,
+    sticky: newsWithImages.filter((n) => n.isSticky).length,
+    totalViews: newsWithImages.reduce((acc, curr) => acc + curr.viewCount, 0),
+  };
+
+  const handleEdit = (id: string) => {
+    setSelectedNewsId(id);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    setNewsToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleAddSubmit = async (formData: FormData) => {
+    await createNews(formData, {
+      onSuccess: () => {
+        toastify("success", "خبر با موفقیت ایجاد شد");
+        setIsAddModalOpen(false);
+        refetch();
+      },
+      onError: (error: any) => {
+        showErrorToasts(error);
+      },
+    });
+  };
+
+  const handleEditSubmit = async (formData: FormData) => {
+    await updateNews(formData, {
+      onSuccess: () => {
+        toastify("success", "خبر با موفقیت بروزرسانی شد");
+        setIsEditModalOpen(false);
+        setSelectedNewsId(null);
+        refetch();
+      },
+      onError: (error: any) => {
+        showErrorToasts(error);
+      },
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (newsToDelete) {
+      await deleteNews(newsToDelete, {
+        onSuccess: () => {
+          toastify("success", "خبر با موفقیت حذف شد");
+          setIsDeleteModalOpen(false);
+          setNewsToDelete(null);
+          refetch();
+        },
+        onError: (error: any) => {
+          showErrorToasts(error);
+        },
+      });
+    }
+  };
+
+  const totalPages = data ? Math.ceil(data.totalRecord / data.pageSize) : 1;
+  const pageNumbers = generatePageNumbers(totalPages, currentPage + 1);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="text-center"
+        >
+          <AlertCircle size={64} className="text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-slate-800 mb-2">
+            خطا در بارگذاری
+          </h2>
+          <p className="text-slate-500 mb-6">
+            مشکلی در دریافت اطلاعات رخ داده است
+          </p>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => refetch()}
+            className="px-6 py-3 bg-linear-to-r from-slate-700 to-slate-800 text-white rounded-xl shadow-md hover:shadow-xl transition-all"
+          >
+            تلاش مجدد
+          </motion.button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="w-full bg-linear-to-br from-slate-50 via-white to-slate-50 min-h-screen"
+      dir="rtl"
+    >
+      <div className="p-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
+          <StatCard
+            title="کل اخبار"
+            value={stats.total}
+            icon={Newspaper}
+            color="from-slate-600 to-slate-700"
+            trend="+12.5%"
+          />
+          <StatCard
+            title="اخبار انحصاری"
+            value={stats.exclusive}
+            icon={Star}
+            color="from-amber-500 to-orange-500"
+            trend="+5.2%"
+          />
+          <StatCard
+            title="اخبار مهم"
+            value={stats.sticky}
+            icon={Pin}
+            color="from-red-500 to-pink-500"
+            trend="+8.3%"
+          />
+          <StatCard
+            title="تعداد بازدیدها"
+            value={stats.totalViews}
+            icon={Eye}
+            color="from-emerald-500 to-teal-500"
+            trend="+22.1%"
+          />
+        </div>
+
+        <div className="md:hidden flex justify-end mb-4">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-slate-700 to-slate-800 text-white rounded-lg shadow-md text-sm"
+          >
+            <Plus size={16} />
+            <span>خبر جدید</span>
+          </motion.button>
+        </div>
+
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            >
+              <Loader2 size={48} className="text-slate-400" />
+            </motion.div>
+            <p className="text-slate-500 mt-4">در حال بارگذاری اخبار...</p>
+          </div>
+        ) : (
+          <>
+            <motion.div
+              layout
+              className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            >
+              <AnimatePresence mode="popLayout">
+                {data?.data.map((news: any, index: number) => (
+                  <motion.div
+                    key={news.id}
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <NewsCard
+                      news={news}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+
+            {data && data.totalRecord > data.pageSize && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center justify-between mt-10 bg-white rounded-2xl shadow-lg border border-slate-100 p-4"
+              >
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(0, prev - 1))
+                  }
+                  disabled={currentPage === 0}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 text-slate-600 disabled:opacity-50 hover:bg-slate-100 transition-all text-sm font-medium"
+                >
+                  <ChevronRight size={16} />
+                  قبلی
+                </motion.button>
+
+                <div className="flex items-center gap-2">
+                  {pageNumbers.map((page, index) => (
+                    <motion.button
+                      key={index}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() =>
+                        typeof page === "number" && setCurrentPage(page - 1)
+                      }
+                      className={`w-9 h-9 rounded-xl font-medium text-sm transition-all ${
+                        currentPage ===
+                        (typeof page === "number" ? page - 1 : -1)
+                          ? "bg-linear-to-r from-slate-700 to-slate-800 text-white shadow-md"
+                          : typeof page === "number"
+                            ? "hover:bg-slate-100 text-slate-600"
+                            : "text-slate-300 cursor-default"
+                      }`}
+                      disabled={typeof page !== "number"}
+                    >
+                      {page}
+                    </motion.button>
+                  ))}
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setCurrentPage((prev) => prev + 1)}
+                  disabled={currentPage >= totalPages - 1}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 text-slate-600 disabled:opacity-50 hover:bg-slate-100 transition-all text-sm font-medium"
+                >
+                  بعدی
+                  <ChevronLeft size={16} />
+                </motion.button>
+              </motion.div>
+            )}
+          </>
+        )}
+      </div>
+
+      <AddNewsModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={handleAddSubmit}
+        isSubmitting={isCreating}
+      />
+
+      <EditNewsModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedNewsId(null);
+        }}
+        newsId={selectedNewsId}
+        onSubmit={handleEditSubmit}
+        isSubmitting={isUpdating}
+      />
+
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setNewsToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+      />
+    </div>
+  );
 }

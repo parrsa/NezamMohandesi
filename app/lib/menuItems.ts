@@ -46,6 +46,7 @@ import {
   ShoppingBag,
   Video,
   Newspaper,
+  ClipboardList,
 } from "lucide-react";
 
 export const menuItemsDashboard: any[] = [
@@ -65,13 +66,19 @@ export const menuItemsDashboard: any[] = [
     id: "category",
     label: "دسته بندی اخبار",
     icon: Video,
-    href: "/admin/news-categories"
+    href: "/admin/news-categories",
   },
   {
     id: "videos",
     label: "ویدیوها",
     icon: Video,
     href: "/admin/videos",
+  },
+  {
+    id: "categories",
+    label: "دسته بندی",
+    icon: ClipboardList,
+    href: "/admin/categories",
   },
   // {
   //   id: "advertising",
