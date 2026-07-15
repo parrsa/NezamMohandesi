@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
+  Edit,
   Loader2,
   Plus,
   Scale,
@@ -19,15 +20,21 @@ import {
 import { generatePageNumbers } from "@/app/lib/generatePageNumbers";
 import { toastify } from "@/app/components/Toasts";
 import { showErrorToasts } from "@/app/lib/showErrorToastify";
-import DeleteCategoryModal from "./components/DeleteCategoryModal";
 import { useHeaderAction } from "@/app/core/provider/HeaderActionProvider/HeaderAction";
 import AddCategoriesModal from "./components/CreateCategoryModal";
+import DeleteCategoryModal from "./components/DeleteCategoryModal";
+import EditCategoriesModal from "./components/EditCategories";
 
 export default function Categories() {
   const [currentPage, setCurrentPage] = useState(1);
   const [newsToDelete, setNewsToDelete] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedCategoryId, setselectedCategoryId] = useState<string | null>(
+    null,
+  );
+
   const { setAction, setActionSecound } = useHeaderAction();
   const { data, isLoading, error, refetch } = useGetAllCategories(
     currentPage,
@@ -36,6 +43,7 @@ export default function Categories() {
   const { mutate: deleteCategory, isPending: isDeleting } = useDeleteCategory();
   const { mutate: createCategories, isPending: isCreating } =
     useCreateCategory();
+  const { mutate: editCategories, isPending: isUpdating } = useUpdateCategory();
   const totalPages = data ? Math.ceil(data.totalRecord / data.pageSize) : 1;
   const pageNumbers = generatePageNumbers(totalPages, currentPage + 1);
 
@@ -84,6 +92,11 @@ export default function Categories() {
     setIsDeleteModalOpen(true);
   };
 
+  const handleEdit = (id: string) => {
+    setselectedCategoryId(id);
+    setIsEditModalOpen(true);
+  };
+
   const handleConfirmDelete = async () => {
     if (newsToDelete) {
       await deleteCategory(newsToDelete, {
@@ -105,6 +118,20 @@ export default function Categories() {
       onSuccess: () => {
         toastify("success", "خبر با موفقیت ایجاد شد");
         setIsAddModalOpen(false);
+        refetch();
+      },
+      onError: (error: any) => {
+        showErrorToasts(error);
+      },
+    });
+  };
+
+  const handleEditSubmit = async (formData: any) => {
+    await editCategories(formData, {
+      onSuccess: () => {
+        toastify("success", "خبر با موفقیت بروزرسانی شد");
+        setIsEditModalOpen(false);
+        setselectedCategoryId(null);
         refetch();
       },
       onError: (error: any) => {
@@ -136,9 +163,6 @@ export default function Categories() {
                 کد رهگیری
               </th>
               <th className="px-4 py-2 font-light text-center">موضوع</th>
-              <th className="px-4 py-2 font-light text-center">
-                کاربر ثبت کننده
-              </th>
               <th className="px-4 py-2 font-light text-center w-[100px]">
                 تاریخ ثبت
               </th>
@@ -165,25 +189,29 @@ export default function Categories() {
                     {index + 1}
                   </td>
                   <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                    {index + 1}
+                    {item?.name}
                   </td>
                   <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                    {index + 1}
+                    {item?.description}
                   </td>
                   <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                    {index + 1}
+                    {item?.createdAt}
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                    {index + 1}
+                  <td
+                    className={`px-4 py-3 font-medium ${item?.isActive ? "text-green-700" : "text-red-700"} text-center`}
+                  >
+                    {item?.isActive ? "فعال" : "غیرفعال"}
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                    {index + 1}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center">
+                  <td className="flex items-center justify-center gap-2">
                     <Trash2
                       onClick={() => handleDelete(item?.id)}
                       size={18}
                       className="text-red-600"
+                    />
+                    <Edit
+                      onClick={() => handleEdit(item?.id)}
+                      size={18}
+                      className="text-emerald-600"
                     />
                   </td>
                 </motion.tr>
@@ -258,6 +286,16 @@ export default function Categories() {
         }}
         onConfirm={handleConfirmDelete}
         isDeleting={isDeleting}
+      />
+      <EditCategoriesModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setselectedCategoryId(null);
+        }}
+        id={selectedCategoryId}
+        onSubmit={handleEditSubmit}
+        isSubmitting={isUpdating}
       />
     </div>
   );

@@ -8,30 +8,37 @@ import {
   Loader2,
   X,
 } from "lucide-react";
-import { categoriesSchema, CategoriesFormData } from "./categoriesSchema";
 import { Input, TextArea } from "@/app/components/Input";
 import Modal from "@/app/components/Modal";
 import Switch from "@/app/components/Input/Switch";
+import { CategoriesFormData, categoriesSchema } from "./categoriesSchema";
+import { useGetCategoryById } from "@/app/core/services/Categories/useCategories";
 
-interface AddCategoriesModalProps {
+interface EditCategoriesModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: CategoriesFormData) => Promise<void>;
   isSubmitting: boolean;
+  id: string | null;
 }
 
-const initialValues: CategoriesFormData = {
-  name: "",
-  description: "",
-  isActive: false,
-};
-
-export default function AddCategoriesModal({
+export default function EditCategoriesModal({
   isOpen,
   onClose,
   onSubmit,
   isSubmitting,
-}: AddCategoriesModalProps) {
+  id,
+}: EditCategoriesModalProps) {
+  const { data, isLoading } = useGetCategoryById(id ?? "");
+
+  const initialValues: CategoriesFormData = {
+    name: "",
+    description: "",
+    isActive: data?.isActive,
+  };
+
+  console.log("data", data);
+
   const handleSubmit = async (
     values: CategoriesFormData,
     { setSubmitting }: any,

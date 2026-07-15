@@ -17,7 +17,7 @@ export const AllCategoriesListApi = async (
 
 export const GetCategoryByIdApi = async (id: string) => {
   try {
-    const response = await api.get(`Categories/${id}`);
+    const response = await api.get(`api/Categories/${id}`);
     return response.data;
   } catch (error) {
     console.error("Failed to get category by Id:", error);
@@ -39,7 +39,7 @@ export const CreateCategoriesApi = async (formData: any) => {
   }
 };
 
-export const UpdateCategoriesApi = async (id: string, formData: FormData) => {
+export const UpdateCategoriesApi = async (id: string, formData: any) => {
   try {
     const response = await api.put(`Categories/${id}`, formData, {
       headers: {
