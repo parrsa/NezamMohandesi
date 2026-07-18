@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Edit,
+  EyeIcon,
   Loader2,
   Plus,
   Scale,
@@ -25,6 +26,7 @@ import { useHeaderAction } from "@/app/core/provider/HeaderActionProvider/Header
 import AddCategoriesModal from "./components/CreateCategoryModal";
 import DeleteCategoryModal from "./components/DeleteCategoryModal";
 import EditCategoriesModal from "./components/EditCategories";
+import Link from "next/link";
 
 export default function Categories() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -142,7 +144,7 @@ export default function Categories() {
   };
 
   return (
-    <div className="min-h-screen px-5 flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen p-5 bg-linear-to-br from-slate-50 to-slate-100">
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <motion.div
@@ -177,46 +179,50 @@ export default function Categories() {
           </thead>
           <AnimatePresence>
             <tbody className="divide-y divide-gray-200">
-              {data?.items.map((item: any, index: number) => (
-                <motion.tr
-                  key={item?.id || index}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="transition-colors divide-x divide-gray-100 hover:bg-gray-50"
-                >
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                    {index + 1}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                    {item?.name}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                    {item?.description}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-clip">
-                    {item?.createdAt}
-                  </td>
-                  <td
-                    className={`px-4 py-3 font-medium ${item?.isActive ? "text-green-700" : "text-red-700"} text-center`}
+              {data.items &&
+                data?.items.map((item: any, index: number) => (
+                  <motion.tr
+                    key={item?.id || index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                    className="transition-colors divide-x divide-gray-100 hover:bg-gray-50"
                   >
-                    {item?.isActive ? "فعال" : "غیرفعال"}
-                  </td>
-                  <td className="flex items-center justify-center gap-2 py-3">
-                    <Trash2
-                      onClick={() => handleDelete(item?.id)}
-                      size={18}
-                      className="text-red-600"
-                    />
-                    <Edit
-                      onClick={() => handleEdit(item?.id)}
-                      size={18}
-                      className="text-emerald-600"
-                    />
-                  </td>
-                </motion.tr>
-              ))}
+                    <td className="px-4 py-3 font-medium text-gray-700 text-center">
+                      {index + 1}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-gray-700 text-center">
+                      {item?.name}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-gray-700 text-center">
+                      {item?.description}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-clip">
+                      {item?.createdAt}
+                    </td>
+                    <td
+                      className={`px-4 py-3 font-medium ${item?.isActive ? "text-green-700" : "text-red-700"} text-center`}
+                    >
+                      {item?.isActive ? "فعال" : "غیرفعال"}
+                    </td>
+                    <td className="flex items-center justify-center gap-2 py-3">
+                      <Trash2
+                        onClick={() => handleDelete(item?.id)}
+                        size={18}
+                        className="text-red-600"
+                      />
+                      <Edit
+                        onClick={() => handleEdit(item?.id)}
+                        size={18}
+                        className="text-emerald-600"
+                      />
+                      <Link href={`/admin/categories/${item?.id}`}>
+                        <EyeIcon size={18} className="text-blue-600" />
+                      </Link>
+                    </td>
+                  </motion.tr>
+                ))}
             </tbody>
           </AnimatePresence>
         </table>

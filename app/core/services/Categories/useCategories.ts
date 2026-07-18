@@ -4,7 +4,9 @@ import {
   AllCategoriesListApi,
   CreateCategoriesApi,
   DeleteCategories,
+  GetCategoriesTreeApi,
   GetCategoryByIdApi,
+  GetSubCategoriesApi,
   UpdateCategoriesApi,
 } from "./useCategoriesApi";
 
@@ -23,6 +25,21 @@ export const useGetCategoryById = (id: string) => {
     queryKey: CategoriesKeys.detail(id),
     queryFn: () => GetCategoryByIdApi(id),
     enabled: !!id,
+  });
+};
+
+export const useGetSubCategories = (id: string) => {
+  return useQuery({
+    queryKey: CategoriesKeys.detail(id),
+    queryFn: () => GetSubCategoriesApi(id),
+    enabled: !!id,
+  });
+};
+
+export const useGetCategoriesTree = () => {
+  return useQuery({
+    queryKey: CategoriesKeys.list(1, 20),
+    queryFn: () => GetCategoriesTreeApi(),
   });
 };
 

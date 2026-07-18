@@ -25,6 +25,28 @@ export const GetCategoryByIdApi = async (id: string) => {
   }
 };
 
+export const GetSubCategoriesApi = async (id: string) => {
+  try {
+    const response = await api.get(`api/Categories/${id}/sub`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get sub categories:", error);
+    throw error;
+  }
+};
+
+export const GetCategoriesTreeApi = async (
+  PageNumber: number = 1,
+  PageSize: number = 20,
+) => {
+  try {
+    const response = await api.get(`api/Categories/tree`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const CreateCategoriesApi = async (formData: any) => {
   try {
     const response = await api.post("/CreateCategory", formData, {
