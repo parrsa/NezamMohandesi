@@ -18,7 +18,7 @@ export const useGetAllCategories = (
   });
 };
 
-export const useGetCategoryById = (id: string | null) => {
+export const useGetCategoryById = (id: string) => {
   return useQuery({
     queryKey: CategoriesKeys.detail(id),
     queryFn: () => GetCategoryByIdApi(id),

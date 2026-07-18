@@ -32,9 +32,7 @@ export default function Categories() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    "",
-  );
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
 
   const { setAction, setActionSecound } = useHeaderAction();
   const { data, isLoading, error, refetch } = useGetAllCategories(
@@ -134,7 +132,7 @@ export default function Categories() {
       onSuccess: () => {
         toastify("success", "دسته بندی با موفقیت بروزرسانی شد");
         setIsEditModalOpen(false);
-        setSelectedCategoryId(null);
+        setSelectedCategoryId("");
         refetch();
       },
       onError: (error: any) => {
@@ -163,7 +161,7 @@ export default function Categories() {
                 ردیف
               </th>
               <th className="px-4 py-2 font-light text-center w-[120px]">
-                کد رهگیری
+                نام دسته بندی
               </th>
               <th className="px-4 py-2 font-light text-center">موضوع</th>
               <th className="px-4 py-2 font-light text-center w-[100px]">
@@ -294,7 +292,7 @@ export default function Categories() {
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
-          setSelectedCategoryId(null);
+          setSelectedCategoryId("");
         }}
         onSubmit={handleEditSubmit}
         isSubmitting={isUpdating}

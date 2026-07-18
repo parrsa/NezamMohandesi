@@ -47,6 +47,7 @@ import {
   Video,
   Newspaper,
   ClipboardList,
+  TagIcon,
 } from "lucide-react";
 
 export const menuItemsDashboard: any[] = [
@@ -79,6 +80,12 @@ export const menuItemsDashboard: any[] = [
     label: "دسته بندی",
     icon: ClipboardList,
     href: "/admin/categories",
+  },
+  {
+    id: "tags",
+    label: "تگ ها",
+    icon: TagIcon,
+    href: "/admin/tags",
   },
   // {
   //   id: "advertising",

@@ -8,13 +8,12 @@ import {
   Loader2,
   X,
 } from "lucide-react";
-import { categoriesSchema, CategoriesFormData } from "./categoriesSchema";
 import { Input, TextArea } from "@/app/components/Input";
 import Modal from "@/app/components/Modal";
 import { useEffect, useMemo } from "react";
-import { FormikSwitch } from "@/app/components/FormikSwitch";
+import { TagsFormData, tagsSchema } from "./tagsSchema";
 
-interface EditCategoriesModalProps {
+interface EditTagsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: any) => Promise<void>;
@@ -22,18 +21,17 @@ interface EditCategoriesModalProps {
   data: any;
 }
 
-export default function EditCategoriesModal({
+export default function EditTagsModal({
   isOpen,
   onClose,
   onSubmit,
   isSubmitting,
   data,
-}: EditCategoriesModalProps) {
-  const initialValues: CategoriesFormData = useMemo(() => {
+}: EditTagsModalProps) {
+  const initialValues: TagsFormData = useMemo(() => {
     return {
       name: data?.name || "",
       description: data?.description || "",
-      isActive: data?.isActive ?? true,
     };
   }, [data]);
 
@@ -42,18 +40,13 @@ export default function EditCategoriesModal({
     }
   }, [isOpen]);
 
-  const handleSubmit = async (
-    values: CategoriesFormData,
-    { setSubmitting }: any,
-  ) => {
+  const handleSubmit = async (values: TagsFormData, { setSubmitting }: any) => {
     const payload = {
       id: data?.id,
       formData: {
         id: data?.id,
         name: values.name,
         description: values.description,
-        isActive: values.isActive,
-        parentId: null,
       },
     };
 
@@ -62,7 +55,7 @@ export default function EditCategoriesModal({
   };
 
   const headerProps = {
-    title: "ویرایش دسته بندی",
+    title: "ویرایش تگ ها",
     ColorText: "#1e293b",
     bgColor: "transparent",
     Close_Icon: <X size={24} className="text-gray-500" />,
@@ -81,7 +74,7 @@ export default function EditCategoriesModal({
       <Formik
         key={data?.id || "edit-form"}
         initialValues={initialValues}
-        validationSchema={categoriesSchema}
+        validationSchema={tagsSchema}
         onSubmit={handleSubmit}
         enableReinitialize={true}
       >
@@ -100,7 +93,7 @@ export default function EditCategoriesModal({
                   rounded="xl"
                   inputSize="lg"
                   error={errors.name}
-                  placeholder="عنوان دسته بندی"
+                  placeholder="عنوان تگ"
                 />
                 <ErrorMessage name="name">
                   {(msg) => (
@@ -122,7 +115,7 @@ export default function EditCategoriesModal({
                   rounded="xl"
                   inputSize="lg"
                   error={errors.description}
-                  placeholder="توضیحات دسته بندی..."
+                  placeholder="توضیحات تگ..."
                 />
                 <ErrorMessage name="description">
                   {(msg) => (
@@ -134,27 +127,6 @@ export default function EditCategoriesModal({
                 </ErrorMessage>
               </div>
             </div>
-            <div className="w-full border-b pb-4 border-neutral-300">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  فعال/غیرفعال *
-                </label>
-                <FormikSwitch
-                  name="isActive"
-                  label={values.isActive ? "فعال" : "غیرفعال"}
-                />
-
-                <ErrorMessage name="isActive">
-                  {(msg) => (
-                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle size={14} />
-                      {msg}
-                    </p>
-                  )}
-                </ErrorMessage>
-              </div>
-            </div>
-
             <div className="flex justify-end gap-4 pb-4 pt-6 border-t border-gray-200">
               <button
                 type="button"
@@ -174,7 +146,7 @@ export default function EditCategoriesModal({
                     <span>در حال بروزرسانی...</span>
                   </>
                 ) : (
-                  "بروزرسانی دسته بندی"
+                  "بروزرسانی تگ"
                 )}
               </button>
             </div>

@@ -1,60 +1,33 @@
 "use client";
 
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import {
-  Upload,
-  Image as ImageIcon,
-  AlertCircle,
-  Loader2,
-  X,
-} from "lucide-react";
-import { categoriesSchema, CategoriesFormData } from "./categoriesSchema";
+import { AlertCircle, Loader2, X } from "lucide-react";
 import { Input, TextArea } from "@/app/components/Input";
 import Modal from "@/app/components/Modal";
-import { useEffect, useMemo } from "react";
-import { FormikSwitch } from "@/app/components/FormikSwitch";
+import { TagsFormData, tagsSchema } from "./tagsSchema";
 
-interface EditCategoriesModalProps {
+interface AddTagsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: TagsFormData) => Promise<void>;
   isSubmitting: boolean;
-  data: any;
 }
 
-export default function EditCategoriesModal({
+const initialValues: TagsFormData = {
+  name: "",
+  description: "",
+};
+
+export default function AddTagsModal({
   isOpen,
   onClose,
   onSubmit,
   isSubmitting,
-  data,
-}: EditCategoriesModalProps) {
-  const initialValues: CategoriesFormData = useMemo(() => {
-    return {
-      name: data?.name || "",
-      description: data?.description || "",
-      isActive: data?.isActive ?? true,
-    };
-  }, [data]);
-
-  useEffect(() => {
-    if (!isOpen) {
-    }
-  }, [isOpen]);
-
-  const handleSubmit = async (
-    values: CategoriesFormData,
-    { setSubmitting }: any,
-  ) => {
+}: AddTagsModalProps) {
+  const handleSubmit = async (values: TagsFormData, { setSubmitting }: any) => {
     const payload = {
-      id: data?.id,
-      formData: {
-        id: data?.id,
-        name: values.name,
-        description: values.description,
-        isActive: values.isActive,
-        parentId: null,
-      },
+      name: values.name,
+      description: values.description,
     };
 
     await onSubmit(payload);
@@ -62,7 +35,7 @@ export default function EditCategoriesModal({
   };
 
   const headerProps = {
-    title: "ویرایش دسته بندی",
+    title: "دسته بندی جدید",
     ColorText: "#1e293b",
     bgColor: "transparent",
     Close_Icon: <X size={24} className="text-gray-500" />,
@@ -74,18 +47,16 @@ export default function EditCategoriesModal({
       isVisible={isOpen}
       onClose={onClose}
       auth
-      className="w-full md:w-[45%] h-[95vh] backdrop-blur-xl bg-white rounded-3xl shadow-2xl border border-gray-200"
+      className="w-full md:w-[45%]  h-[95vh] backdrop-blur-xl bg-white rounded-3xl shadow-2xl border border-gray-200"
       showHeader={true}
       headerProps={headerProps}
     >
       <Formik
-        key={data?.id || "edit-form"}
         initialValues={initialValues}
-        validationSchema={categoriesSchema}
+        validationSchema={tagsSchema}
         onSubmit={handleSubmit}
-        enableReinitialize={true}
       >
-        {({ errors, setFieldValue, values }) => (
+        {({ errors, setFieldValue }) => (
           <Form className="p-6 space-y-6 max-h-[calc(95vh-80px)]">
             <div className="grid grid-cols-1 gap-6">
               <div>
@@ -113,7 +84,7 @@ export default function EditCategoriesModal({
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  توضیحات *
+                  توضیحات*
                 </label>
                 <Field
                   as={TextArea}
@@ -125,26 +96,6 @@ export default function EditCategoriesModal({
                   placeholder="توضیحات دسته بندی..."
                 />
                 <ErrorMessage name="description">
-                  {(msg) => (
-                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle size={14} />
-                      {msg}
-                    </p>
-                  )}
-                </ErrorMessage>
-              </div>
-            </div>
-            <div className="w-full border-b pb-4 border-neutral-300">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  فعال/غیرفعال *
-                </label>
-                <FormikSwitch
-                  name="isActive"
-                  label={values.isActive ? "فعال" : "غیرفعال"}
-                />
-
-                <ErrorMessage name="isActive">
                   {(msg) => (
                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
                       <AlertCircle size={14} />
@@ -171,10 +122,10 @@ export default function EditCategoriesModal({
                 {isSubmitting ? (
                   <>
                     <Loader2 size={20} className="animate-spin" />
-                    <span>در حال بروزرسانی...</span>
+                    <span>در حال ثبت...</span>
                   </>
                 ) : (
-                  "بروزرسانی دسته بندی"
+                  "ثبت تگ"
                 )}
               </button>
             </div>
