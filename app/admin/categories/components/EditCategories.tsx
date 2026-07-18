@@ -13,6 +13,7 @@ import { Input, TextArea } from "@/app/components/Input";
 import Modal from "@/app/components/Modal";
 import { useEffect, useMemo } from "react";
 import { FormikSwitch } from "@/app/components/FormikSwitch";
+import { ParamValue } from "next/dist/server/request/params";
 
 interface EditCategoriesModalProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ interface EditCategoriesModalProps {
   onSubmit: (data: any) => Promise<void>;
   isSubmitting: boolean;
   data: any;
+  parentId?: ParamValue;
 }
 
 export default function EditCategoriesModal({
@@ -28,6 +30,7 @@ export default function EditCategoriesModal({
   onSubmit,
   isSubmitting,
   data,
+  parentId,
 }: EditCategoriesModalProps) {
   const initialValues: CategoriesFormData = useMemo(() => {
     return {
@@ -62,7 +65,7 @@ export default function EditCategoriesModal({
   };
 
   const headerProps = {
-    title: "ویرایش دسته بندی",
+    title: `${parentId ? "ویرایش زیر دسته" : "ویرایش دسته بندی"}`,
     ColorText: "#1e293b",
     bgColor: "transparent",
     Close_Icon: <X size={24} className="text-gray-500" />,

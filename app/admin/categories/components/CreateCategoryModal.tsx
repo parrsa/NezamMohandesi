@@ -12,12 +12,14 @@ import { categoriesSchema, CategoriesFormData } from "./categoriesSchema";
 import { Input, TextArea } from "@/app/components/Input";
 import Modal from "@/app/components/Modal";
 import Switch from "@/app/components/Input/Switch";
+import { ParamValue } from "next/dist/server/request/params";
 
 interface AddCategoriesModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: CategoriesFormData) => Promise<void>;
   isSubmitting: boolean;
+  parentId?: ParamValue;
 }
 
 const initialValues: CategoriesFormData = {
@@ -31,6 +33,7 @@ export default function AddCategoriesModal({
   onClose,
   onSubmit,
   isSubmitting,
+  parentId,
 }: AddCategoriesModalProps) {
   const handleSubmit = async (
     values: CategoriesFormData,
@@ -40,7 +43,7 @@ export default function AddCategoriesModal({
       name: values.name,
       description: values.description,
       isActive: values.isActive,
-      parentId: null,
+      parentId: parentId ?? null,
     };
 
     await onSubmit(payload);
@@ -48,7 +51,7 @@ export default function AddCategoriesModal({
   };
 
   const headerProps = {
-    title: "دسته بندی جدید",
+    title: `${[parentId ? "زیر دسته بندی جدید" : "دسته بندی جدید"]}`,
     ColorText: "#1e293b",
     bgColor: "transparent",
     Close_Icon: <X size={24} className="text-gray-500" />,

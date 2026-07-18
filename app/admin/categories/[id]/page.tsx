@@ -2,23 +2,100 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { useGetCategoriesTree } from "@/app/core/services/Categories/useCategories";
+import {
+  useCreateCategory,
+  useDeleteCategory,
+  useGetCategoriesTree,
+  useGetCategoryById,
+  useUpdateCategory,
+} from "@/app/core/services/Categories/useCategories";
 import { motion, AnimatePresence } from "framer-motion";
 import { useHeaderAction } from "@/app/core/provider/HeaderActionProvider/HeaderAction";
 import { Edit, EyeIcon, Loader2, Plus, Scale, Trash2 } from "lucide-react";
 import Link from "next/link";
+import DeleteCategoryModal from "../components/DeleteCategoryModal";
+import { toastify } from "@/app/components/Toasts";
+import { showErrorToasts } from "@/app/lib/showErrorToastify";
+import AddCategoriesModal from "../components/CreateCategoryModal";
+import EditCategoriesModal from "../components/EditCategories";
 
 export default function SubCategories() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [categoriesToDelete, setCategoriesToDelete] = useState<string | null>(
+    null,
+  );
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
+
   const { id } = useParams();
 
   const { setAction, setActionSecound } = useHeaderAction();
 
   const { data, isLoading, error, refetch } = useGetCategoriesTree();
+  const { mutate: createCategories, isPending: isCreating } =
+    useCreateCategory();
+  const { mutate: editCategories, isPending: isUpdating } = useUpdateCategory();
+  const { mutate: deleteCategory, isPending: isDeleting } = useDeleteCategory();
+  const { data: getById, isLoading: isGetById } =
+    useGetCategoryById(selectedCategoryId);
+
   console.log("data tree", data);
   const categoriesDetail =
     data?.length > 1 && data?.find((item: any) => item.id == id);
   console.log("categoriesDetail", categoriesDetail?.children);
+
+  const handleDelete = (id: string) => {
+    setCategoriesToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+  const handleEdit = (id: string) => {
+    setSelectedCategoryId(id);
+    setIsEditModalOpen(true);
+  };
+
+  const handleAddSubmit = async (formData: any) => {
+    await createCategories(formData, {
+      onSuccess: () => {
+        toastify("success", "خبر با موفقیت ایجاد شد");
+        setIsAddModalOpen(false);
+        refetch();
+      },
+      onError: (error: any) => {
+        showErrorToasts(error);
+      },
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (categoriesToDelete) {
+      await deleteCategory(categoriesToDelete, {
+        onSuccess: () => {
+          toastify("success", "خبر با موفقیت حذف شد");
+          setIsDeleteModalOpen(false);
+          setCategoriesToDelete(null);
+          refetch();
+        },
+        onError: (error) => {
+          showErrorToasts(error);
+        },
+      });
+    }
+  };
+
+  const handleEditSubmit = async (payload: any) => {
+    await editCategories(payload, {
+      onSuccess: () => {
+        toastify("success", "دسته بندی با موفقیت بروزرسانی شد");
+        setIsEditModalOpen(false);
+        setSelectedCategoryId("");
+        refetch();
+      },
+      onError: (error: any) => {
+        showErrorToasts(error);
+      },
+    });
+  };
 
   useEffect(() => {
     setAction(
@@ -84,9 +161,6 @@ export default function SubCategories() {
               </th>
               <th className="px-4 py-2 font-light text-center">موضوع</th>
               <th className="px-4 py-2 font-light text-center w-[100px]">
-                تاریخ ثبت
-              </th>
-              <th className="px-4 py-2 font-light text-center w-[100px]">
                 وضعیت
               </th>
               <th className="px-4 py-2 font-light text-center w-[80px]">
@@ -115,9 +189,6 @@ export default function SubCategories() {
                     <td className="px-4 py-3 font-medium text-gray-700 text-center">
                       {item?.description}
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-clip">
-                      {item?.createdAt}
-                    </td>
                     <td
                       className={`px-4 py-3 font-medium ${item?.isActive ? "text-green-700" : "text-red-700"} text-center`}
                     >
@@ -125,12 +196,12 @@ export default function SubCategories() {
                     </td>
                     <td className="flex items-center justify-center gap-2 py-3">
                       <Trash2
-                        // onClick={() => handleDelete(item?.id)}
+                        onClick={() => handleDelete(item?.id)}
                         size={18}
                         className="text-red-600"
                       />
                       <Edit
-                        // onClick={() => handleEdit(item?.id)}
+                        onClick={() => handleEdit(item?.id)}
                         size={18}
                         className="text-emerald-600"
                       />
@@ -144,6 +215,33 @@ export default function SubCategories() {
           </AnimatePresence>
         </table>
       )}
+      <AddCategoriesModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={handleAddSubmit}
+        isSubmitting={isCreating}
+        parentId={id}
+      />
+      <DeleteCategoryModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setCategoriesToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+      />
+      <EditCategoriesModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedCategoryId("");
+        }}
+        onSubmit={handleEditSubmit}
+        isSubmitting={isUpdating}
+        data={getById}
+        parentId={id}
+      />
     </div>
   );
 }
