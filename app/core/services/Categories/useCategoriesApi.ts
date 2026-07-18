@@ -41,9 +41,9 @@ export const CreateCategoriesApi = async (formData: any) => {
 
 export const UpdateCategoriesApi = async (id: string, formData: any) => {
   try {
-    const response = await api.put(`Categories/${id}`, formData, {
+    const response = await api.put(`api/Categories/${id}`, formData, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
       },
     });
     return response.data;

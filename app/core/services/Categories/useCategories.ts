@@ -18,7 +18,7 @@ export const useGetAllCategories = (
   });
 };
 
-export const useGetCategoryById = (id: string) => {
+export const useGetCategoryById = (id: string | null) => {
   return useQuery({
     queryKey: CategoriesKeys.detail(id),
     queryFn: () => GetCategoryByIdApi(id),
@@ -39,7 +39,8 @@ export const useCreateCategory = () => {
 export const useUpdateCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: UpdateCategoriesApi,
+    mutationFn: ({ id, formData }: { id: string; formData: any }) =>
+      UpdateCategoriesApi(id, formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CategoriesKeys.all });
     },

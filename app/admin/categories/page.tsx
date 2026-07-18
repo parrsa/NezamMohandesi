@@ -5,6 +5,7 @@ import {
   useCreateCategory,
   useDeleteCategory,
   useGetAllCategories,
+  useGetCategoryById,
   useUpdateCategory,
 } from "@/app/core/services/Categories/useCategories";
 import { motion, AnimatePresence } from "framer-motion";
@@ -31,8 +32,8 @@ export default function Categories() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [selectedCategoryId, setselectedCategoryId] = useState<string | null>(
-    null,
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    "",
   );
 
   const { setAction, setActionSecound } = useHeaderAction();
@@ -44,6 +45,8 @@ export default function Categories() {
   const { mutate: createCategories, isPending: isCreating } =
     useCreateCategory();
   const { mutate: editCategories, isPending: isUpdating } = useUpdateCategory();
+  const { data: getById, isLoading: isGetById } =
+    useGetCategoryById(selectedCategoryId);
   const totalPages = data ? Math.ceil(data.totalRecord / data.pageSize) : 1;
   const pageNumbers = generatePageNumbers(totalPages, currentPage + 1);
 
@@ -93,7 +96,7 @@ export default function Categories() {
   };
 
   const handleEdit = (id: string) => {
-    setselectedCategoryId(id);
+    setSelectedCategoryId(id);
     setIsEditModalOpen(true);
   };
 
@@ -126,12 +129,12 @@ export default function Categories() {
     });
   };
 
-  const handleEditSubmit = async (formData: any) => {
-    await editCategories(formData, {
+  const handleEditSubmit = async (payload: any) => {
+    await editCategories(payload, {
       onSuccess: () => {
-        toastify("success", "خبر با موفقیت بروزرسانی شد");
+        toastify("success", "دسته بندی با موفقیت بروزرسانی شد");
         setIsEditModalOpen(false);
-        setselectedCategoryId(null);
+        setSelectedCategoryId(null);
         refetch();
       },
       onError: (error: any) => {
@@ -194,7 +197,7 @@ export default function Categories() {
                   <td className="px-4 py-3 font-medium text-gray-700 text-center">
                     {item?.description}
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center">
+                  <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-clip">
                     {item?.createdAt}
                   </td>
                   <td
@@ -202,7 +205,7 @@ export default function Categories() {
                   >
                     {item?.isActive ? "فعال" : "غیرفعال"}
                   </td>
-                  <td className="flex items-center justify-center gap-2">
+                  <td className="flex items-center justify-center gap-2 py-3">
                     <Trash2
                       onClick={() => handleDelete(item?.id)}
                       size={18}
@@ -291,11 +294,11 @@ export default function Categories() {
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
-          setselectedCategoryId(null);
+          setSelectedCategoryId(null);
         }}
-        id={selectedCategoryId}
         onSubmit={handleEditSubmit}
         isSubmitting={isUpdating}
+        data={getById}
       />
     </div>
   );

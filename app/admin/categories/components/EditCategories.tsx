@@ -8,18 +8,19 @@ import {
   Loader2,
   X,
 } from "lucide-react";
+import { categoriesSchema, CategoriesFormData } from "./categoriesSchema";
 import { Input, TextArea } from "@/app/components/Input";
 import Modal from "@/app/components/Modal";
 import Switch from "@/app/components/Input/Switch";
-import { CategoriesFormData, categoriesSchema } from "./categoriesSchema";
-import { useGetCategoryById } from "@/app/core/services/Categories/useCategories";
+import { useEffect, useMemo } from "react";
+import { FormikSwitch } from "@/app/components/FormikSwitch";
 
 interface EditCategoriesModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: CategoriesFormData) => Promise<void>;
+  onSubmit: (data: any) => Promise<void>;
   isSubmitting: boolean;
-  id: string | null;
+  data: any;
 }
 
 export default function EditCategoriesModal({
@@ -27,27 +28,34 @@ export default function EditCategoriesModal({
   onClose,
   onSubmit,
   isSubmitting,
-  id,
+  data,
 }: EditCategoriesModalProps) {
-  const { data, isLoading } = useGetCategoryById(id ?? "");
+  const initialValues: CategoriesFormData = useMemo(() => {
+    return {
+      name: data?.name || "",
+      description: data?.description || "",
+      isActive: data?.isActive ?? true,
+    };
+  }, [data]);
 
-  const initialValues: CategoriesFormData = {
-    name: "",
-    description: "",
-    isActive: data?.isActive,
-  };
-
-  console.log("data", data);
+  useEffect(() => {
+    if (!isOpen) {
+    }
+  }, [isOpen]);
 
   const handleSubmit = async (
     values: CategoriesFormData,
     { setSubmitting }: any,
   ) => {
     const payload = {
-      name: values.name,
-      description: values.description,
-      isActive: values.isActive,
-      parentId: null,
+      id: data?.id,
+      formData: {
+        id: data?.id,
+        name: values.name,
+        description: values.description,
+        isActive: values.isActive,
+        parentId: null,
+      },
     };
 
     await onSubmit(payload);
@@ -55,7 +63,7 @@ export default function EditCategoriesModal({
   };
 
   const headerProps = {
-    title: "دسته بندی جدید",
+    title: "ویرایش دسته بندی",
     ColorText: "#1e293b",
     bgColor: "transparent",
     Close_Icon: <X size={24} className="text-gray-500" />,
@@ -67,16 +75,18 @@ export default function EditCategoriesModal({
       isVisible={isOpen}
       onClose={onClose}
       auth
-      className="w-full md:w-[45%]  h-[95vh] backdrop-blur-xl bg-white rounded-3xl shadow-2xl border border-gray-200"
+      className="w-full md:w-[45%] h-[95vh] backdrop-blur-xl bg-white rounded-3xl shadow-2xl border border-gray-200"
       showHeader={true}
       headerProps={headerProps}
     >
       <Formik
+        key={data?.id || "edit-form"}
         initialValues={initialValues}
         validationSchema={categoriesSchema}
         onSubmit={handleSubmit}
+        enableReinitialize={true}
       >
-        {({ errors, setFieldValue }) => (
+        {({ errors, setFieldValue, values }) => (
           <Form className="p-6 space-y-6 max-h-[calc(95vh-80px)]">
             <div className="grid grid-cols-1 gap-6">
               <div>
@@ -104,7 +114,7 @@ export default function EditCategoriesModal({
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  توضیحات*
+                  توضیحات *
                 </label>
                 <Field
                   as={TextArea}
@@ -130,14 +140,11 @@ export default function EditCategoriesModal({
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   فعال/غیرفعال *
                 </label>
-                <Field
+                <FormikSwitch
                   name="isActive"
-                  as={Switch}
-                  error={errors.isActive}
-                  onChange={(value: boolean) => {
-                    setFieldValue("isActive", value);
-                  }}
+                  label={values.isActive ? "فعال" : "غیرفعال"}
                 />
+
                 <ErrorMessage name="isActive">
                   {(msg) => (
                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
@@ -165,10 +172,10 @@ export default function EditCategoriesModal({
                 {isSubmitting ? (
                   <>
                     <Loader2 size={20} className="animate-spin" />
-                    <span>در حال ثبت...</span>
+                    <span>در حال بروزرسانی...</span>
                   </>
                 ) : (
-                  "ثبت دسته بندی"
+                  "بروزرسانی دسته بندی"
                 )}
               </button>
             </div>
