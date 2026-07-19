@@ -10,6 +10,40 @@ export const AllSocietiesListApi = async () => {
   }
 };
 
+export const CreateSocietyNoticesApi = async (formData: FormData) => {
+  try {
+    const response = await api.post("api/SocietyNotices/Create", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Failed to create Society Notices:", error);
+    throw error;
+  }
+};
+
+export const GetAllSocietyNoticesApi = async (id: string) => {
+  try {
+    const response = await api.get(`api/SocietyNotices/GetAll?societyId=${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get Society Notices:", error);
+    throw error;
+  }
+};
+
+export const GetSocietyNoticesByIdApi = async (id: string) => {
+  try {
+    const response = await api.get(`api/SocietyNotices/GetById/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get Society Notices:", error);
+    throw error;
+  }
+};
+
 export const GetSocietiesByIdApi = async (id: string) => {
   try {
     const response = await api.get(`api/Societies/GetById/${id}`);

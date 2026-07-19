@@ -129,7 +129,7 @@ export default function SocietiesPage() {
   }, [setAction, setActionSecound]);
 
   return (
-    <div className="min-h-screen p-5  bg-linear-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen p-5 bg-linear-to-br from-slate-50 to-slate-100">
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <motion.div
