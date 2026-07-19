@@ -6,6 +6,8 @@ import {
   useCreateContent,
   useDeleteContent,
   useGetAllContents,
+  useGetContentById,
+  useUpdateContent,
 } from "@/app/core/services/Contents/useContents";
 import { useHeaderAction } from "@/app/core/provider/HeaderActionProvider/HeaderAction";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,16 +22,19 @@ import {
   Trash2,
 } from "lucide-react";
 import { generatePageNumbers } from "@/app/lib/generatePageNumbers";
-import AddContentModal from "./components/AddContentModal";
 import { toastify } from "@/app/components/Toasts";
 import { showErrorToasts } from "@/app/lib/showErrorToastify";
 import DeleteConfirmModal from "@/app/admin/news/components/DeleteConfirmationModal";
+import AddContentModal from "./components/AddContentModal";
+import EditContentModal from "./components/EditContentModal";
 
 export default function ContentPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [contentToDelete, setContentToDelete] = useState<string | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedContentId, setSelectedContentId] = useState<string>("");
 
   const { contentId } = useParams();
 
@@ -39,12 +44,20 @@ export default function ContentPage() {
     null,
     contentId,
   );
+
   const { mutate: createContent, isPending: isCreating } = useCreateContent();
   const { mutate: deleteContent, isPending: isDeleting } = useDeleteContent();
-
+  const { mutate: updateContent, isPending: isUpdating } = useUpdateContent();
+  const { data: getById, isLoading: isGetById } =
+    useGetContentById(selectedContentId);
   const { setAction, setActionSecound } = useHeaderAction();
   const totalPages = data ? Math.ceil(data.totalRecord / data.pageSize) : 1;
   const pageNumbers = generatePageNumbers(totalPages, currentPage + 1);
+
+  const handleEdit = (id: string) => {
+    setSelectedContentId(id);
+    setIsEditModalOpen(true);
+  };
 
   const handleDelete = (id: string) => {
     setContentToDelete(id);
@@ -78,6 +91,20 @@ export default function ContentPage() {
         },
       });
     }
+  };
+
+  const handleEditSubmit = async (payload: any) => {
+    await updateContent(payload, {
+      onSuccess: () => {
+        toastify("success", "دسته بندی با موفقیت بروزرسانی شد");
+        setIsEditModalOpen(false);
+        setSelectedContentId("");
+        refetch();
+      },
+      onError: (error: any) => {
+        showErrorToasts(error);
+      },
+    });
   };
 
   useEffect(() => {
@@ -189,11 +216,11 @@ export default function ContentPage() {
                         size={18}
                         className="text-red-600"
                       />
-                      <Edit
-                        // onClick={() => handleEdit(item?.id)}
+                      {/* <Edit
+                        onClick={() => handleEdit(item?.id)}
                         size={18}
                         className="text-emerald-600"
-                      />
+                      /> */}
                     </td>
                   </motion.tr>
                 ))}
@@ -268,6 +295,17 @@ export default function ContentPage() {
         }}
         onConfirm={handleConfirmDelete}
         isDeleting={isDeleting}
+      />
+      <EditContentModal
+        categoryId={contentId}
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedContentId("");
+        }}
+        onSubmit={handleEditSubmit}
+        isSubmitting={isUpdating}
+        data={getById}
       />
     </div>
   );

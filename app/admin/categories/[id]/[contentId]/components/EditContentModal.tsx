@@ -17,16 +17,18 @@ import Modal from "@/app/components/Modal";
 import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
-import { ContentFormData, contentSchema } from "../contentSchema";
+import DateObject from "react-date-object";
+import { ContentFormData, contentSchema } from "./contentSchema";
 import { useGetAllTags } from "@/app/core/services/Tags/useTags";
 import { ParamValue } from "next/dist/server/request/params";
 
-interface AddContentModalProps {
+interface EditContentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (formData: FormData) => Promise<void>;
   isSubmitting: boolean;
   categoryId: ParamValue;
+  data: any;
 }
 
 const statusOptions = [
@@ -146,13 +148,14 @@ function TagMultiSelect({
   );
 }
 
-export default function AddContentModal({
+export default function EditContentModal({
   isOpen,
   onClose,
   onSubmit,
   isSubmitting,
   categoryId,
-}: AddContentModalProps) {
+  data,
+}: EditContentModalProps) {
   const [featuredImageFile, setFeaturedImageFile] = useState<File | null>(null);
   const [featuredImagePreview, setFeaturedImagePreview] = useState<
     string | null
@@ -163,13 +166,13 @@ export default function AddContentModal({
   const [selectedTagValues, setSelectedTagValues] = useState<number[]>([]);
 
   const initialValues: ContentFormData = {
-    title: "",
-    summary: "",
-    body: "",
-    status: 1,
-    tagIds: [],
-    publishDate: "",
-    featuredImage: null,
+    title: data?.title || "",
+    summary: data?.summary || "",
+    body: data?.body || "",
+    status: data?.status ?? 1,
+    tagIds: data?.tags?.map((tag: any) => tag.id) || [],
+    publishDate: data?.publishDate || "",
+    featuredImage: data?.featuredImage || null,
     files: [],
   };
 
@@ -180,6 +183,27 @@ export default function AddContentModal({
       value: tag.id,
       label: tag.name,
     })) || [];
+
+  useEffect(() => {
+    if (isOpen && data) {
+      setSelectedTagValues(data?.tags?.map((tag: any) => tag.id) || []);
+      setFeaturedImagePreview(data?.featuredImage || null);
+      setFeaturedImageFile(null);
+      setAttachmentFiles([]);
+      setAttachmentPreviews([]);
+      if (data?.publishDate) {
+        setPublishDateValue(
+          new DateObject({
+            date: data.publishDate,
+            calendar: persian,
+            locale: persian_fa,
+          }),
+        );
+      } else {
+        setPublishDateValue(null);
+      }
+    }
+  }, [isOpen, data]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -287,6 +311,7 @@ export default function AddContentModal({
       const metaTitle = generateMetaTitle(values.title);
       const metaDescription = generateMetaDescription(values.summary);
 
+      formData.append("Id", String(data?.id));
       formData.append("Title", values.title);
       formData.append("Summary", values.summary);
       formData.append("Body", values.body);
@@ -297,7 +322,7 @@ export default function AddContentModal({
       formData.append("MetaDescription", metaDescription);
 
       if (featuredImageFile) {
-        formData.append("FeaturedImage", "featuredImageFile");
+        formData.append("FeaturedImage", featuredImageFile);
       }
 
       if (values.tagIds && values.tagIds.length > 0) {
@@ -332,7 +357,7 @@ export default function AddContentModal({
   };
 
   const headerProps = {
-    title: "ایجاد محتوای جدید",
+    title: "ویرایش محتوا",
     ColorText: "#1e293b",
     bgColor: "transparent",
     Close_Icon: <X size={24} className="text-gray-500" />,
@@ -352,6 +377,7 @@ export default function AddContentModal({
         initialValues={initialValues}
         validationSchema={contentSchema}
         onSubmit={handleSubmit}
+        enableReinitialize
       >
         {({ errors, setFieldValue, values }) => (
           <Form className="p-6 space-y-6 max-h-[calc(95vh-80px)] overflow-y-auto">
@@ -611,10 +637,10 @@ export default function AddContentModal({
                 {isSubmitting ? (
                   <>
                     <Loader2 size={20} className="animate-spin" />
-                    <span>در حال ثبت...</span>
+                    <span>در حال بروزرسانی...</span>
                   </>
                 ) : (
-                  "ثبت محتوا"
+                  "بروزرسانی محتوا"
                 )}
               </button>
             </div>

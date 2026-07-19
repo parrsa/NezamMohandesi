@@ -42,11 +42,11 @@ export const CreateContentApi = async (formData: FormData) => {
   }
 };
 
-export const EditContentApi = async (id: string, formData: any) => {
+export const EditContentApi = async (id: string, formData: FormData) => {
   try {
     const response = await api.put(`api/Contents/${id}`, formData, {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
       },
     });
     return response;
