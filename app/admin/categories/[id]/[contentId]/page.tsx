@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import {
   useCreateContent,
+  useDeleteContent,
   useGetAllContents,
 } from "@/app/core/services/Contents/useContents";
 import { useHeaderAction } from "@/app/core/provider/HeaderActionProvider/HeaderAction";
@@ -22,10 +23,13 @@ import { generatePageNumbers } from "@/app/lib/generatePageNumbers";
 import AddContentModal from "./components/AddContentModal";
 import { toastify } from "@/app/components/Toasts";
 import { showErrorToasts } from "@/app/lib/showErrorToastify";
+import DeleteConfirmModal from "@/app/admin/news/components/DeleteConfirmationModal";
 
 export default function ContentPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [contentToDelete, setContentToDelete] = useState<string | null>(null);
 
   const { contentId } = useParams();
 
@@ -36,10 +40,16 @@ export default function ContentPage() {
     contentId,
   );
   const { mutate: createContent, isPending: isCreating } = useCreateContent();
+  const { mutate: deleteContent, isPending: isDeleting } = useDeleteContent();
 
   const { setAction, setActionSecound } = useHeaderAction();
   const totalPages = data ? Math.ceil(data.totalRecord / data.pageSize) : 1;
   const pageNumbers = generatePageNumbers(totalPages, currentPage + 1);
+
+  const handleDelete = (id: string) => {
+    setContentToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
 
   const handleAddSubmit = async (formData: any) => {
     await createContent(formData, {
@@ -52,6 +62,22 @@ export default function ContentPage() {
         showErrorToasts(error);
       },
     });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (contentToDelete) {
+      await deleteContent(contentToDelete, {
+        onSuccess: () => {
+          toastify("success", "خبر با موفقیت حذف شد");
+          setIsDeleteModalOpen(false);
+          setContentToDelete(null);
+          refetch();
+        },
+        onError: (error) => {
+          showErrorToasts(error);
+        },
+      });
+    }
   };
 
   useEffect(() => {
@@ -159,7 +185,7 @@ export default function ContentPage() {
                     </td>
                     <td className="flex items-center justify-center gap-2 py-3">
                       <Trash2
-                        // onClick={() => handleDelete(item?.id)}
+                        onClick={() => handleDelete(item?.id)}
                         size={18}
                         className="text-red-600"
                       />
@@ -233,6 +259,15 @@ export default function ContentPage() {
         onSubmit={handleAddSubmit}
         isSubmitting={isCreating}
         categoryId={contentId}
+      />
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setContentToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
       />
     </div>
   );

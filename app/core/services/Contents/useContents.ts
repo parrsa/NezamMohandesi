@@ -54,7 +54,7 @@ export const useUpdateContent = () => {
 export const useDeleteContent = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id }: { id: string }) => DeleteContentApi(id),
+    mutationFn: DeleteContentApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ContentsKeys.all });
     },
