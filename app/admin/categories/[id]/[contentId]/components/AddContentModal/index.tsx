@@ -1,19 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import {
   X,
-  Upload,
   AlertCircle,
   Loader2,
   Calendar,
-  Clock,
-  Hash,
-  FileText,
   Image as ImageIcon,
+  Tag,
+  ChevronDown,
+  Check,
 } from "lucide-react";
-import { Input, Select, TextArea } from "@/app/components/Input";
+import { Input, TextArea } from "@/app/components/Input";
 import Modal from "@/app/components/Modal";
 import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
@@ -37,6 +36,116 @@ const statusOptions = [
   { value: 3, label: "زمان‌بندی شده" },
 ];
 
+function TagMultiSelect({
+  options,
+  selected,
+  onChange,
+  loading,
+}: {
+  options: { value: number; label: string }[];
+  selected: number[];
+  onChange: (values: number[]) => void;
+  loading: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleValue = (value: number) => {
+    if (selected.includes(value)) {
+      onChange(selected.filter((v) => v !== value));
+    } else {
+      onChange([...selected, value]);
+    }
+  };
+
+  const removeValue = (value: number) => {
+    onChange(selected.filter((v) => v !== value));
+  };
+
+  const selectedLabels = options.filter((o) => selected.includes(o.value));
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <div
+        onClick={() => setOpen((prev) => !prev)}
+        className="w-full min-h-[52px] px-3 py-2 rounded-xl border-2 border-gray-200 focus-within:border-blue-500 bg-white cursor-pointer flex items-center flex-wrap gap-2 transition-all"
+      >
+        {selectedLabels.length === 0 && (
+          <span className="text-gray-400 px-1 flex items-center gap-2">
+            <Tag size={16} />
+            انتخاب تگ‌ها...
+          </span>
+        )}
+        {selectedLabels.map((tag) => (
+          <span
+            key={tag.value}
+            className="flex items-center gap-1 px-3 py-1 rounded-full bg-linear-to-r from-blue-100 to-purple-100 text-blue-700 text-sm font-medium"
+          >
+            {tag.label}
+            <X
+              size={14}
+              className="cursor-pointer hover:text-red-600"
+              onClick={(e) => {
+                e.stopPropagation();
+                removeValue(tag.value);
+              }}
+            />
+          </span>
+        ))}
+        <ChevronDown
+          size={18}
+          className={`mr-auto text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </div>
+
+      {open && (
+        <div className="absolute z-20 mt-2 w-full max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-xl p-2 space-y-1">
+          {loading && (
+            <p className="text-sm text-gray-500 px-3 py-2">
+              در حال بارگذاری تگ‌ها...
+            </p>
+          )}
+          {!loading && options.length === 0 && (
+            <p className="text-sm text-gray-500 px-3 py-2">
+              هیچ تگی موجود نیست
+            </p>
+          )}
+          {options.map((option) => {
+            const isSelected = selected.includes(option.value);
+            return (
+              <div
+                key={option.value}
+                onClick={() => toggleValue(option.value)}
+                className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors ${
+                  isSelected
+                    ? "bg-blue-50 text-blue-700"
+                    : "hover:bg-gray-50 text-gray-700"
+                }`}
+              >
+                <span className="text-sm font-medium">{option.label}</span>
+                {isSelected && <Check size={16} className="text-blue-600" />}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AddContentModal({
   isOpen,
   onClose,
@@ -51,14 +160,14 @@ export default function AddContentModal({
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [attachmentPreviews, setAttachmentPreviews] = useState<string[]>([]);
   const [publishDateValue, setPublishDateValue] = useState<any>(null);
-  const [selectedTags, setSelectedTags] = useState<any[]>([]);
+  const [selectedTagValues, setSelectedTagValues] = useState<number[]>([]);
 
   const initialValues: ContentFormData = {
     title: "",
     summary: "",
     body: "",
     status: 1,
-    tagIds: 4,
+    tagIds: [],
     publishDate: "",
     featuredImage: null,
     files: [],
@@ -87,7 +196,7 @@ export default function AddContentModal({
       setAttachmentFiles([]);
       setAttachmentPreviews([]);
       setPublishDateValue(null);
-      setSelectedTags([]);
+      setSelectedTagValues([]);
     }
   }, [isOpen]);
 
@@ -116,7 +225,7 @@ export default function AddContentModal({
     }
     setFeaturedImageFile(null);
     setFeaturedImagePreview(null);
-    // setFieldValue("featuredImage", null);
+    setFieldValue("featuredImage", null);
   };
 
   const handleAttachmentChange = (
@@ -126,8 +235,9 @@ export default function AddContentModal({
     const files = e.target.files;
     if (files) {
       const newFiles = Array.from(files);
-      setAttachmentFiles((prev) => [...prev, ...newFiles]);
-      setFieldValue("files", [...attachmentFiles, ...newFiles]);
+      const updatedFiles = [...attachmentFiles, ...newFiles];
+      setAttachmentFiles(updatedFiles);
+      setFieldValue("files", updatedFiles);
 
       newFiles.forEach((file) => {
         const reader = new FileReader();
@@ -170,52 +280,55 @@ export default function AddContentModal({
     values: ContentFormData,
     { setSubmitting }: any,
   ) => {
-    const formData = new FormData();
+    try {
+      const formData = new FormData();
 
-    const slug = generateSlug(values.title);
-    const metaTitle = generateMetaTitle(values.title);
-    const metaDescription = generateMetaDescription(values.summary);
+      const slug = generateSlug(values.title);
+      const metaTitle = generateMetaTitle(values.title);
+      const metaDescription = generateMetaDescription(values.summary);
 
-    formData.append("Title", values.title);
-    formData.append("Summary", values.summary);
-    formData.append("Body", values.body);
-    formData.append("Status", String(values.status));
-    formData.append("CategoryId", categoryId);
-    formData.append("Slug", slug);
-    formData.append("MetaTitle", metaTitle);
-    formData.append("MetaDescription", metaDescription);
-    formData.append("FeaturedImage", metaDescription);
-    formData.append("TagIds", 4);
+      formData.append("Title", values.title);
+      formData.append("Summary", values.summary);
+      formData.append("Body", values.body);
+      formData.append("Status", String(values.status));
+      formData.append("CategoryId", String(categoryId));
+      formData.append("Slug", slug);
+      formData.append("MetaTitle", metaTitle);
+      formData.append("MetaDescription", metaDescription);
 
-    // if (values.tagIds && values.tagIds.length > 0) {
-    //   values.tagIds.forEach((tagId: number | undefined) => {
-    //     formData.append("TagIds", String(tagId));
-    //   });
-    // }
+      if (featuredImageFile) {
+        formData.append("FeaturedImage", "featuredImageFile");
+      }
 
-    if (publishDateValue) {
-      const date = new Date(publishDateValue);
-      formData.append("PublishDate", date.toISOString());
+      if (values.tagIds && values.tagIds.length > 0) {
+        values.tagIds.forEach((tagId) => {
+          formData.append("TagIds", String(tagId));
+        });
+      }
+
+      if (publishDateValue) {
+        const date = publishDateValue.toDate();
+        formData.append("PublishDate", date.toISOString());
+      }
+
+      attachmentFiles.forEach((file, index) => {
+        formData.append("Files", file);
+        const fileMetadata = {
+          fileName: file.name,
+          displayName: file.name,
+          isMainAttachment: index === 0,
+          fileType: file.type,
+          description: `فایل پیوست ${index + 1}`,
+        };
+        formData.append("FilesMetadata", JSON.stringify(fileMetadata));
+      });
+
+      await onSubmit(formData);
+    } catch (error) {
+      console.error("Submit error:", error);
+    } finally {
+      setSubmitting(false);
     }
-
-    // if (featuredImageFile) {
-    //   formData.append("FeaturedImage", featuredImageFile);
-    // }
-
-    attachmentFiles.forEach((file, index) => {
-      formData.append("Files", file);
-      const fileMetadata = {
-        fileName: file.name,
-        displayName: file.name,
-        isMainAttachment: index === 0,
-        fileType: file.type,
-        description: `فایل پیوست ${index + 1}`,
-      };
-      formData.append("FilesMetadata", JSON.stringify(fileMetadata));
-    });
-
-    await onSubmit(formData);
-    setSubmitting(false);
   };
 
   const headerProps = {
@@ -365,22 +478,25 @@ export default function AddContentModal({
                 </div>
               </div>
 
-              <div>
+              <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   تگ‌ها
                 </label>
-                <Select
-                  variant="default"
+                <TagMultiSelect
                   options={tagOptions}
-                  value={selectedTags}
-                  onChange={(selected: any) => {
-                    setSelectedTags(selected || []);
-                    setFieldValue(
-                      "tagIds",
-                      (selected || []).map((item: any) => item.value),
-                    );
+                  selected={selectedTagValues}
+                  loading={tagsLoading}
+                  onChange={(values) => {
+                    setSelectedTagValues(values);
+                    setFieldValue("tagIds", values);
                   }}
                 />
+                {errors.tagIds && typeof errors.tagIds === "string" && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <AlertCircle size={14} />
+                    {errors.tagIds}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -441,58 +557,41 @@ export default function AddContentModal({
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 فایل‌های پیوست
               </label>
-              <div className="bg-gray-50 rounded-2xl p-6 border-2 border-dashed border-gray-300 hover:border-purple-500 transition-colors">
-                <label className="cursor-pointer">
-                  <div className="flex flex-col items-center">
-                    {attachmentPreviews.length > 0 ? (
-                      <div className="w-full grid grid-cols-3 gap-4">
-                        {attachmentPreviews.map((preview, index) => (
-                          <div key={index} className="relative">
-                            <img
-                              src={preview}
-                              alt={`Attachment ${index + 1}`}
-                              className="w-full h-24 object-cover rounded-lg"
-                            />
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleRemoveAttachment(index, setFieldValue)
-                              }
-                              className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                            >
-                              <X size={12} />
-                            </button>
-                          </div>
-                        ))}
-                        <div className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg h-24 hover:border-purple-500 transition-colors">
-                          <Upload size={24} className="text-gray-400" />
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="w-20 h-20 rounded-full bg-linear-to-br from-purple-100 to-pink-100 flex items-center justify-center mb-4">
-                          <FileText size={32} className="text-purple-500" />
-                        </div>
-                        <p className="text-gray-700 font-medium mb-2">
-                          فایل‌های پیوست را آپلود کنید
-                        </p>
-                        <p className="text-gray-500 text-sm mb-4">
-                          فرمت‌های مجاز: PDF، DOC، DOCX، تصاویر (حداکثر 20MB)
-                        </p>
-                        <span className="px-6 py-3 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-xl font-medium hover:from-purple-600 hover:to-pink-600 transition-colors">
-                          انتخاب فایل‌ها
-                        </span>
-                      </>
-                    )}
-                    <input
-                      type="file"
-                      className="hidden"
-                      multiple
-                      accept=".pdf,.doc,.docx,image/*"
-                      onChange={(e) => handleAttachmentChange(e, setFieldValue)}
-                    />
-                  </div>
+              <div className="bg-gray-50 rounded-2xl p-6 border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                <label className="cursor-pointer flex flex-col items-center">
+                  <span className="px-6 py-3 bg-white border-2 border-blue-500 text-blue-600 rounded-xl font-medium hover:bg-blue-50 transition-colors">
+                    انتخاب فایل‌های پیوست
+                  </span>
+                  <input
+                    type="file"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => handleAttachmentChange(e, setFieldValue)}
+                  />
                 </label>
+                {attachmentFiles.length > 0 && (
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {attachmentFiles.map((file, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between px-4 py-2 rounded-xl bg-white border border-gray-200"
+                      >
+                        <span className="text-sm text-gray-700 truncate">
+                          {file.name}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleRemoveAttachment(index, setFieldValue)
+                          }
+                          className="p-1 rounded-full hover:bg-red-50 text-red-500"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 

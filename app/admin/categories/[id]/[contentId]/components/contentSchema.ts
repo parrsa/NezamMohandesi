@@ -1,4 +1,3 @@
-import { ParamValue } from "next/dist/server/request/params";
 import * as yup from "yup";
 
 export const contentSchema = yup.object().shape({
@@ -6,13 +5,13 @@ export const contentSchema = yup.object().shape({
     .string()
     .required("عنوان الزامی است")
     .min(5, "عنوان باید حداقل ۵ کاراکتر باشد")
-    .max(200, "عنوان باید حداکثر ۲۰۰ کاراکتر باشد"),
+    .max(20, "عنوان باید حداکثر ۲۰ کاراکتر باشد"),
 
   summary: yup
     .string()
     .required("خلاصه الزامی است")
     .min(20, "خلاصه باید حداقل ۲۰ کاراکتر باشد")
-    .max(500, "خلاصه باید حداکثر ۵۰۰ کاراکتر باشد"),
+    .max(50, "خلاصه باید حداکثر ۵۰ کاراکتر باشد"),
 
   body: yup
     .string()
@@ -24,7 +23,7 @@ export const contentSchema = yup.object().shape({
     .required("وضعیت الزامی است")
     .oneOf([0, 1, 2, 3], "وضعیت نامعتبر است"),
 
-  tagIds: yup.number(),
+  tagIds: yup.array(yup.number()),
 
   publishDate: yup.string(),
 
