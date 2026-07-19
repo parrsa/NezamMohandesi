@@ -1,0 +1,36 @@
+import { ParamValue } from "next/dist/server/request/params";
+import * as yup from "yup";
+
+export const contentSchema = yup.object().shape({
+  title: yup
+    .string()
+    .required("عنوان الزامی است")
+    .min(5, "عنوان باید حداقل ۵ کاراکتر باشد")
+    .max(200, "عنوان باید حداکثر ۲۰۰ کاراکتر باشد"),
+
+  summary: yup
+    .string()
+    .required("خلاصه الزامی است")
+    .min(20, "خلاصه باید حداقل ۲۰ کاراکتر باشد")
+    .max(500, "خلاصه باید حداکثر ۵۰۰ کاراکتر باشد"),
+
+  body: yup
+    .string()
+    .required("متن کامل الزامی است")
+    .min(10, "متن کامل باید حداقل 10 کاراکتر باشد"),
+
+  status: yup
+    .number()
+    .required("وضعیت الزامی است")
+    .oneOf([0, 1, 2, 3], "وضعیت نامعتبر است"),
+
+  tagIds: yup.number(),
+
+  publishDate: yup.string(),
+
+  featuredImage: yup.mixed().nullable(),
+
+  files: yup.array().of(yup.mixed()),
+});
+
+export type ContentFormData = yup.InferType<typeof contentSchema>;

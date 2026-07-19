@@ -3,92 +3,49 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  useCreateCategory,
-  useDeleteCategory,
-  useGetCategoriesTree,
-  useGetCategoryById,
-  useUpdateCategory,
-} from "@/app/core/services/Categories/useCategories";
-import { motion, AnimatePresence } from "framer-motion";
+  useCreateContent,
+  useGetAllContents,
+} from "@/app/core/services/Contents/useContents";
 import { useHeaderAction } from "@/app/core/provider/HeaderActionProvider/HeaderAction";
-import { Edit, EyeIcon, Loader2, Plus, Scale, Trash2 } from "lucide-react";
-import Link from "next/link";
-import DeleteCategoryModal from "../components/DeleteCategoryModal";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Edit,
+  EyeIcon,
+  Loader2,
+  Plus,
+  Scale,
+  Trash2,
+} from "lucide-react";
+import { generatePageNumbers } from "@/app/lib/generatePageNumbers";
+import AddContentModal from "./components/AddContentModal";
 import { toastify } from "@/app/components/Toasts";
 import { showErrorToasts } from "@/app/lib/showErrorToastify";
-import AddCategoriesModal from "../components/CreateCategoryModal";
-import EditCategoriesModal from "../components/EditCategories";
 
-export default function SubCategories() {
+export default function ContentPage() {
+  const [currentPage, setCurrentPage] = useState(1);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [categoriesToDelete, setCategoriesToDelete] = useState<string | null>(
-    null,
-  );
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
 
-  const { id } = useParams();
+  const { contentId } = useParams();
+
+  const { data, isLoading, error, refetch } = useGetAllContents(
+    currentPage,
+    20,
+    null,
+    contentId,
+  );
+  const { mutate: createContent, isPending: isCreating } = useCreateContent();
 
   const { setAction, setActionSecound } = useHeaderAction();
-
-  const { data, isLoading, error, refetch } = useGetCategoriesTree();
-  const { mutate: createCategories, isPending: isCreating } =
-    useCreateCategory();
-  const { mutate: editCategories, isPending: isUpdating } = useUpdateCategory();
-  const { mutate: deleteCategory, isPending: isDeleting } = useDeleteCategory();
-  const { data: getById, isLoading: isGetById } =
-    useGetCategoryById(selectedCategoryId);
-
-  console.log("data tree", data);
-  const categoriesDetail =
-    data?.length > 1 && data?.find((item: any) => item.id == id);
-  console.log("categoriesDetail", categoriesDetail?.children);
-
-  const handleDelete = (id: string) => {
-    setCategoriesToDelete(id);
-    setIsDeleteModalOpen(true);
-  };
-  const handleEdit = (id: string) => {
-    setSelectedCategoryId(id);
-    setIsEditModalOpen(true);
-  };
+  const totalPages = data ? Math.ceil(data.totalRecord / data.pageSize) : 1;
+  const pageNumbers = generatePageNumbers(totalPages, currentPage + 1);
 
   const handleAddSubmit = async (formData: any) => {
-    await createCategories(formData, {
+    await createContent(formData, {
       onSuccess: () => {
         toastify("success", "خبر با موفقیت ایجاد شد");
         setIsAddModalOpen(false);
-        refetch();
-      },
-      onError: (error: any) => {
-        showErrorToasts(error);
-      },
-    });
-  };
-
-  const handleConfirmDelete = async () => {
-    if (categoriesToDelete) {
-      await deleteCategory(categoriesToDelete, {
-        onSuccess: () => {
-          toastify("success", "خبر با موفقیت حذف شد");
-          setIsDeleteModalOpen(false);
-          setCategoriesToDelete(null);
-          refetch();
-        },
-        onError: (error) => {
-          showErrorToasts(error);
-        },
-      });
-    }
-  };
-
-  const handleEditSubmit = async (payload: any) => {
-    await editCategories(payload, {
-      onSuccess: () => {
-        toastify("success", "دسته بندی با موفقیت بروزرسانی شد");
-        setIsEditModalOpen(false);
-        setSelectedCategoryId("");
         refetch();
       },
       onError: (error: any) => {
@@ -111,7 +68,7 @@ export default function SubCategories() {
           <h1 className="text-xl font-bold bg-linear-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">
             مدیریت دسته بندی
           </h1>
-          <p className="text-xs text-slate-500">مدیریت زیر دسته ها</p>
+          <p className="text-xs text-slate-500">مدیریت دسته بندی ها</p>
         </div>
       </motion.div>,
     );
@@ -127,7 +84,7 @@ export default function SubCategories() {
       >
         <span className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
         <Plus size={16} />
-        <span>زیر دسته جدید</span>
+        <span>محتوای جدید</span>
       </motion.button>,
     );
 
@@ -147,7 +104,7 @@ export default function SubCategories() {
           >
             <Loader2 size={48} className="text-slate-400" />
           </motion.div>
-          <p className="text-slate-500 mt-4">در حال بارگذاری زیر دسته ها...</p>
+          <p className="text-slate-500 mt-4">در حال بارگذاری دسته بندی ها...</p>
         </div>
       ) : (
         <table className="border-collapse text-sm text-right rounded-xl overflow-hidden w-full bg-white">
@@ -161,6 +118,9 @@ export default function SubCategories() {
               </th>
               <th className="px-4 py-2 font-light text-center">موضوع</th>
               <th className="px-4 py-2 font-light text-center w-[100px]">
+                تاریخ ثبت
+              </th>
+              <th className="px-4 py-2 font-light text-center w-[100px]">
                 وضعیت
               </th>
               <th className="px-4 py-2 font-light text-center w-[80px]">
@@ -170,8 +130,8 @@ export default function SubCategories() {
           </thead>
           <AnimatePresence>
             <tbody className="divide-y divide-gray-200">
-              {data?.length > 1 &&
-                categoriesDetail?.children.map((item: any, index: number) => (
+              {data.items &&
+                data?.items.map((item: any, index: number) => (
                   <motion.tr
                     key={item?.id || index}
                     initial={{ opacity: 0, y: 10 }}
@@ -184,10 +144,13 @@ export default function SubCategories() {
                       {index + 1}
                     </td>
                     <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                      {item?.name}
+                      {item?.title}
                     </td>
                     <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                      {item?.description}
+                      {item?.summary}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-clip">
+                      {item?.createdAt}
                     </td>
                     <td
                       className={`px-4 py-3 font-medium ${item?.isActive ? "text-green-700" : "text-red-700"} text-center`}
@@ -196,18 +159,15 @@ export default function SubCategories() {
                     </td>
                     <td className="flex items-center justify-center gap-2 py-3">
                       <Trash2
-                        onClick={() => handleDelete(item?.id)}
+                        // onClick={() => handleDelete(item?.id)}
                         size={18}
                         className="text-red-600"
                       />
                       <Edit
-                        onClick={() => handleEdit(item?.id)}
+                        // onClick={() => handleEdit(item?.id)}
                         size={18}
                         className="text-emerald-600"
                       />
-                      <Link href={`/admin/categories/${id}/${item?.id}`}>
-                        <EyeIcon size={18} className="text-blue-600" />
-                      </Link>
                     </td>
                   </motion.tr>
                 ))}
@@ -215,32 +175,64 @@ export default function SubCategories() {
           </AnimatePresence>
         </table>
       )}
-      <AddCategoriesModal
+      {data && data.totalRecord > data.pageSize && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-between mt-10 bg-white rounded-2xl shadow-lg border border-slate-100 p-4"
+        >
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
+            disabled={currentPage === 0}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 text-slate-600 disabled:opacity-50 hover:bg-slate-100 transition-all text-sm font-medium"
+          >
+            <ChevronRight size={16} />
+            قبلی
+          </motion.button>
+
+          <div className="flex items-center gap-2">
+            {pageNumbers.map((page, index) => (
+              <motion.button
+                key={index}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() =>
+                  typeof page === "number" && setCurrentPage(page - 1)
+                }
+                className={`w-9 h-9 rounded-xl font-medium text-sm transition-all ${
+                  currentPage === (typeof page === "number" ? page - 1 : -1)
+                    ? "bg-linear-to-r from-slate-700 to-slate-800 text-white shadow-md"
+                    : typeof page === "number"
+                      ? "hover:bg-slate-100 text-slate-600"
+                      : "text-slate-300 cursor-default"
+                }`}
+                disabled={typeof page !== "number"}
+              >
+                {page}
+              </motion.button>
+            ))}
+          </div>
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={currentPage >= totalPages - 1}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 text-slate-600 disabled:opacity-50 hover:bg-slate-100 transition-all text-sm font-medium"
+          >
+            بعدی
+            <ChevronLeft size={16} />
+          </motion.button>
+        </motion.div>
+      )}
+      <AddContentModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={handleAddSubmit}
         isSubmitting={isCreating}
-        parentId={id}
-      />
-      <DeleteCategoryModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => {
-          setIsDeleteModalOpen(false);
-          setCategoriesToDelete(null);
-        }}
-        onConfirm={handleConfirmDelete}
-        isDeleting={isDeleting}
-      />
-      <EditCategoriesModal
-        isOpen={isEditModalOpen}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setSelectedCategoryId("");
-        }}
-        onSubmit={handleEditSubmit}
-        isSubmitting={isUpdating}
-        data={getById}
-        parentId={id}
+        categoryId={contentId}
       />
     </div>
   );

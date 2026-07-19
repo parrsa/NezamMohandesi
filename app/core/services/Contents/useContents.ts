@@ -7,12 +7,13 @@ import {
   DeleteContentApi,
   EditContentApi,
 } from "./useContentsApi";
+import { ParamValue } from "next/dist/server/request/params";
 
 export const useGetAllContents = (
   pageNumber: number = 1,
   pageSize: number = 20,
-  isActive: boolean,
-  categoryId: string,
+  isActive: boolean | null,
+  categoryId: ParamValue,
 ) => {
   return useQuery({
     queryKey: ContentsKeys.list(pageNumber, pageSize),
@@ -31,7 +32,7 @@ export const useGetContentById = (categoryId: string) => {
 
 export const useCreateContent = () => {
   const queryClient = useQueryClient();
-  useMutation({
+  return useMutation({
     mutationFn: CreateContentApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ContentsKeys.all });
@@ -41,8 +42,8 @@ export const useCreateContent = () => {
 
 export const useUpdateContent = () => {
   const queryClient = useQueryClient();
-  useMutation({
-    mutationFn: ({ id, formData }: { id: string; formData: any }) =>
+  return useMutation({
+    mutationFn: ({ id, formData }: { id: string; formData: FormData }) =>
       EditContentApi(id, formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ContentsKeys.all });
@@ -52,7 +53,7 @@ export const useUpdateContent = () => {
 
 export const useDeleteContent = () => {
   const queryClient = useQueryClient();
-  useMutation({
+  return useMutation({
     mutationFn: ({ id }: { id: string }) => DeleteContentApi(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ContentsKeys.all });

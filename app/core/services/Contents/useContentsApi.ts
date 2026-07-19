@@ -1,14 +1,15 @@
+import { ParamValue } from "next/dist/server/request/params";
 import api from "../../config/api";
 
 export const AllContentsListApi = async (
   PageNumber: number = 1,
   PageSize: number = 20,
-  isActive: boolean | null = null,
-  categoryId: string,
+  isActive: boolean | null,
+  categoryId: ParamValue,
 ) => {
   try {
     const response = await api.get(
-      `api/Contents?categoryId=${categoryId}&isActive&page=${PageNumber}&pageSize=${PageSize}&sortBy=CreatedAt&sortDescending=true`,
+      `api/Contents?categoryId=${categoryId}&page=${PageNumber}&pageSize=${PageSize}&sortBy=CreatedAt`,
     );
     return response.data;
   } catch (error) {
@@ -27,11 +28,11 @@ export const ContentByIdApi = async (id: string) => {
   }
 };
 
-export const CreateContentApi = async (formData: any) => {
+export const CreateContentApi = async (formData: FormData) => {
   try {
     const response = await api.post("/create", formData, {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
       },
     });
     return response;
