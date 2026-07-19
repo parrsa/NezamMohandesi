@@ -48,6 +48,8 @@ import {
   Newspaper,
   ClipboardList,
   TagIcon,
+  PersonStanding,
+  Group,
 } from "lucide-react";
 
 export const menuItemsDashboard: any[] = [
@@ -56,24 +58,6 @@ export const menuItemsDashboard: any[] = [
     label: "داشبورد",
     icon: Home,
     href: "/admin",
-  },
-  {
-    id: "news",
-    label: "اخبار",
-    icon: Newspaper,
-    href: "/admin/news",
-  },
-  {
-    id: "category",
-    label: "دسته بندی اخبار",
-    icon: Video,
-    href: "/admin/news-categories",
-  },
-  {
-    id: "videos",
-    label: "ویدیوها",
-    icon: Video,
-    href: "/admin/videos",
   },
   {
     id: "categories",
@@ -86,6 +70,12 @@ export const menuItemsDashboard: any[] = [
     label: "تگ ها",
     icon: TagIcon,
     href: "/admin/tags",
+  },
+  {
+    id: "societies",
+    label: "مجمع",
+    icon: Users,
+    href: "/admin/societies",
   },
   // {
   //   id: "advertising",
