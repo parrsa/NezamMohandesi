@@ -22,7 +22,7 @@ export const useGetAllContents = (
   });
 };
 
-export const useGetContentById = (categoryId: string) => {
+export const useGetContentById = (categoryId: string | null) => {
   return useQuery({
     queryKey: ContentsKeys.detail(categoryId),
     queryFn: () => ContentByIdApi(categoryId),

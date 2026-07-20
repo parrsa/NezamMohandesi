@@ -18,7 +18,7 @@ export const AllContentsListApi = async (
   }
 };
 
-export const ContentByIdApi = async (id: string) => {
+export const ContentByIdApi = async (id: string | null) => {
   try {
     const response = await api.get(`api/Contents/${id}`);
     return response.data;

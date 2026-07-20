@@ -14,5 +14,5 @@ export const ContentsKeys = {
       { pageNumber, pageSize, isActive, categoryId },
     ] as const,
   details: () => [...ContentsKeys.all, "detail"] as const,
-  detail: (id: string) => [...ContentsKeys.details(), id] as const,
+  detail: (id: string | null) => [...ContentsKeys.details(), id] as const,
 };

@@ -91,18 +91,21 @@ export default function CategoriesContentPage() {
     }
   };
 
-  const handleEditSubmit = async (payload: any) => {
-    await updateContent(payload, {
-      onSuccess: () => {
-        toastify("success", "دسته بندی با موفقیت بروزرسانی شد");
-        setIsEditModalOpen(false);
-        setSelectedContentId("");
-        refetch();
+  const handleEditSubmit = async (formData: FormData) => {
+    await updateContent(
+      { id: selectedContentId, formData },
+      {
+        onSuccess: () => {
+          toastify("success", "دسته بندی با موفقیت بروزرسانی شد");
+          setIsEditModalOpen(false);
+          setSelectedContentId("");
+          refetch();
+        },
+        onError: (error: any) => {
+          showErrorToasts(error);
+        },
       },
-      onError: (error: any) => {
-        showErrorToasts(error);
-      },
-    });
+    );
   };
 
   useEffect(() => {

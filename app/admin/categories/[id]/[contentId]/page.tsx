@@ -48,8 +48,9 @@ export default function ContentPage() {
   const { mutate: createContent, isPending: isCreating } = useCreateContent();
   const { mutate: deleteContent, isPending: isDeleting } = useDeleteContent();
   const { mutate: updateContent, isPending: isUpdating } = useUpdateContent();
-  const { data: getById, isLoading: isGetById } =
-    useGetContentById(selectedContentId);
+  const { data: getById, isLoading: isGetById } = useGetContentById(
+    String(selectedContentId),
+  );
   const { setAction, setActionSecound } = useHeaderAction();
   const totalPages = data ? Math.ceil(data.totalRecord / data.pageSize) : 1;
   const pageNumbers = generatePageNumbers(totalPages, currentPage + 1);
@@ -93,18 +94,21 @@ export default function ContentPage() {
     }
   };
 
-  const handleEditSubmit = async (payload: any) => {
-    await updateContent(payload, {
-      onSuccess: () => {
-        toastify("success", "دسته بندی با موفقیت بروزرسانی شد");
-        setIsEditModalOpen(false);
-        setSelectedContentId("");
-        refetch();
+  const handleEditSubmit = async (formData: FormData) => {
+    await updateContent(
+      { id: selectedContentId, formData },
+      {
+        onSuccess: () => {
+          toastify("success", "دسته بندی با موفقیت بروزرسانی شد");
+          setIsEditModalOpen(false);
+          setSelectedContentId("");
+          refetch();
+        },
+        onError: (error: any) => {
+          showErrorToasts(error);
+        },
       },
-      onError: (error: any) => {
-        showErrorToasts(error);
-      },
-    });
+    );
   };
 
   useEffect(() => {
@@ -216,11 +220,11 @@ export default function ContentPage() {
                         size={18}
                         className="text-red-600"
                       />
-                      {/* <Edit
+                      <Edit
                         onClick={() => handleEdit(item?.id)}
                         size={18}
                         className="text-emerald-600"
-                      /> */}
+                      />
                     </td>
                   </motion.tr>
                 ))}

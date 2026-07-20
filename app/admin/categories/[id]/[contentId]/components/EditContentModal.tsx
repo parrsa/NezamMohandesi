@@ -20,14 +20,15 @@ import persian_fa from "react-date-object/locales/persian_fa";
 import DateObject from "react-date-object";
 import { ContentFormData, contentSchema } from "./contentSchema";
 import { useGetAllTags } from "@/app/core/services/Tags/useTags";
-import { ParamValue } from "next/dist/server/request/params";
+
+const FILE_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "";
 
 interface EditContentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (formData: FormData) => Promise<void>;
   isSubmitting: boolean;
-  categoryId: ParamValue;
+  categoryId: string | string[] | null | undefined;
   data: any;
 }
 
@@ -37,6 +38,18 @@ const statusOptions = [
   { value: 2, label: "بایگانی شده" },
   { value: 3, label: "زمان‌بندی شده" },
 ];
+
+const resolveImageUrl = (value: string | null) => {
+  if (!value) return "";
+  if (
+    value.startsWith("blob:") ||
+    value.startsWith("data:") ||
+    value.startsWith("http")
+  ) {
+    return value;
+  }
+  return `${FILE_BASE_URL}/uploads/${value}`;
+};
 
 function TagMultiSelect({
   options,
@@ -172,7 +185,7 @@ export default function EditContentModal({
     status: data?.status ?? 1,
     tagIds: data?.tags?.map((tag: any) => tag.id) || [],
     publishDate: data?.publishDate || "",
-    featuredImage: data?.featuredImage || null,
+    featuredImage: null,
     files: [],
   };
 
@@ -186,15 +199,18 @@ export default function EditContentModal({
 
   useEffect(() => {
     if (isOpen && data) {
-      setSelectedTagValues(data?.tags?.map((tag: any) => tag.id) || []);
-      setFeaturedImagePreview(data?.featuredImage || null);
+      // setSelectedTagValues(data?.tags?.map((tag: any) => tag.id) || []);
+      if (featuredImagePreview?.startsWith("blob:")) {
+        URL.revokeObjectURL(featuredImagePreview);
+      }
       setFeaturedImageFile(null);
+      setFeaturedImagePreview(null);
       setAttachmentFiles([]);
       setAttachmentPreviews([]);
       if (data?.publishDate) {
         setPublishDateValue(
           new DateObject({
-            date: data.publishDate,
+            date: data?.publishDate,
             calendar: persian,
             locale: persian_fa,
           }),
@@ -204,25 +220,6 @@ export default function EditContentModal({
       }
     }
   }, [isOpen, data]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      if (featuredImagePreview?.startsWith("blob:")) {
-        URL.revokeObjectURL(featuredImagePreview);
-      }
-      attachmentPreviews.forEach((preview) => {
-        if (preview.startsWith("blob:")) {
-          URL.revokeObjectURL(preview);
-        }
-      });
-      setFeaturedImageFile(null);
-      setFeaturedImagePreview(null);
-      setAttachmentFiles([]);
-      setAttachmentPreviews([]);
-      setPublishDateValue(null);
-      setSelectedTagValues([]);
-    }
-  }, [isOpen]);
 
   const handleFeaturedImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -257,20 +254,16 @@ export default function EditContentModal({
     setFieldValue: any,
   ) => {
     const files = e.target.files;
-    if (files) {
+    if (files && files.length > 0) {
       const newFiles = Array.from(files);
+      const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
       const updatedFiles = [...attachmentFiles, ...newFiles];
+      const updatedPreviews = [...attachmentPreviews, ...newPreviews];
       setAttachmentFiles(updatedFiles);
+      setAttachmentPreviews(updatedPreviews);
       setFieldValue("files", updatedFiles);
-
-      newFiles.forEach((file) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setAttachmentPreviews((prev) => [...prev, reader.result as string]);
-        };
-        reader.readAsDataURL(file);
-      });
     }
+    e.target.value = "";
   };
 
   const handleRemoveAttachment = (index: number, setFieldValue: any) => {
@@ -320,7 +313,6 @@ export default function EditContentModal({
       formData.append("Slug", slug);
       formData.append("MetaTitle", metaTitle);
       formData.append("MetaDescription", metaDescription);
-
       if (featuredImageFile) {
         formData.append("FeaturedImage", featuredImageFile);
       }
@@ -536,7 +528,7 @@ export default function EditContentModal({
                     {featuredImagePreview ? (
                       <div className="relative w-full max-w-md">
                         <img
-                          src={featuredImagePreview}
+                          src={resolveImageUrl(featuredImagePreview)}
                           alt="Featured"
                           className="w-full h-48 object-cover rounded-xl"
                         />
@@ -599,7 +591,7 @@ export default function EditContentModal({
                   <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {attachmentFiles.map((file, index) => (
                       <div
-                        key={index}
+                        key={`${file.name}-${index}`}
                         className="flex items-center justify-between px-4 py-2 rounded-xl bg-white border border-gray-200"
                       >
                         <span className="text-sm text-gray-700 truncate">
