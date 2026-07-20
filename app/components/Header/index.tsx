@@ -68,10 +68,10 @@ export function Header() {
       label: "خدمات",
       href: "/services",
       items: [
-        { name: "آموزش", id: "/services/education" },
-        { name: "صدور پروانه", id: "/services/license" },
-        { name: "آزمون‌ها", id: "/services/exams" },
-        { name: "مشاوره", id: "/services/consulting" },
+        { name: "آموزش", id: "/education" },
+        { name: "صدور پروانه", id: "/license" },
+        { name: "آزمون‌ها", id: "/exams" },
+        { name: "مشاوره", id: "/consulting" },
       ],
     },
     { id: "magazine", label: "نشریه پیام مهندسی", href: "/magazine" },
@@ -80,7 +80,6 @@ export function Header() {
 
   const getCurrentPageFromPath = () => {
     if (pathname === "/") return "home";
-    // تطبیق مسیر معرفی سازمان با id
     if (pathname === "/introduction") return "about";
     const path = pathname.split("/")[1];
     return path || "home";
@@ -178,7 +177,6 @@ export function Header() {
         </div>
       </div>
 
-      {/* منوی دسکتاپ */}
       <div className="hidden md:flex bg-white">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center h-14">
@@ -228,7 +226,7 @@ export function Header() {
                       {item.items.map((subItem: any, idx: number) => (
                         <Link
                           key={idx}
-                          href={`/news/${subItem?.id}`}
+                          href={`${item.href}/${subItem?.id}`}
                           onClick={() => setOpenDropdown(null)}
                           className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                         >
@@ -244,7 +242,6 @@ export function Header() {
         </div>
       </div>
 
-      {/* منوی موبایل */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.nav
@@ -276,10 +273,10 @@ export function Header() {
 
                       {item.items && openDropdown === item.id && (
                         <div className="mr-4 space-y-1 border-r-2 border-blue-200 pr-2 mt-1">
-                          {item.items.map((subItem, idx) => (
+                          {item.items.map((subItem: any, idx: number) => (
                             <Link
                               key={idx}
-                              href={subItem.href}
+                              href={`${item.href}/${subItem?.id}`}
                               onClick={() => {
                                 setMobileMenuOpen(false);
                                 setOpenDropdown(null);

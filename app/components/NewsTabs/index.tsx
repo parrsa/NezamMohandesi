@@ -6,7 +6,7 @@ import { Calendar, Image as ImageIcon } from "lucide-react";
 import { useGetAllCategories } from "@/app/core/services/Categories/useCategories";
 import { useGetAllContents } from "@/app/core/services/Contents/useContents";
 
-const FILE_BASE_URL = process.env.NEXT_PUBLIC_FILE_URL || "";
+const FILE_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "";
 
 export function NewsTabs() {
   const [activeTab, setActiveTab] = useState<number | null>(null);
@@ -123,7 +123,7 @@ export function NewsTabs() {
                   >
                     <div className="w-full h-full bg-linear-to-r from-blue-900 to-blue-700">
                       <img
-                        src={`${FILE_BASE_URL}/${featured.featuredImage}`}
+                        src={`${FILE_BASE_URL}/uploads/${featured.featuredImage}`}
                         alt={featured.title}
                         className="w-full h-full object-cover opacity-60"
                       />
@@ -160,7 +160,7 @@ export function NewsTabs() {
                         <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 shadow-md relative z-10">
                           {news.featuredImage ? (
                             <img
-                              src={`${FILE_BASE_URL}/${news.featuredImage}`}
+                              src={`${FILE_BASE_URL}/uploads/${news.featuredImage}`}
                               alt={news.title.slice(0, 5)}
                               className="w-full h-full object-cover"
                             />

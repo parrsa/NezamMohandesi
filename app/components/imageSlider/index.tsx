@@ -54,16 +54,19 @@ const DateIcon = () => (
   </svg>
 );
 
-type Image = {
+type Banner = {
   id: number;
+  title?: string;
+  summary?: string;
+  date?: string;
+  icon?: string;
+  iconClasses?: string;
 };
 
 type ImagesSliderProps = {
-  banners: Image[];
+  banners: Banner[];
   autoPlay?: boolean;
   interval?: number;
-  Height?: string;
-  date?: string;
 };
 
 const ImagesSlider: React.FC<ImagesSliderProps> = ({
@@ -74,7 +77,10 @@ const ImagesSlider: React.FC<ImagesSliderProps> = ({
   const [current, setCurrent] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(true);
 
-  const extendedBanners = [banners[banners.length - 1], ...banners, banners[0]];
+  const extendedBanners: Banner[] =
+    banners && banners.length
+      ? [banners[banners.length - 1], ...banners, banners[0]]
+      : [];
 
   const next = () => {
     if (current >= extendedBanners.length - 1) return;
@@ -83,16 +89,17 @@ const ImagesSlider: React.FC<ImagesSliderProps> = ({
   };
 
   useEffect(() => {
-    if (!autoPlay) return;
+    if (!autoPlay || !banners?.length) return;
 
     const id = setInterval(() => {
       next();
     }, interval);
 
     return () => clearInterval(id);
-  }, [autoPlay, interval, current]);
+  }, [autoPlay, interval, current, banners?.length]);
 
   useEffect(() => {
+    if (!banners?.length) return;
     if (current === 0) {
       setTimeout(() => {
         setIsTransitioning(false);
@@ -104,7 +111,7 @@ const ImagesSlider: React.FC<ImagesSliderProps> = ({
         setCurrent(1);
       }, 500);
     }
-  }, [current, banners.length]);
+  }, [current, banners?.length]);
 
   const getRealIndex = () => {
     if (current === 0) return banners.length - 1;
@@ -118,9 +125,9 @@ const ImagesSlider: React.FC<ImagesSliderProps> = ({
 
   return (
     <div className="flex flex-col gap-4 w-full">
-      <div className={` flex items-end overflow-hidden`}>
+      <div className="flex items-end overflow-hidden">
         <div className="w-full max-w-full mx-auto relative rounded-xl cursor-pointer">
-          <div className=" rounded-xl">
+          <div className="rounded-xl">
             <div
               className="flex will-change-transform"
               style={{
@@ -130,31 +137,28 @@ const ImagesSlider: React.FC<ImagesSliderProps> = ({
                   : "none",
               }}
             >
-              {extendedBanners.map((banner: any, index: number) => (
+              {extendedBanners.map((banner, index) => (
                 <div
-                  key={`${banner.id}-${index}`}
+                  key={`${banner?.id}-${index}`}
                   className="w-full h-48 bg-white rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{ minWidth: "100%" }}
                 >
                   <div
-                    className={` w-full h-full flex items-center ${
-                      banner.icon ? "justify-around" : ""
+                    className={`w-full h-full flex items-center ${
+                      banner?.icon ? "justify-around" : ""
                     }`}
                   >
                     <div className="flex flex-col gap-1 px-4">
-                      <span className={`font-bold text-blue-800`}>
-                        {banner.title}
+                      <span className="font-bold text-blue-800">
+                        {banner?.title}
                       </span>
-                      <span className={`text-gray-800 leading-7 text-sm`}>
-                        {banner.subTitle}
+                      <span className="text-gray-800 leading-7 text-sm">
+                        {banner?.summary}
                       </span>
                       <div className="flex items-center gap-1">
-                        <DateIcon />{" "}
-                        <p className="text-sm text-gray-600">{banner.date}</p>
+                        <DateIcon />
+                        <p className="text-sm text-gray-600">{banner?.date}</p>
                       </div>
-                    </div>
-                    <div className={`${banner.iconClasses}`}>
-                      <img className="w-full h-full" src={banner.icon} alt="" />
                     </div>
                   </div>
                 </div>
@@ -172,9 +176,7 @@ const ImagesSlider: React.FC<ImagesSliderProps> = ({
               setCurrent(idx + 1);
             }}
             className={`w-3 h-3 rounded-full transition-all ${
-              idx === getRealIndex()
-                ? "bg-blue-800"
-                : "bg-transparent bg-white "
+              idx === getRealIndex() ? "bg-blue-800" : "bg-transparent bg-white"
             }`}
           />
         ))}

@@ -35,7 +35,7 @@ function Introduction() {
     { label: "چارت سازمان", href: "/introduction/organizational-chart" },
     { label: "مصوبات", href: "/introduction/ratifications" },
     { label: "معاونت‌ها", href: "/introduction/deputies" },
-    { label: "مجمع سالیانه", href: "/introduction/annual-meeting" },
+    { label: "مجمع سالیانه", href: "/introduction/assembly" },
   ];
 
   return (
