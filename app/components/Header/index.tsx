@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { useGetAllCategories } from "@/app/core/services/Categories/useCategories";
 
 const Logo = () => (
   <svg
@@ -44,6 +45,10 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
+  const { data, isLoading, error, refetch } = useGetAllCategories();
+
+  console.log("header data", data);
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -56,21 +61,17 @@ export function Header() {
       id: "news",
       label: "اخبار و اطلاعیه‌ها",
       href: "/news",
-      dropdown: [
-        { label: "اخبار عمومی", href: "/news/general" },
-        { label: "اطلاعیه‌ها", href: "/news/announcements" },
-        { label: "اخبار صنفی", href: "/news/professional" },
-      ],
+      items: data?.items,
     },
     {
       id: "services",
       label: "خدمات",
       href: "/services",
-      dropdown: [
-        { label: "آموزش", href: "/services/education" },
-        { label: "صدور پروانه", href: "/services/license" },
-        { label: "آزمون‌ها", href: "/services/exams" },
-        { label: "مشاوره", href: "/services/consulting" },
+      items: [
+        { name: "آموزش", id: "/services/education" },
+        { name: "صدور پروانه", id: "/services/license" },
+        { name: "آزمون‌ها", id: "/services/exams" },
+        { name: "مشاوره", id: "/services/consulting" },
       ],
     },
     { id: "magazine", label: "نشریه پیام مهندسی", href: "/magazine" },
@@ -133,7 +134,6 @@ export function Header() {
       <div className="bg-blue-50 border-b border-gray-200">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            {/* لوگو و نام سازمان - لینک به صفحه اصلی */}
             <Link href="/" className="flex items-center gap-3">
               <div className="flex items-center justify-center text-white font-bold text-lg">
                 <Logo />
@@ -189,7 +189,7 @@ export function Header() {
                   className="relative group"
                   ref={openDropdown === item.id ? dropdownRef : null}
                 >
-                  {item.dropdown ? (
+                  {item.items ? (
                     <button
                       onClick={(e) => handleDropdownToggle(item.id, e)}
                       className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center gap-1 ${
@@ -218,21 +218,21 @@ export function Header() {
                     </Link>
                   )}
 
-                  {item.dropdown && openDropdown === item.id && (
+                  {item.items && openDropdown === item.id && (
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       className="absolute top-full right-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
                     >
-                      {item.dropdown.map((subItem, idx) => (
+                      {item.items.map((subItem: any, idx: number) => (
                         <Link
                           key={idx}
-                          href={subItem.href}
+                          href={`/news/${subItem?.id}`}
                           onClick={() => setOpenDropdown(null)}
                           className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                         >
-                          {subItem.label}
+                          {subItem?.name}
                         </Link>
                       ))}
                     </motion.div>
@@ -256,7 +256,7 @@ export function Header() {
             <div className="py-3 px-4 space-y-1">
               {mainMenuItems.map((item) => (
                 <div key={item.id}>
-                  {item.dropdown ? (
+                  {item.items ? (
                     <>
                       <button
                         onClick={(e) => handleDropdownToggle(item.id, e)}
@@ -274,9 +274,9 @@ export function Header() {
                         />
                       </button>
 
-                      {item.dropdown && openDropdown === item.id && (
+                      {item.items && openDropdown === item.id && (
                         <div className="mr-4 space-y-1 border-r-2 border-blue-200 pr-2 mt-1">
-                          {item.dropdown.map((subItem, idx) => (
+                          {item.items.map((subItem, idx) => (
                             <Link
                               key={idx}
                               href={subItem.href}
@@ -286,7 +286,7 @@ export function Header() {
                               }}
                               className="block w-full text-right py-2 px-3 text-sm text-gray-600 rounded-lg hover:bg-blue-50"
                             >
-                              {subItem.label}
+                              {subItem.name}
                             </Link>
                           ))}
                         </div>

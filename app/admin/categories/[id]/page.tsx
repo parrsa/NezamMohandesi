@@ -183,7 +183,7 @@ export default function SubCategories() {
                     <td className="px-4 py-3 font-medium text-gray-700 text-center">
                       {index + 1}
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-700 text-center">
+                    <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-hidden text-ellipsis max-w-20">
                       {item?.name}
                     </td>
                     <td className="px-4 py-3 font-medium text-gray-700 text-center">

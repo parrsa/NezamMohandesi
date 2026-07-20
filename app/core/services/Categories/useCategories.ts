@@ -7,8 +7,10 @@ import {
   GetCategoriesTreeApi,
   GetCategoryByIdApi,
   GetSubCategoriesApi,
+  GetSubCategoryApi,
   UpdateCategoriesApi,
 } from "./useCategoriesApi";
+import { ParamValue } from "next/dist/server/request/params";
 
 export const useGetAllCategories = (
   pageNumber: number = 1,
@@ -24,6 +26,14 @@ export const useGetCategoryById = (id: string) => {
   return useQuery({
     queryKey: CategoriesKeys.detail(id),
     queryFn: () => GetCategoryByIdApi(id),
+    enabled: !!id,
+  });
+};
+
+export const useGetSubCategory = (id: string) => {
+  return useQuery({
+    queryKey: CategoriesKeys.detail(id),
+    queryFn: () => GetSubCategoryApi(id),
     enabled: !!id,
   });
 };

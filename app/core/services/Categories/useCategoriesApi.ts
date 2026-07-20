@@ -1,3 +1,4 @@
+import { ParamValue } from "next/dist/server/request/params";
 import api from "../../config/api";
 
 export const AllCategoriesListApi = async (
@@ -21,6 +22,16 @@ export const GetCategoryByIdApi = async (id: string) => {
     return response.data;
   } catch (error) {
     console.error("Failed to get category by Id:", error);
+    throw error;
+  }
+};
+
+export const GetSubCategoryApi = async (id: string | ParamValue) => {
+  try {
+    const response = await api.get(`api/Categories/${id}/sub?onlyActive=true`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get sub categories:", error);
     throw error;
   }
 };
