@@ -27,14 +27,14 @@ function Introduction() {
   ];
 
   const subMenuItems = [
-    { label: "بازرسان", href: "/introduction/inspectors" },
-    { label: "مدیریت سازمان", href: "/introduction/management" },
+    // { label: "بازرسان", href: "/introduction/inspectors" },
+    // { label: "مدیریت سازمان", href: "/introduction/management" },
     { label: "اعضای هیئت رئیسه", href: "/introduction/board" },
     { label: "دفتر ریاست", href: "/introduction/president-office" },
     { label: "شورای انتظامی", href: "/introduction/disciplinary-council" },
     { label: "چارت سازمان", href: "/introduction/organizational-chart" },
     { label: "مصوبات", href: "/introduction/ratifications" },
-    { label: "معاونت‌ها", href: "/introduction/deputies" },
+    // { label: "معاونت‌ها", href: "/introduction/deputies" },
     { label: "مجمع سالیانه", href: "/introduction/assembly" },
   ];
 
