@@ -1,3 +1,4 @@
+import { ParamValue } from "next/dist/server/request/params";
 import api from "../../config/api";
 
 export const AllSocietiesListApi = async () => {
@@ -24,7 +25,7 @@ export const CreateSocietyNoticesApi = async (formData: FormData) => {
   }
 };
 
-export const GetAllSocietyNoticesApi = async (id: string) => {
+export const GetAllSocietyNoticesApi = async (id: ParamValue) => {
   try {
     const response = await api.get(`api/SocietyNotices/GetAll?societyId=${id}`);
     return response.data;
@@ -34,22 +35,12 @@ export const GetAllSocietyNoticesApi = async (id: string) => {
   }
 };
 
-export const GetSocietyNoticesByIdApi = async (id: string) => {
+export const GetSocietyNoticesByIdApi = async (id: ParamValue) => {
   try {
     const response = await api.get(`api/SocietyNotices/GetById/${id}`);
     return response.data;
   } catch (error) {
     console.error("Failed to get Society Notices:", error);
-    throw error;
-  }
-};
-
-export const GetSocietiesByIdApi = async (id: string) => {
-  try {
-    const response = await api.get(`api/Societies/GetById/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("Failed to get Societies by Id:", error);
     throw error;
   }
 };
@@ -85,6 +76,16 @@ export const EditSocietiesApi = async (id: string, formData: any) => {
 export const DeleteSocietiesApi = async (id: string) => {
   try {
     const response = await api.delete(`api/Societies/Delete/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to delete Societies:", error);
+    throw error;
+  }
+};
+
+export const DeleteSocietiesNoticesApi = async (id: string) => {
+  try {
+    const response = await api.delete(`api/SocietyNotices/Delete/${id}`);
     return response.data;
   } catch (error) {
     console.error("Failed to delete Societies:", error);

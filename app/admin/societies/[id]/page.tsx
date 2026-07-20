@@ -4,30 +4,33 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useHeaderAction } from "@/app/core/provider/HeaderActionProvider/HeaderAction";
 import {
-  useCreateSocieties,
+  useCreateSocietiesNotices,
   useDeleteSocieties,
-  useGetAllSocieties,
+  useDeleteSocietiesNotices,
   useGetSocietiesById,
+  useGetSocietiesNotices,
+  useGetSocietyNoticesById,
   useUpdateSocieties,
 } from "@/app/core/services/Societies/useSocieties";
 import { Edit, EyeIcon, Loader2, Plus, Scale, Trash2 } from "lucide-react";
-import AddSocietiesModal from "./components/CreateSocieties";
 import { showErrorToasts } from "@/app/lib/showErrorToastify";
 import { toastify } from "@/app/components/Toasts";
-import DeleteSocietiesModal from "./components/DeleteSocietiesModal";
-import EditSocietiesModal from "./components/EditSocietiesModal";
-import Link from "next/link";
+import { useParams } from "next/navigation";
+import AddSocietiesNoticesModal from "./components/SocietiesNoticesModal";
+import DeleteSocietiesNoticesModal from "./components/DeleteSocietiesNoticesModal";
 
-export default function SocietiesPage() {
+export default function SocietiesNoticesPage() {
+  const { id } = useParams();
+
   const [selectedSocietiesId, setSelectedSocietiesId] = useState<string>("");
-  const { data, isLoading, error, refetch } = useGetAllSocieties();
+  const { data, isLoading, error, refetch } = useGetSocietiesNotices(id);
   const { mutate: createSocieties, isPending: isCreating } =
-    useCreateSocieties();
+    useCreateSocietiesNotices();
   const { mutate: deleteSocieties, isPending: isDeleting } =
-    useDeleteSocieties();
+    useDeleteSocietiesNotices();
   const { mutate: editSocieties, isPending: isUpdating } = useUpdateSocieties();
   const { data: getSocietiesById, isLoading: isGetSocietiesById } =
-    useGetSocietiesById(selectedSocietiesId);
+    useGetSocietyNoticesById(selectedSocietiesId);
 
   const { setAction, setActionSecound } = useHeaderAction();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -103,7 +106,7 @@ export default function SocietiesPage() {
           <h1 className="text-xl font-bold bg-linear-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">
             مدیریت مجمع
           </h1>
-          <p className="text-xs text-slate-500">مدیریت مجمع ها</p>
+          <p className="text-xs text-slate-500">مدیریت مصوبات</p>
         </div>
       </motion.div>,
     );
@@ -119,7 +122,7 @@ export default function SocietiesPage() {
       >
         <span className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
         <Plus size={16} />
-        <span>مجمع جدید</span>
+        <span>مصوبه جدید</span>
       </motion.button>,
     );
 
@@ -181,8 +184,10 @@ export default function SocietiesPage() {
                   <td className="px-4 py-3 font-medium text-gray-700 text-center">
                     {item?.description}
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                    {item?.announcementsCount}
+                  <td
+                    className={`px-4 py-3 font-medium ${item?.isActive ? "text-green-700" : "text-red-700"} text-center`}
+                  >
+                    {item?.isActive ? "فعال" : "غیرفعال"}
                   </td>
 
                   <td className="flex items-center justify-center gap-2 py-3">
@@ -196,9 +201,6 @@ export default function SocietiesPage() {
                       size={18}
                       className="text-emerald-600"
                     />
-                    <Link href={`/admin/societies/${item?.id}`}>
-                      <EyeIcon size={18} className="text-blue-600" />
-                    </Link>
                   </td>
                 </motion.tr>
               ))}
@@ -206,13 +208,15 @@ export default function SocietiesPage() {
           </AnimatePresence>
         </table>
       )}
-      <AddSocietiesModal
+      <AddSocietiesNoticesModal
+        societyId={id}
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={handleAddSubmit}
         isSubmitting={isCreating}
       />
-      <DeleteSocietiesModal
+
+      <DeleteSocietiesNoticesModal
         isOpen={isDeleteModalOpen}
         onClose={() => {
           setIsDeleteModalOpen(false);
@@ -221,6 +225,7 @@ export default function SocietiesPage() {
         onConfirm={handleConfirmDelete}
         isDeleting={isDeleting}
       />
+      {/*
       <EditSocietiesModal
         isOpen={isEditModalOpen}
         onClose={() => {
@@ -230,7 +235,7 @@ export default function SocietiesPage() {
         onSubmit={handleEditSubmit}
         isSubmitting={isUpdating}
         data={getSocietiesById}
-      />
+      /> */}
     </div>
   );
 }

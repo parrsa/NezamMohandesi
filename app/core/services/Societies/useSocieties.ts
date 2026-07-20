@@ -3,10 +3,14 @@ import { SocietiesKeys } from "./useSocietiesKeys";
 import {
   AllSocietiesListApi,
   CreateSocietiesApi,
+  CreateSocietyNoticesApi,
   DeleteSocietiesApi,
+  DeleteSocietiesNoticesApi,
   EditSocietiesApi,
-  GetSocietiesByIdApi,
+  GetAllSocietyNoticesApi,
+  GetSocietyNoticesByIdApi,
 } from "./useSocietiesApi";
+import { ParamValue } from "next/dist/server/request/params";
 
 export const useGetAllSocieties = () => {
   return useQuery({
@@ -18,7 +22,23 @@ export const useGetAllSocieties = () => {
 export const useGetSocietiesById = (id: string) => {
   return useQuery({
     queryKey: SocietiesKeys.detail(id),
-    queryFn: () => GetSocietiesByIdApi(id),
+    queryFn: () => GetSocietyNoticesByIdApi(id),
+    enabled: !!id,
+  });
+};
+
+export const useGetSocietyNoticesById = (id: string) => {
+  return useQuery({
+    queryKey: SocietiesKeys.detail(id),
+    queryFn: () => GetSocietyNoticesByIdApi(id),
+    enabled: !!id,
+  });
+};
+
+export const useGetSocietiesNotices = (id: ParamValue) => {
+  return useQuery({
+    queryKey: SocietiesKeys.detail(String(id)),
+    queryFn: () => GetAllSocietyNoticesApi(id),
     enabled: !!id,
   });
 };
@@ -27,6 +47,16 @@ export const useCreateSocieties = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: CreateSocietiesApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SocietiesKeys.all });
+    },
+  });
+};
+
+export const useCreateSocietiesNotices = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (formData: FormData) => CreateSocietyNoticesApi(formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SocietiesKeys.all });
     },
@@ -48,6 +78,16 @@ export const useDeleteSocieties = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: DeleteSocietiesApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SocietiesKeys.all });
+    },
+  });
+};
+
+export const useDeleteSocietiesNotices = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: DeleteSocietiesNoticesApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SocietiesKeys.all });
     },
