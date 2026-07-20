@@ -97,7 +97,6 @@ export function SpecialtyGroups() {
                 <group.icon className="w-7 h-7 md:w-8 md:h-8 text-white" />
               </motion.div>
 
-              {/* متن زیر دایره */}
               <span className="mt-4 text-gray-700 font-medium text-sm md:text-base text-center whitespace-nowrap">
                 {group.title}
               </span>

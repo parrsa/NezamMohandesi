@@ -13,10 +13,10 @@ export const useGetAllContents = (
   pageNumber: number = 1,
   pageSize: number = 20,
   isActive: boolean | null,
-  categoryId: ParamValue,
+  categoryId: ParamValue | string | null,
 ) => {
   return useQuery({
-    queryKey: ContentsKeys.list(pageNumber, pageSize),
+    queryKey: ContentsKeys.list(pageNumber, pageSize, isActive, categoryId),
     queryFn: () =>
       AllContentsListApi(pageNumber, pageSize, isActive, categoryId),
   });

@@ -5,7 +5,7 @@ export const AllContentsListApi = async (
   PageNumber: number = 1,
   PageSize: number = 20,
   isActive: boolean | null,
-  categoryId: ParamValue,
+  categoryId: ParamValue | string | null,
 ) => {
   try {
     const response = await api.get(
