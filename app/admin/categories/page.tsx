@@ -15,8 +15,10 @@ import {
   Edit,
   EyeIcon,
   Loader2,
+  NotepadText,
   Plus,
   Scale,
+  StickyNote,
   Trash2,
 } from "lucide-react";
 import { generatePageNumbers } from "@/app/lib/generatePageNumbers";
@@ -220,6 +222,9 @@ export default function Categories() {
                       <Link href={`/admin/categories/${item?.id}`}>
                         <EyeIcon size={18} className="text-blue-600" />
                       </Link>
+                      <Link href={`/admin/categories/contents/${item?.id}`}>
+                        <NotepadText size={18} className="text-yellow-600" />
+                      </Link>
                     </td>
                   </motion.tr>
                 ))}
@@ -227,6 +232,7 @@ export default function Categories() {
           </AnimatePresence>
         </table>
       )}
+
       {data && data.totalRecord > data.pageSize && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -117,9 +117,9 @@ export default function CategoriesContentPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold bg-linear-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">
-            مدیریت دسته بندی
+            مدیریت محتوای دسته بندی
           </h1>
-          <p className="text-xs text-slate-500">مدیریت دسته بندی ها</p>
+          <p className="text-xs text-slate-500">مدیریت محتوای دسته بندی ها</p>
         </div>
       </motion.div>,
     );
@@ -135,7 +135,7 @@ export default function CategoriesContentPage() {
       >
         <span className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
         <Plus size={16} />
-        <span>محتوای جدید</span>
+        <span>محتوای دسته بندی جدید</span>
       </motion.button>,
     );
 
@@ -194,10 +194,10 @@ export default function CategoriesContentPage() {
                     <td className="px-4 py-3 font-medium text-gray-700 text-center">
                       {index + 1}
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-700 text-center">
+                    <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-hidden text-ellipsis max-w-[20px]">
                       {item?.title}
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-700 text-center">
+                    <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-hidden text-ellipsis max-w-xl">
                       {item?.summary}
                     </td>
                     <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-clip">

@@ -12,7 +12,7 @@ import {
   useGetSocietyNoticesById,
   useUpdateSocieties,
 } from "@/app/core/services/Societies/useSocieties";
-import { Edit, EyeIcon, Loader2, Plus, Scale, Trash2 } from "lucide-react";
+import { Edit, Loader2, Plus, Scale, Trash2 } from "lucide-react";
 import { showErrorToasts } from "@/app/lib/showErrorToastify";
 import { toastify } from "@/app/components/Toasts";
 import { useParams } from "next/navigation";
@@ -178,10 +178,10 @@ export default function SocietiesNoticesPage() {
                   <td className="px-4 py-3 font-medium text-gray-700 text-center">
                     {index + 1}
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center">
+                  <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-hidden text-ellipsis max-w-xl">
                     {item?.title}
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center">
+                  <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-hidden text-ellipsis max-w-xl">
                     {item?.description}
                   </td>
                   <td

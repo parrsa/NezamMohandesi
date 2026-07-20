@@ -175,7 +175,7 @@ export default function SocietiesPage() {
                   <td className="px-4 py-3 font-medium text-gray-700 text-center">
                     {index + 1}
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center">
+                  <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-hidden text-ellipsis max-w-xl">
                     {item?.title}
                   </td>
                   <td className="px-4 py-3 font-medium text-gray-700 text-center">
