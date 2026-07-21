@@ -29,6 +29,7 @@ import AddCategoriesModal from "./components/CreateCategoryModal";
 import DeleteCategoryModal from "./components/DeleteCategoryModal";
 import EditCategoriesModal from "./components/EditCategories";
 import Link from "next/link";
+import { formatDateForDisplay } from "@/app/lib/persianToEnglishNumber";
 
 export default function Categories() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -201,7 +202,7 @@ export default function Categories() {
                       {item?.description}
                     </td>
                     <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-clip">
-                      {item?.createdAt}
+                      {formatDateForDisplay(item?.createdAt)}
                     </td>
                     <td
                       className={`px-4 py-3 font-medium ${item?.isActive ? "text-green-700" : "text-red-700"} text-center`}

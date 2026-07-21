@@ -19,6 +19,7 @@ import {
   societiesNoticesSchema,
 } from "./societiesNoticesSchema";
 import { ParamValue } from "next/dist/server/request/params";
+import { formatDateForBackend } from "@/app/lib/persianToEnglishNumber";
 
 interface SocietiesNoticesEditModalProps {
   isOpen: boolean;
@@ -93,7 +94,7 @@ export default function EditSocietiesNoticesModal({
       }
 
       if (data.expirationDate) {
-        setPublishDateValue(new Date(data.expirationDate));
+        setPublishDateValue(data.expirationDate);
       } else {
         setPublishDateValue(null);
       }
@@ -159,11 +160,8 @@ export default function EditSocietiesNoticesModal({
       }
 
       if (publishDateValue) {
-        const date =
-          typeof publishDateValue.toDate === "function"
-            ? publishDateValue.toDate()
-            : new Date(publishDateValue);
-        formData.append("ExpirationDate", date.toISOString());
+        const dateString = formatDateForBackend(publishDateValue);
+        formData.append("ExpirationDate", dateString);
       }
 
       await onSubmit(formData);
@@ -311,7 +309,7 @@ export default function EditSocietiesNoticesModal({
                     locale={persian_fa}
                     value={publishDateValue}
                     onChange={setPublishDateValue}
-                    format="YYYY/MM/DD - HH:mm"
+                    format="YYYY/MM/DD"
                     placeholder="انتخاب تاریخ و زمان"
                     className="w-full"
                     containerClassName="w-full"
@@ -400,7 +398,7 @@ export default function EditSocietiesNoticesModal({
                     <span>در حال ثبت...</span>
                   </>
                 ) : (
-                  "ثبت محتوا"
+                  "ویرایش مصوبه"
                 )}
               </button>
             </div>

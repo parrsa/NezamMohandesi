@@ -19,6 +19,7 @@ import {
   societiesNoticesSchema,
 } from "./societiesNoticesSchema";
 import { ParamValue } from "next/dist/server/request/params";
+import { formatDateForBackend } from "@/app/lib/persianToEnglishNumber";
 
 interface SocietiesNoticesModalProps {
   isOpen: boolean;
@@ -63,7 +64,7 @@ export default function AddSocietiesNoticesModal({
     priority: 0,
     type: 0,
     expirationDate: "",
-    attachment: null,
+    attachmentPath: null,
   };
 
   useEffect(() => {
@@ -128,8 +129,8 @@ export default function AddSocietiesNoticesModal({
       }
 
       if (publishDateValue) {
-        const date = publishDateValue.toDate();
-        formData.append("ExpirationDate", date.toISOString());
+        const dateString = formatDateForBackend(publishDateValue);
+        formData.append("ExpirationDate", dateString);
       }
       console.log(formData.values);
       await onSubmit(formData);
@@ -276,7 +277,7 @@ export default function AddSocietiesNoticesModal({
                     locale={persian_fa}
                     value={publishDateValue}
                     onChange={setPublishDateValue}
-                    format="YYYY/MM/DD - HH:mm"
+                    format="YYYY/MM/DD"
                     placeholder="انتخاب تاریخ و زمان"
                     className="w-full"
                     containerClassName="w-full"

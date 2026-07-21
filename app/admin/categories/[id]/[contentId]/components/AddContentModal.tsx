@@ -310,9 +310,6 @@ export default function AddContentModal({
 
       if (publishDateValue) {
         if (publishDateValue) {
-          const date = publishDateValue.toDate
-            ? publishDateValue
-            : new DateObject(publishDateValue);
           const dateString = formatDateForBackend(publishDateValue);
           formData.append("PublishDate", dateString);
         }
