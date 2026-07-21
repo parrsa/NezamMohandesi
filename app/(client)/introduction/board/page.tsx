@@ -1,7 +1,7 @@
 import boardPic from "@/public/assets/board.png";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowIcon } from "../assembly/[id]/page";
+import { ArrowIcon } from "../assembly/[slug]/page";
 import { ChevronLeftIcon } from "lucide-react";
 
 const boardList = [

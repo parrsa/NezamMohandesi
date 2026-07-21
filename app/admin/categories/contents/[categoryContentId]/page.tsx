@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
+  Edit,
   Loader2,
   Plus,
   Scale,
@@ -217,11 +218,11 @@ export default function CategoriesContentPage() {
                         size={18}
                         className="text-red-600"
                       />
-                      {/* <Edit
+                      <Edit
                         onClick={() => handleEdit(item?.id)}
                         size={18}
                         className="text-emerald-600"
-                      /> */}
+                      />
                     </td>
                   </motion.tr>
                 ))}

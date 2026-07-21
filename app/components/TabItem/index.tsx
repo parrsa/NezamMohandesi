@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Laptop from "@/public/assets/Laptop.png";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 interface TabItem {
   id: string;
   label: string;
@@ -53,6 +54,7 @@ const tabs: TabItem[] = [
 
 export function ServiceTabs() {
   const [activeTab, setActiveTab] = useState<string>(tabs[0].id);
+  const navigate = useRouter();
 
   const activeTabContent = tabs.find((tab) => tab.id === activeTab)?.content;
 
@@ -107,7 +109,10 @@ export function ServiceTabs() {
                   <p className="text-white/80 leading-relaxed text-justify">
                     {activeTabContent?.description}
                   </p>
-                  <button className="mt-4 px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                  <button
+                    onClick={() => navigate.push("/admin")}
+                    className="mt-4 px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  >
                     ورود به سامانه
                   </button>
                 </motion.div>

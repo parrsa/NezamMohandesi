@@ -45,6 +45,16 @@ export const GetSocietyNoticesByIdApi = async (id: ParamValue) => {
   }
 };
 
+export const GetSocietyByIdApi = async (id: ParamValue) => {
+  try {
+    const response = await api.get(`api/Societies/GetById/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get Society Notices:", error);
+    throw error;
+  }
+};
+
 export const CreateSocietiesApi = async (formData: any) => {
   try {
     const response = await api.post("api/Societies/Create", formData, {

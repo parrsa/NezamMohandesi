@@ -313,6 +313,7 @@ export default function EditContentModal({
       formData.append("Slug", slug);
       formData.append("MetaTitle", metaTitle);
       formData.append("MetaDescription", metaDescription);
+      formData.append("IsActive", "true");
       if (featuredImageFile) {
         formData.append("FeaturedImage", featuredImageFile);
       }

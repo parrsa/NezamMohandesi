@@ -72,9 +72,9 @@ const AttachmentIcon = () => (
 );
 
 export default function AssemblyDetailsPage() {
-  const { id } = useParams();
-
-  const { data, isLoading } = useGetSocietiesNotices(id);
+  const { slug } = useParams();
+  const { data, isLoading } = useGetSocietiesNotices(slug);
+  console.log("Kjfd", slug, data);
 
   return (
     <div className="p-3">

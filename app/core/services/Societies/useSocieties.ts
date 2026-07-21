@@ -8,6 +8,7 @@ import {
   DeleteSocietiesNoticesApi,
   EditSocietiesApi,
   GetAllSocietyNoticesApi,
+  GetSocietyByIdApi,
   GetSocietyNoticesByIdApi,
 } from "./useSocietiesApi";
 import { ParamValue } from "next/dist/server/request/params";
@@ -22,7 +23,7 @@ export const useGetAllSocieties = () => {
 export const useGetSocietiesById = (id: string) => {
   return useQuery({
     queryKey: SocietiesKeys.detail(id),
-    queryFn: () => GetSocietyNoticesByIdApi(id),
+    queryFn: () => GetSocietyByIdApi(id),
     enabled: !!id,
   });
 };
