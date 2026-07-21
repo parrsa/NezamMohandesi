@@ -10,6 +10,7 @@ import {
   GetAllSocietyNoticesApi,
   GetSocietyByIdApi,
   GetSocietyNoticesByIdApi,
+  UpdateSocietyNoticesApi,
 } from "./useSocietiesApi";
 import { ParamValue } from "next/dist/server/request/params";
 
@@ -48,6 +49,17 @@ export const useCreateSocieties = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: CreateSocietiesApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SocietiesKeys.all });
+    },
+  });
+};
+
+export const useUpdateSocietiesNotices = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, formData }: { id: string; formData: FormData }) =>
+      UpdateSocietyNoticesApi(id, formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SocietiesKeys.all });
     },

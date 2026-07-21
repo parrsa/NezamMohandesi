@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import {
   X,
@@ -8,205 +8,79 @@ import {
   Loader2,
   Calendar,
   Image as ImageIcon,
-  Tag,
-  ChevronDown,
-  Check,
 } from "lucide-react";
 import { Input, TextArea } from "@/app/components/Input";
 import Modal from "@/app/components/Modal";
 import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
-import DateObject from "react-date-object";
-import { ContentFormData, contentSchema } from "./contentSchema";
-import { useGetAllTags } from "@/app/core/services/Tags/useTags";
+import {
+  SocietiesNoticesFormData,
+  societiesNoticesSchema,
+} from "./societiesNoticesSchema";
+import { ParamValue } from "next/dist/server/request/params";
 
-const FILE_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "";
-
-interface EditContentModalProps {
+interface SocietiesNoticesEditModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (formData: FormData) => Promise<void>;
   isSubmitting: boolean;
-  categoryId: string | string[] | null | undefined;
+  societyId: ParamValue;
   data: any;
 }
 
-const statusOptions = [
-  { value: 0, label: "پیش‌نویس" },
-  { value: 1, label: "منتشر شده" },
-  { value: 2, label: "بایگانی شده" },
-  { value: 3, label: "زمان‌بندی شده" },
+const priorityOptions = [
+  { value: 0, label: "کم اهمیت" },
+  { value: 1, label: "عادی" },
+  { value: 2, label: "فوری" },
+  { value: 3, label: "اضطراری" },
 ];
 
-const resolveImageUrl = (value: string | null) => {
-  if (!value) return "";
-  if (
-    value.startsWith("blob:") ||
-    value.startsWith("data:") ||
-    value.startsWith("http")
-  ) {
-    return value;
-  }
-  return `${FILE_BASE_URL}/uploads/${value}`;
-};
+const typeOptions = [
+  { value: 0, label: "عمومی" },
+  { value: 1, label: "مهم" },
+  { value: 2, label: "رویداد" },
+  { value: 3, label: "هشدار" },
+  { value: 4, label: "سیستمی" },
+];
 
-function TagMultiSelect({
-  options,
-  selected,
-  onChange,
-  loading,
-}: {
-  options: { value: number; label: string }[];
-  selected: number[];
-  onChange: (values: number[]) => void;
-  loading: boolean;
-}) {
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+const FILE_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "";
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const toggleValue = (value: number) => {
-    if (selected.includes(value)) {
-      onChange(selected.filter((v) => v !== value));
-    } else {
-      onChange([...selected, value]);
-    }
-  };
-
-  const removeValue = (value: number) => {
-    onChange(selected.filter((v) => v !== value));
-  };
-
-  const selectedLabels = options.filter((o) => selected.includes(o.value));
-
-  return (
-    <div className="relative" ref={containerRef}>
-      <div
-        onClick={() => setOpen((prev) => !prev)}
-        className="w-full min-h-[52px] px-3 py-2 rounded-xl border-2 border-gray-200 focus-within:border-blue-500 bg-white cursor-pointer flex items-center flex-wrap gap-2 transition-all"
-      >
-        {selectedLabels.length === 0 && (
-          <span className="text-gray-400 px-1 flex items-center gap-2">
-            <Tag size={16} />
-            انتخاب تگ‌ها...
-          </span>
-        )}
-        {selectedLabels.map((tag) => (
-          <span
-            key={tag.value}
-            className="flex items-center gap-1 px-3 py-1 rounded-full bg-linear-to-r from-blue-100 to-purple-100 text-blue-700 text-sm font-medium"
-          >
-            {tag.label}
-            <X
-              size={14}
-              className="cursor-pointer hover:text-red-600"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeValue(tag.value);
-              }}
-            />
-          </span>
-        ))}
-        <ChevronDown
-          size={18}
-          className={`mr-auto text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
-        />
-      </div>
-
-      {open && (
-        <div className="absolute z-20 mt-2 w-full max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-xl p-2 space-y-1">
-          {loading && (
-            <p className="text-sm text-gray-500 px-3 py-2">
-              در حال بارگذاری تگ‌ها...
-            </p>
-          )}
-          {!loading && options.length === 0 && (
-            <p className="text-sm text-gray-500 px-3 py-2">
-              هیچ تگی موجود نیست
-            </p>
-          )}
-          {options.map((option) => {
-            const isSelected = selected.includes(option.value);
-            return (
-              <div
-                key={option.value}
-                onClick={() => toggleValue(option.value)}
-                className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-                  isSelected
-                    ? "bg-blue-50 text-blue-700"
-                    : "hover:bg-gray-50 text-gray-700"
-                }`}
-              >
-                <span className="text-sm font-medium">{option.label}</span>
-                {isSelected && <Check size={16} className="text-blue-600" />}
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default function EditContentModal({
+export default function EditSocietiesNoticesModal({
   isOpen,
   onClose,
   onSubmit,
   isSubmitting,
-  categoryId,
+  societyId,
   data,
-}: EditContentModalProps) {
+}: SocietiesNoticesEditModalProps) {
   const [featuredImageFile, setFeaturedImageFile] = useState<File | null>(null);
   const [featuredImagePreview, setFeaturedImagePreview] = useState<
     string | null
   >(null);
   const [publishDateValue, setPublishDateValue] = useState<any>(null);
-  const [selectedTagValues, setSelectedTagValues] = useState<number[]>([]);
 
-  const initialValues: ContentFormData = {
-    title: data?.title || "",
-    summary: data?.summary || "",
-    body: data?.body || "",
-    status: data?.status ?? 1,
-    tagIds: data?.tags?.map((tag: any) => tag.id) || [],
-    publishDate: data?.publishDate || "",
-    featuredImage: data?.featuredImage || "",
-    files: [],
+  const initialValues: SocietiesNoticesFormData = {
+    title: data?.title ?? "",
+    description: data?.description ?? "",
+    priority: typeof data?.priority === "number" ? data.priority : 0,
+    type: typeof data?.type === "number" ? data.type : 0,
+    expirationDate: data?.expirationDate ?? "",
+    attachmentPath: data?.attachmentPath ?? "",
   };
-
-  const { data: tagsData, isLoading: tagsLoading } = useGetAllTags();
-
-  const tagOptions =
-    tagsData?.map((tag: any) => ({
-      value: tag.id,
-      label: tag.name,
-    })) || [];
 
   useEffect(() => {
     if (isOpen && data) {
-      setSelectedTagValues(data?.tags?.map((tag: any) => tag.id) || []);
-
-      if (data.featuredImage) {
-        const url = resolveImageUrl(data.featuredImage);
-        setFeaturedImagePreview(url);
-        fetch(url)
+      if (data.attachmentPath) {
+        const path = String(data.attachmentPath).replace(/\\/g, "/");
+        const fullUrl = /^https?:\/\//i.test(path)
+          ? path
+          : `${FILE_BASE_URL}/uploads/${path}`;
+        setFeaturedImagePreview(fullUrl);
+        fetch(fullUrl)
           .then((res) => res.blob())
           .then((blob) => {
-            const fileName =
-              data.featuredImage.split("/").pop() || "featured.jpg";
+            const fileName = path.split("/").pop() || "file";
             const file = new File([blob], fileName, { type: blob.type });
             setFeaturedImageFile(file);
           })
@@ -218,14 +92,8 @@ export default function EditContentModal({
         setFeaturedImagePreview(null);
       }
 
-      if (data.publishDate) {
-        setPublishDateValue(
-          new DateObject({
-            date: data.publishDate,
-            calendar: persian,
-            locale: persian_fa,
-          }),
-        );
+      if (data.expirationDate) {
+        setPublishDateValue(new Date(data.expirationDate));
       } else {
         setPublishDateValue(null);
       }
@@ -240,7 +108,6 @@ export default function EditContentModal({
       setFeaturedImageFile(null);
       setFeaturedImagePreview(null);
       setPublishDateValue(null);
-      setSelectedTagValues([]);
     }
   }, [isOpen]);
 
@@ -254,13 +121,14 @@ export default function EditContentModal({
         URL.revokeObjectURL(featuredImagePreview);
       }
       setFeaturedImageFile(file);
-      setFieldValue("featuredImage", file);
+      setFieldValue("attachment", file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setFeaturedImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
+    e.target.value = "";
   };
 
   const handleRemoveFeaturedImage = (setFieldValue: any) => {
@@ -269,60 +137,33 @@ export default function EditContentModal({
     }
     setFeaturedImageFile(null);
     setFeaturedImagePreview(null);
-    setFieldValue("featuredImage", null);
-  };
-
-  const generateSlug = (title: string): string => {
-    return title
-      .trim()
-      .replace(/[^a-zA-Z0-9\u0600-\u06FF\s]/g, "")
-      .replace(/\s+/g, "-")
-      .toLowerCase();
-  };
-
-  const generateMetaTitle = (title: string): string => {
-    return `${title} | وبسایت خبری`;
-  };
-
-  const generateMetaDescription = (summary: string): string => {
-    return summary.length > 160 ? summary.substring(0, 157) + "..." : summary;
+    setFieldValue("attachment", null);
   };
 
   const handleSubmit = async (
-    values: ContentFormData,
+    values: SocietiesNoticesFormData,
     { setSubmitting }: any,
   ) => {
     try {
       const formData = new FormData();
-
-      const slug = generateSlug(values.title);
-      const metaTitle = generateMetaTitle(values.title);
-      const metaDescription = generateMetaDescription(values.summary);
-
-      formData.append("Id", String(data?.id));
+      formData.append("Id", String(data.id));
       formData.append("Title", values.title);
-      formData.append("Summary", values.summary);
-      formData.append("Body", values.body);
-      formData.append("Status", String(values.status));
-      formData.append("CategoryId", String(categoryId));
-      formData.append("Slug", slug);
-      formData.append("MetaTitle", metaTitle);
-      formData.append("MetaDescription", metaDescription);
-      formData.append("IsActive", "true");
+      formData.append("Description", values.description);
+      formData.append("Priority", String(values.priority));
+      formData.append("Type", String(values.type));
+      formData.append("AttachmentFileName", values.title);
+      formData.append("isActive", "true");
 
       if (featuredImageFile) {
-        formData.append("FeaturedImage", featuredImageFile);
-      }
-
-      if (values.tagIds && values.tagIds.length > 0) {
-        values.tagIds.forEach((tagId) => {
-          formData.append("TagIds", String(tagId));
-        });
+        formData.append("AttachmentPath", featuredImageFile);
       }
 
       if (publishDateValue) {
-        const date = publishDateValue.toDate();
-        formData.append("PublishDate", date.toISOString());
+        const date =
+          typeof publishDateValue.toDate === "function"
+            ? publishDateValue.toDate()
+            : new Date(publishDateValue);
+        formData.append("ExpirationDate", date.toISOString());
       }
 
       await onSubmit(formData);
@@ -334,7 +175,7 @@ export default function EditContentModal({
   };
 
   const headerProps = {
-    title: "ویرایش محتوا",
+    title: "ویرایش مصوبه ",
     ColorText: "#1e293b",
     bgColor: "transparent",
     Close_Icon: <X size={24} className="text-gray-500" />,
@@ -351,12 +192,12 @@ export default function EditContentModal({
       headerProps={headerProps}
     >
       <Formik
-        initialValues={initialValues}
-        validationSchema={contentSchema}
-        onSubmit={handleSubmit}
         enableReinitialize
+        initialValues={initialValues}
+        validationSchema={societiesNoticesSchema}
+        onSubmit={handleSubmit}
       >
-        {({ errors, setFieldValue, values }) => (
+        {({ errors, setFieldValue }) => (
           <Form className="p-6 space-y-6 max-h-[calc(95vh-80px)] overflow-y-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2">
@@ -371,7 +212,7 @@ export default function EditContentModal({
                   rounded="xl"
                   inputSize="lg"
                   error={errors.title}
-                  placeholder="عنوان محتوا"
+                  placeholder="عنوان"
                 />
                 <ErrorMessage name="title">
                   {(msg) => (
@@ -385,41 +226,18 @@ export default function EditContentModal({
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  خلاصه *
+                  توضیحات *
                 </label>
                 <Field
                   as={TextArea}
-                  name="summary"
+                  name="description"
                   rows={3}
                   rounded="xl"
                   inputSize="lg"
-                  error={errors.summary}
-                  placeholder="خلاصه محتوا..."
+                  error={errors.description}
+                  placeholder="توضیحات..."
                 />
-                <ErrorMessage name="summary">
-                  {(msg) => (
-                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle size={14} />
-                      {msg}
-                    </p>
-                  )}
-                </ErrorMessage>
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  متن کامل *
-                </label>
-                <Field
-                  name="body"
-                  rows={8}
-                  as={TextArea}
-                  rounded="xl"
-                  inputSize="lg"
-                  error={errors.body}
-                  placeholder="متن کامل محتوا..."
-                />
-                <ErrorMessage name="body">
+                <ErrorMessage name="description">
                   {(msg) => (
                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
                       <AlertCircle size={14} />
@@ -431,15 +249,15 @@ export default function EditContentModal({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  وضعیت *
+                  اولویت بندی *
                 </label>
-                <Field name="status">
+                <Field name="priority">
                   {({ field }: any) => (
                     <select
                       {...field}
                       className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 outline-none transition-all bg-white"
                     >
-                      {statusOptions.map((option) => (
+                      {priorityOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>
@@ -447,7 +265,7 @@ export default function EditContentModal({
                     </select>
                   )}
                 </Field>
-                <ErrorMessage name="status">
+                <ErrorMessage name="priority">
                   {(msg) => (
                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
                       <AlertCircle size={14} />
@@ -456,10 +274,36 @@ export default function EditContentModal({
                   )}
                 </ErrorMessage>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  تاریخ انتشار
+                  نوع *
+                </label>
+                <Field name="type">
+                  {({ field }: any) => (
+                    <select
+                      {...field}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 outline-none transition-all bg-white"
+                    >
+                      {typeOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </Field>
+                <ErrorMessage name="type">
+                  {(msg) => (
+                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                      <AlertCircle size={14} />
+                      {msg}
+                    </p>
+                  )}
+                </ErrorMessage>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  تاریخ انقضا
                 </label>
                 <div className="relative">
                   <DatePicker
@@ -468,7 +312,7 @@ export default function EditContentModal({
                     value={publishDateValue}
                     onChange={setPublishDateValue}
                     format="YYYY/MM/DD - HH:mm"
-                    placeholder="انتخاب تاریخ و زمان انتشار"
+                    placeholder="انتخاب تاریخ و زمان"
                     className="w-full"
                     containerClassName="w-full"
                     inputClass="w-full px-4 py-3 pr-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 outline-none transition-all bg-white"
@@ -479,27 +323,6 @@ export default function EditContentModal({
                     size={20}
                   />
                 </div>
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  تگ‌ها
-                </label>
-                <TagMultiSelect
-                  options={tagOptions}
-                  selected={selectedTagValues}
-                  loading={tagsLoading}
-                  onChange={(values) => {
-                    setSelectedTagValues(values);
-                    setFieldValue("tagIds", values);
-                  }}
-                />
-                {errors.tagIds && typeof errors.tagIds === "string" && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-                    <AlertCircle size={14} />
-                    {errors.tagIds}
-                  </p>
-                )}
               </div>
             </div>
 
@@ -574,10 +397,10 @@ export default function EditContentModal({
                 {isSubmitting ? (
                   <>
                     <Loader2 size={20} className="animate-spin" />
-                    <span>در حال بروزرسانی...</span>
+                    <span>در حال ثبت...</span>
                   </>
                 ) : (
-                  "بروزرسانی محتوا"
+                  "ثبت محتوا"
                 )}
               </button>
             </div>

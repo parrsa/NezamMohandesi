@@ -111,8 +111,6 @@ export default function AddSocietiesNoticesModal({
     setFieldValue("attachment", null);
   };
 
-  console.log("SocietyId", String(societyId));
-
   const handleSubmit = async (
     values: SocietiesNoticesFormData,
     { setSubmitting }: any,
@@ -365,7 +363,7 @@ export default function AddSocietiesNoticesModal({
                     <span>در حال ثبت...</span>
                   </>
                 ) : (
-                  "ثبت محتوا"
+                  "ثبت مصوبه"
                 )}
               </button>
             </div>

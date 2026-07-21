@@ -25,6 +25,27 @@ export const CreateSocietyNoticesApi = async (formData: FormData) => {
   }
 };
 
+export const UpdateSocietyNoticesApi = async (
+  id: string,
+  formData: FormData,
+) => {
+  try {
+    const response = await api.put(
+      `api/SocietyNotices/Update/${id}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+    return response;
+  } catch (error) {
+    console.error("Failed to update Society notices Notices:", error);
+    throw error;
+  }
+};
+
 export const GetAllSocietyNoticesApi = async (id: ParamValue) => {
   try {
     const response = await api.get(`api/SocietyNotices/GetAll?societyId=${id}`);

@@ -26,7 +26,7 @@ export const societiesNoticesSchema = yup.object().shape({
 
   expirationDate: yup.string(),
 
-  attachment: yup.mixed().nullable(),
+  attachmentPath: yup.mixed().nullable(),
 });
 
 export type SocietiesNoticesFormData = yup.InferType<

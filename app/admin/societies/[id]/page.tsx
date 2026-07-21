@@ -5,12 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useHeaderAction } from "@/app/core/provider/HeaderActionProvider/HeaderAction";
 import {
   useCreateSocietiesNotices,
-  useDeleteSocieties,
   useDeleteSocietiesNotices,
-  useGetSocietiesById,
   useGetSocietiesNotices,
   useGetSocietyNoticesById,
-  useUpdateSocieties,
+  useUpdateSocietiesNotices,
 } from "@/app/core/services/Societies/useSocieties";
 import { Edit, Loader2, Plus, Scale, Trash2 } from "lucide-react";
 import { showErrorToasts } from "@/app/lib/showErrorToastify";
@@ -18,6 +16,7 @@ import { toastify } from "@/app/components/Toasts";
 import { useParams } from "next/navigation";
 import AddSocietiesNoticesModal from "./components/SocietiesNoticesModal";
 import DeleteSocietiesNoticesModal from "./components/DeleteSocietiesNoticesModal";
+import EditSocietiesNoticesModal from "./components/EditSocietiesNoticesModal";
 
 export default function SocietiesNoticesPage() {
   const { id } = useParams();
@@ -28,9 +27,11 @@ export default function SocietiesNoticesPage() {
     useCreateSocietiesNotices();
   const { mutate: deleteSocieties, isPending: isDeleting } =
     useDeleteSocietiesNotices();
-  const { mutate: editSocieties, isPending: isUpdating } = useUpdateSocieties();
   const { data: getSocietiesById, isLoading: isGetSocietiesById } =
     useGetSocietyNoticesById(selectedSocietiesId);
+
+  const { mutate: updateSocieties, isPending: isUpdating } =
+    useUpdateSocietiesNotices();
 
   const { setAction, setActionSecound } = useHeaderAction();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -78,18 +79,22 @@ export default function SocietiesNoticesPage() {
       });
     }
   };
-  const handleEditSubmit = async (payload: any) => {
-    await editSocieties(payload, {
-      onSuccess: () => {
-        toastify("success", "دسته بندی با موفقیت بروزرسانی شد");
-        setIsEditModalOpen(false);
-        setSelectedSocietiesId("");
-        refetch();
+
+  const handleEditSubmit = async (formData: FormData) => {
+    await updateSocieties(
+      { id: selectedSocietiesId, formData },
+      {
+        onSuccess: () => {
+          toastify("success", "دسته بندی با موفقیت بروزرسانی شد");
+          setIsEditModalOpen(false);
+          setSelectedSocietiesId("");
+          refetch();
+        },
+        onError: (error: any) => {
+          showErrorToasts(error);
+        },
       },
-      onError: (error: any) => {
-        showErrorToasts(error);
-      },
-    });
+    );
   };
 
   useEffect(() => {
@@ -166,44 +171,45 @@ export default function SocietiesNoticesPage() {
           </thead>
           <AnimatePresence>
             <tbody className="divide-y divide-gray-200">
-              {data?.map((item: any, index: number) => (
-                <motion.tr
-                  key={item?.id || index}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="transition-colors divide-x divide-gray-100 hover:bg-gray-50"
-                >
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                    {index + 1}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-hidden text-ellipsis max-w-xl">
-                    {item?.title}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-hidden text-ellipsis max-w-xl">
-                    {item?.description}
-                  </td>
-                  <td
-                    className={`px-4 py-3 font-medium ${item?.isActive ? "text-green-700" : "text-red-700"} text-center`}
+              {data.length > 0 &&
+                data?.map((item: any, index: number) => (
+                  <motion.tr
+                    key={item?.id || index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                    className="transition-colors divide-x divide-gray-100 hover:bg-gray-50"
                   >
-                    {item?.isActive ? "فعال" : "غیرفعال"}
-                  </td>
+                    <td className="px-4 py-3 font-medium text-gray-700 text-center">
+                      {index + 1}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-hidden text-ellipsis max-w-xl">
+                      {item?.title}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-hidden text-ellipsis max-w-xl">
+                      {item?.description}
+                    </td>
+                    <td
+                      className={`px-4 py-3 font-medium ${item?.isActive ? "text-green-700" : "text-red-700"} text-center`}
+                    >
+                      {item?.isActive ? "فعال" : "غیرفعال"}
+                    </td>
 
-                  <td className="flex items-center justify-center gap-2 py-3">
-                    <Trash2
-                      onClick={() => handleDelete(item?.id)}
-                      size={18}
-                      className="text-red-600"
-                    />
-                    <Edit
-                      onClick={() => handleEdit(item?.id)}
-                      size={18}
-                      className="text-emerald-600"
-                    />
-                  </td>
-                </motion.tr>
-              ))}
+                    <td className="flex items-center justify-center gap-2 py-3">
+                      <Trash2
+                        onClick={() => handleDelete(item?.id)}
+                        size={18}
+                        className="text-red-600"
+                      />
+                      <Edit
+                        onClick={() => handleEdit(item?.id)}
+                        size={18}
+                        className="text-emerald-600"
+                      />
+                    </td>
+                  </motion.tr>
+                ))}
             </tbody>
           </AnimatePresence>
         </table>
@@ -225,9 +231,10 @@ export default function SocietiesNoticesPage() {
         onConfirm={handleConfirmDelete}
         isDeleting={isDeleting}
       />
-      {/*
-      <EditSocietiesModal
+
+      <EditSocietiesNoticesModal
         isOpen={isEditModalOpen}
+        societyId={selectedSocietiesId}
         onClose={() => {
           setIsEditModalOpen(false);
           setSelectedSocietiesId("");
@@ -235,7 +242,7 @@ export default function SocietiesNoticesPage() {
         onSubmit={handleEditSubmit}
         isSubmitting={isUpdating}
         data={getSocietiesById}
-      /> */}
+      />
     </div>
   );
 }
