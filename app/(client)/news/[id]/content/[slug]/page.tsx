@@ -4,16 +4,16 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowIcon } from "@/app/(client)/introduction/assembly/[slug]/page";
-import { DateIcon } from "../page";
+import { DateIcon } from "../../page";
 import { useGetContentById } from "@/app/core/services/Contents/useContents";
 import { useParams } from "next/navigation";
 
 const FILE_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "";
 
 export default function NewsDetails() {
-  const { subCategoryId, id } = useParams();
+  const { slug } = useParams();
 
-  const { data, isLoading, error } = useGetContentById(String(subCategoryId));
+  const { data, isLoading, error } = useGetContentById(String(slug));
 
   if (isLoading) {
     return (
@@ -40,45 +40,43 @@ export default function NewsDetails() {
       <div className="flex items-center gap-4 mb-3">
         <p className="text-gray-400 text-sm">صفحه اصلی</p>
         <ArrowIcon />
-        <Link href={`/news/${id}`} className="text-gray-600 text-sm">
-          {data.categoryName || "اخبار"}
+        <Link href={`/news/${slug}`} className="text-gray-600 text-sm">
+          {data?.categoryName || "اخبار"}
         </Link>
       </div>
       <div className="p-4 bg-white rounded-xl">
         <div className="flex items-center justify-between">
           <p className="text-gray-800 text-sm">
-            {data.categoryName || "اخبار"}
+            {data?.categoryName || "اخبار"}
           </p>
-          <Link href={`/news/${id}`}>
+          <Link href={`/news/${slug}`}>
             <ArrowIcon />
           </Link>
         </div>
         <div className="py-3 px-6 flex flex-col gap-5">
           <div className="flex items-center gap-5">
             <Image
-              src={`${FILE_BASE_URL}/uploads/${data.featuredImage}`}
+              src={`${FILE_BASE_URL}/uploads/${data?.featuredImage}`}
               alt={data.title}
               width={250}
               height={200}
               className="rounded-xl object-cover"
             />
             <div className="flex flex-col gap-2">
-              <p className="text-sm font-bold text-blue-800">{data.title}</p>
-              <p className="text-sm font-bold text-gray-800">{data.summary}</p>
+              <p className="text-sm font-bold text-blue-800">{data?.title}</p>
+              <p className="text-sm font-bold text-gray-800">{data?.summary}</p>
               <div className="flex items-center gap-1">
                 <DateIcon />
-                <p className="text-[13px] text-gray-600">
-                  {new Date(data.publishDate).toLocaleDateString("fa-IR")}
-                </p>
+                <p className="text-[13px] text-gray-600">{data?.publishDate}</p>
               </div>
             </div>
           </div>
           <p className="text-sm font-bold text-gray-800 leading-7">
-            {data.body}
+            {data?.body}
           </p>
           {data.tags?.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
-              {data.tags.map((tag: string, index: number) => (
+              {data?.tags?.map((tag: string, index: number) => (
                 <span
                   key={index}
                   className="px-3 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
@@ -90,15 +88,15 @@ export default function NewsDetails() {
           )}
           {data.attachments?.length > 0 && (
             <div className="flex flex-col gap-2">
-              {data.attachments.map((attachment: any) => (
+              {data?.attachments.map((attachment: any, index: number) => (
                 <a
-                  key={attachment.id}
-                  href={`${FILE_BASE_URL}/uploads/${attachment.filePath}`}
+                  key={index}
+                  href={`${FILE_BASE_URL}/uploads/${attachment?.filePath}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-blue-600 underline"
                 >
-                  {attachment.displayName} ({attachment.fileSizeDisplay})
+                  {attachment?.displayName} ({attachment?.fileSizeDisplay})
                 </a>
               ))}
             </div>

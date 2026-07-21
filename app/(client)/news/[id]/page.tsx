@@ -88,7 +88,7 @@ export default function NewsPage() {
           <div className="grid grid-cols-2 gap-2">
             {subCategoryContent?.items?.map((item: any, itemIndex: number) => (
               <Link
-                href={`/news/${id}/${item.id}`}
+                href={`/news/${id}/content/${item.title}`}
                 key={itemIndex}
                 className="flex items-center gap-3 p-3 border border-gray-200 shadow-md rounded-xl"
               >
@@ -104,7 +104,7 @@ export default function NewsPage() {
                   <div className="flex items-center gap-2">
                     <DateIcon />
                     <p className="text-[13px] text-gray-600">
-                      {new Date(item.publishDate).toLocaleDateString("fa-IR")}
+                      {item.publishDate}
                     </p>
                   </div>
                   <p className="text-sm font-bold text-gray-800">
