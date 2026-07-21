@@ -9,7 +9,7 @@ export const AllContentsListApi = async (
 ) => {
   try {
     const response = await api.get(
-      `api/Contents?categoryId=${categoryId}&page=${PageNumber}&pageSize=${PageSize}&sortBy=CreatedAt`,
+      `api/Contents?categoryId=${categoryId}&page=${PageNumber}&pageSize=${PageSize}&sortBy=CreatedAt&sortDescending=true`,
     );
     return response.data;
   } catch (error) {

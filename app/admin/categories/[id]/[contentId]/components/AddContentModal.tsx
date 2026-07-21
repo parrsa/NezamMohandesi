@@ -20,6 +20,8 @@ import persian_fa from "react-date-object/locales/persian_fa";
 import { ContentFormData, contentSchema } from "./contentSchema";
 import { useGetAllTags } from "@/app/core/services/Tags/useTags";
 import { ParamValue } from "next/dist/server/request/params";
+import DateObject from "react-date-object";
+import { formatDateForBackend } from "@/app/lib/persianToEnglishNumber";
 
 interface AddContentModalProps {
   isOpen: boolean;
@@ -307,8 +309,13 @@ export default function AddContentModal({
       }
 
       if (publishDateValue) {
-        const date = publishDateValue.toDate();
-        formData.append("PublishDate", date.toISOString());
+        if (publishDateValue) {
+          const date = publishDateValue.toDate
+            ? publishDateValue
+            : new DateObject(publishDateValue);
+          const dateString = formatDateForBackend(publishDateValue);
+          formData.append("PublishDate", dateString);
+        }
       }
 
       attachmentFiles.forEach((file, index) => {
@@ -464,7 +471,7 @@ export default function AddContentModal({
                     locale={persian_fa}
                     value={publishDateValue}
                     onChange={setPublishDateValue}
-                    format="YYYY/MM/DD - HH:mm"
+                    format="YYYY/MM/DD"
                     placeholder="انتخاب تاریخ و زمان انتشار"
                     className="w-full"
                     containerClassName="w-full"

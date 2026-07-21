@@ -207,7 +207,7 @@ export default function ContentPage() {
                       {item?.summary}
                     </td>
                     <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-clip">
-                      {item?.createdAt}
+                      {item?.publishDate}
                     </td>
                     <td
                       className={`px-4 py-3 font-medium ${item?.isActive ? "text-green-700" : "text-red-700"} text-center`}
