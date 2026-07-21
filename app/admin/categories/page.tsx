@@ -1,134 +1,110 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
+import Tree from "rc-tree";
 import {
   useCreateCategory,
   useDeleteCategory,
-  useGetAllCategories,
+  useGetCategoriesTree,
   useGetCategoryById,
   useUpdateCategory,
 } from "@/app/core/services/Categories/useCategories";
-import { motion, AnimatePresence } from "framer-motion";
 import {
-  ChevronLeft,
-  ChevronRight,
   Edit,
   EyeIcon,
-  Loader2,
   NotepadText,
   Plus,
-  Scale,
-  StickyNote,
   Trash2,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
-import { generatePageNumbers } from "@/app/lib/generatePageNumbers";
+import Link from "next/link";
 import { toastify } from "@/app/components/Toasts";
 import { showErrorToasts } from "@/app/lib/showErrorToastify";
-import { useHeaderAction } from "@/app/core/provider/HeaderActionProvider/HeaderAction";
+import { formatDateForDisplay } from "@/app/lib/persianToEnglishNumber";
 import AddCategoriesModal from "./components/CreateCategoryModal";
 import DeleteCategoryModal from "./components/DeleteCategoryModal";
 import EditCategoriesModal from "./components/EditCategories";
-import Link from "next/link";
-import { formatDateForDisplay } from "@/app/lib/persianToEnglishNumber";
+
+interface CategoryNode {
+  id: number;
+  name: string;
+  description: string;
+  isActive: boolean;
+  level: number;
+  fullPath: string;
+  createdAt?: string;
+  children: CategoryNode[];
+}
+
+interface RcTreeNode {
+  key: string;
+  title: React.ReactNode;
+  children?: RcTreeNode[];
+}
+
+const COLS = "grid-cols-4";
 
 export default function Categories() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [newsToDelete, setNewsToDelete] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
+  const [newsToDelete, setNewsToDelete] = useState<string | null>(null);
+  const [parentIdForAdd, setParentIdForAdd] = useState<string | null>(null);
+  const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
 
-  const { setAction, setActionSecound } = useHeaderAction();
-  const { data, isLoading, error, refetch } = useGetAllCategories(
-    currentPage,
-    20,
-  );
+  const {
+    data: treeData,
+    isLoading: treeLoading,
+    refetch: treeFetch,
+  } = useGetCategoriesTree();
   const { mutate: deleteCategory, isPending: isDeleting } = useDeleteCategory();
   const { mutate: createCategories, isPending: isCreating } =
     useCreateCategory();
   const { mutate: editCategories, isPending: isUpdating } = useUpdateCategory();
-  const { data: getById, isLoading: isGetById } =
-    useGetCategoryById(selectedCategoryId);
-  const totalPages = data ? Math.ceil(data.totalRecord / data.pageSize) : 1;
-  const pageNumbers = generatePageNumbers(totalPages, currentPage + 1);
+  const { data: getById } = useGetCategoryById(selectedCategoryId);
 
-  useEffect(() => {
-    setAction(
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="flex items-center gap-3"
-      >
-        <div className="p-2.5 rounded-xl bg-linear-to-br from-slate-700 to-slate-800 shadow-lg">
-          <Scale size={22} className="text-white" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold bg-linear-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">
-            مدیریت دسته بندی
-          </h1>
-          <p className="text-xs text-slate-500">مدیریت دسته بندی ها</p>
-        </div>
-      </motion.div>,
-    );
-
-    setActionSecound(
-      <motion.button
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsAddModalOpen(true)}
-        className="relative group overflow-hidden flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-slate-700 to-slate-800 text-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 text-sm font-medium"
-      >
-        <span className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-        <Plus size={16} />
-        <span>دسته بندی جدید</span>
-      </motion.button>,
-    );
-
-    return () => {
-      setAction(null);
-      setActionSecound(null);
-    };
-  }, [setAction, setActionSecound]);
-
-  const handleDelete = (id: string) => {
-    setNewsToDelete(id);
+  const handleDelete = (id: number) => {
+    setNewsToDelete(String(id));
     setIsDeleteModalOpen(true);
   };
 
-  const handleEdit = (id: string) => {
-    setSelectedCategoryId(id);
+  const handleEdit = (id: number) => {
+    setSelectedCategoryId(String(id));
     setIsEditModalOpen(true);
   };
 
+  const handleAddChild = (id: number) => {
+    setParentIdForAdd(String(id));
+    setIsAddModalOpen(true);
+  };
+
   const handleConfirmDelete = async () => {
-    if (newsToDelete) {
-      await deleteCategory(newsToDelete, {
-        onSuccess: () => {
-          toastify("success", "خبر با موفقیت حذف شد");
-          setIsDeleteModalOpen(false);
-          setNewsToDelete(null);
-          refetch();
-        },
-        onError: (error) => {
-          showErrorToasts(error);
-        },
-      });
-    }
+    if (!newsToDelete) return;
+    await deleteCategory(newsToDelete, {
+      onSuccess: () => {
+        toastify("success", "دسته بندی با موفقیت حذف شد");
+        setIsDeleteModalOpen(false);
+        setNewsToDelete(null);
+        treeFetch();
+      },
+      onError: (error) => showErrorToasts(error),
+    });
   };
 
   const handleAddSubmit = async (formData: any) => {
-    await createCategories(formData, {
+    const payload = parentIdForAdd
+      ? { ...formData, parentId: Number(parentIdForAdd) }
+      : formData;
+    await createCategories(payload, {
       onSuccess: () => {
-        toastify("success", "خبر با موفقیت ایجاد شد");
+        toastify("success", "دسته بندی با موفقیت ایجاد شد");
         setIsAddModalOpen(false);
-        refetch();
+        setParentIdForAdd(null);
+        treeFetch();
       },
-      onError: (error: any) => {
-        showErrorToasts(error);
-      },
+      onError: (error: any) => showErrorToasts(error),
     });
   };
 
@@ -138,157 +114,170 @@ export default function Categories() {
         toastify("success", "دسته بندی با موفقیت بروزرسانی شد");
         setIsEditModalOpen(false);
         setSelectedCategoryId("");
-        refetch();
+        treeFetch();
       },
-      onError: (error: any) => {
-        showErrorToasts(error);
-      },
+      onError: (error: any) => showErrorToasts(error),
     });
   };
 
+  const renderTitle = (node: CategoryNode, rowIndex: number) => (
+    <div
+      className={`grid ${COLS} items-center divide-y divide-gray-50 divide-x w-full text-sm h-full`}
+    >
+      <span className="text-slate-700 flex items-center justify-center h-full py-2">
+        {rowIndex}
+      </span>
+      <span className="text-slate-700 flex items-center justify-center h-full py-2">
+        {node.name}
+      </span>
+      <span className="text-slate-700 flex items-center justify-center h-full py-2">
+        {node.description}
+      </span>
+      <span className="flex items-center justify-center gap-2 h-full py-2">
+        <Plus
+          size={15}
+          className="text-slate-500 cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAddChild(node.id);
+          }}
+        />
+        <Trash2
+          size={15}
+          className="text-red-600 cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDelete(node.id);
+          }}
+        />
+        <Edit
+          size={15}
+          className="text-emerald-600 cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleEdit(node.id);
+          }}
+        />
+        <Link
+          href={`/admin/categories/${node.id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <EyeIcon size={15} className="text-blue-600" />
+        </Link>
+        <Link
+          href={`/admin/categories/contents/${node.id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <NotepadText size={15} className="text-yellow-600" />
+        </Link>
+      </span>
+    </div>
+  );
+
+  const mapToRcTree = (nodes: CategoryNode[]): RcTreeNode[] =>
+    nodes.map((node, i) => ({
+      key: String(node.id),
+      title: renderTitle(node, i + 1),
+      children:
+        node.children && node.children.length > 0
+          ? mapToRcTree(node.children)
+          : undefined,
+    }));
+
+  const collectAllKeys = (nodes: CategoryNode[]): string[] =>
+    nodes.reduce<string[]>((acc, node) => {
+      acc.push(String(node.id));
+      if (node.children && node.children.length > 0) {
+        acc.push(...collectAllKeys(node.children));
+      }
+      return acc;
+    }, []);
+
+  const rcTreeData = useMemo(
+    () => (treeData ? mapToRcTree(treeData) : []),
+    [treeData],
+  );
+  const allKeys = useMemo(
+    () => (treeData ? collectAllKeys(treeData) : []),
+    [treeData],
+  );
+
   return (
     <div className="min-h-screen p-5 bg-linear-to-br from-slate-50 to-slate-100">
-      {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-20">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-xl font-bold text-slate-800">مدیریت دسته بندی</h1>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setExpandedKeys(allKeys)}
+            className="px-3 py-1.5 text-xs rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200"
           >
-            <Loader2 size={48} className="text-slate-400" />
-          </motion.div>
-          <p className="text-slate-500 mt-4">در حال بارگذاری دسته بندی ها...</p>
+            باز کردن همه
+          </button>
+          <button
+            onClick={() => setExpandedKeys([])}
+            className="px-3 py-1.5 text-xs rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200"
+          >
+            بستن همه
+          </button>
+          <button
+            onClick={() => {
+              setParentIdForAdd(null);
+              setIsAddModalOpen(true);
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-slate-700 to-slate-800 text-white rounded-xl text-sm font-medium"
+          >
+            <Plus size={16} />
+            دسته بندی جدید
+          </button>
+        </div>
+      </div>
+
+      {treeLoading ? (
+        <div className="flex items-center justify-center py-20 text-slate-500">
+          در حال بارگذاری...
         </div>
       ) : (
-        <table className="border-collapse text-sm text-right rounded-xl overflow-hidden w-full bg-white">
-          <thead className="bg-[#2563EB] text-white h-10 sticky top-0 z-10">
-            <tr className="divide-x">
-              <th className="px-4 py-2 font-light text-center border-l w-[60px]">
-                ردیف
-              </th>
-              <th className="px-4 py-2 font-light text-center w-[120px]">
-                نام دسته بندی
-              </th>
-              <th className="px-4 py-2 font-light text-center">موضوع</th>
-              <th className="px-4 py-2 font-light text-center w-[100px]">
-                تاریخ ثبت
-              </th>
-              <th className="px-4 py-2 font-light text-center w-[100px]">
-                وضعیت
-              </th>
-              <th className="px-4 py-2 font-light text-center w-[80px]">
-                عملیات
-              </th>
-            </tr>
-          </thead>
-          <AnimatePresence>
-            <tbody className="divide-y divide-gray-200">
-              {data.items &&
-                data?.items.map((item: any, index: number) => (
-                  <motion.tr
-                    key={item?.id || index}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                    className="transition-colors divide-x divide-gray-100 hover:bg-gray-50"
-                  >
-                    <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                      {index + 1}
-                    </td>
-                    <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                      {item?.name}
-                    </td>
-                    <td className="px-4 py-3 font-medium text-gray-700 text-center">
-                      {item?.description}
-                    </td>
-                    <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-clip">
-                      {formatDateForDisplay(item?.createdAt)}
-                    </td>
-                    <td
-                      className={`px-4 py-3 font-medium ${item?.isActive ? "text-green-700" : "text-red-700"} text-center`}
-                    >
-                      {item?.isActive ? "فعال" : "غیرفعال"}
-                    </td>
-                    <td className="flex items-center justify-center gap-2 py-3">
-                      <Trash2
-                        onClick={() => handleDelete(item?.id)}
-                        size={18}
-                        className="text-red-600"
-                      />
-                      <Edit
-                        onClick={() => handleEdit(item?.id)}
-                        size={18}
-                        className="text-emerald-600"
-                      />
-                      <Link href={`/admin/categories/${item?.id}`}>
-                        <EyeIcon size={18} className="text-blue-600" />
-                      </Link>
-                      <Link href={`/admin/categories/contents/${item?.id}`}>
-                        <NotepadText size={18} className="text-yellow-600" />
-                      </Link>
-                    </td>
-                  </motion.tr>
-                ))}
-            </tbody>
-          </AnimatePresence>
-        </table>
-      )}
-
-      {data && data.totalRecord > data.pageSize && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mt-10 bg-white rounded-2xl shadow-lg border border-slate-100 p-4"
-        >
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
-            disabled={currentPage === 0}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 text-slate-600 disabled:opacity-50 hover:bg-slate-100 transition-all text-sm font-medium"
+        <div className="bg-white rounded-xl shadow overflow-hidden border border-slate-100">
+          <div
+            className={`grid ${COLS} bg-[#2563EB] divide-x divide-gray-50 text-white text-xs font-light h-10 items-center px-2`}
           >
-            <ChevronRight size={16} />
-            قبلی
-          </motion.button>
-
-          <div className="flex items-center gap-2">
-            {pageNumbers.map((page, index) => (
-              <motion.button
-                key={index}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() =>
-                  typeof page === "number" && setCurrentPage(page - 1)
-                }
-                className={`w-9 h-9 rounded-xl font-medium text-sm transition-all ${
-                  currentPage === (typeof page === "number" ? page - 1 : -1)
-                    ? "bg-linear-to-r from-slate-700 to-slate-800 text-white shadow-md"
-                    : typeof page === "number"
-                      ? "hover:bg-slate-100 text-slate-600"
-                      : "text-slate-300 cursor-default"
-                }`}
-                disabled={typeof page !== "number"}
-              >
-                {page}
-              </motion.button>
-            ))}
+            <span className="text-center flex items-center justify-center h-full">
+              ردیف
+            </span>
+            <span className="text-center flex items-center justify-center h-full">
+              نام دسته بندی
+            </span>
+            <span className="text-center flex items-center justify-center h-full">
+              توضیحات
+            </span>
+            <span className="text-center flex items-center justify-center h-full">
+              عملیات
+            </span>
           </div>
-
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-            disabled={currentPage >= totalPages - 1}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 text-slate-600 disabled:opacity-50 hover:bg-slate-100 transition-all text-sm font-medium"
-          >
-            بعدی
-            <ChevronLeft size={16} />
-          </motion.button>
-        </motion.div>
+          <div className="p-2">
+            <Tree
+              treeData={rcTreeData}
+              expandedKeys={expandedKeys}
+              onExpand={(keys) => setExpandedKeys(keys)}
+              selectable={false}
+              switcherIcon={(props: any) =>
+                props.isLeaf ? null : props.expanded ? (
+                  <ChevronDown size={16} className="text-slate-500" />
+                ) : (
+                  <ChevronRight size={16} className="text-slate-500" />
+                )
+              }
+            />
+          </div>
+        </div>
       )}
+
       <AddCategoriesModal
         isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setParentIdForAdd(null);
+        }}
         onSubmit={handleAddSubmit}
         isSubmitting={isCreating}
       />
