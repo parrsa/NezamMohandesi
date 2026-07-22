@@ -231,9 +231,7 @@ export default function Categories() {
             )}
           </div>
 
-          <div
-            className={`${!isMain ? "hidden lg:block" : ""} flex-shrink-0 min-w-[100px] max-w-[180px]`}
-          >
+          <div className={`flex items-center justify-start w-[30vw] `}>
             <div className="px-2.5 py-1 bg-gray-50/80 rounded-lg border border-gray-100/50">
               <p className="text-xs text-gray-500 truncate">
                 {node.description || <span className="text-gray-300">—</span>}

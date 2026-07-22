@@ -152,10 +152,6 @@ export default function Tags() {
                 اسلاگ
               </th>
               <th className="px-4 py-2 font-light text-center">توضیحات</th>
-              <th className="px-4 py-2 font-light text-center w-[100px]">
-                تاریخ ثبت
-              </th>
-
               <th className="px-4 py-2 font-light text-center w-[80px]">
                 عملیات
               </th>
@@ -186,10 +182,6 @@ export default function Tags() {
                   <td className="px-4 py-3 font-medium text-gray-700 text-center">
                     {item?.description}
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 text-center text-nowrap overflow-clip">
-                    {item?.createdAt}
-                  </td>
-
                   <td className="flex items-center justify-center gap-2 py-3">
                     <Trash2
                       onClick={() => handleDelete(item?.id)}
