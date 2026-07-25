@@ -14,9 +14,8 @@ import {
 } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
-import "leaflet/dist/leaflet.css"; // ✅ مهم: اضافه کردن CSS
+import "leaflet/dist/leaflet.css";
 
-// Fix for default marker icons in Leaflet with Next.js
 const DefaultIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   iconRetinaUrl:
