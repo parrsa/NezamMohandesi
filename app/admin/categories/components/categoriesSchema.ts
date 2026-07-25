@@ -12,6 +12,8 @@ export const categoriesSchema = yup.object().shape({
     .required("متن کامل خبر الزامی است")
     .min(10, "متن کامل خبر باید حداقل 10 کاراکتر باشد"),
 
+  link: yup.string().nullable(),
+
   isActive: yup.boolean(),
 });
 

@@ -26,6 +26,7 @@ const initialValues: CategoriesFormData = {
   name: "",
   description: "",
   isActive: false,
+  link: "",
 };
 
 export default function AddCategoriesModal({
@@ -43,6 +44,7 @@ export default function AddCategoriesModal({
       name: values.name,
       description: values.description,
       isActive: values.isActive,
+      link: values.link ?? null,
       parentId: parentId ?? null,
     };
 
@@ -90,6 +92,29 @@ export default function AddCategoriesModal({
                   placeholder="عنوان دسته بندی"
                 />
                 <ErrorMessage name="name">
+                  {(msg) => (
+                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                      <AlertCircle size={14} />
+                      {msg}
+                    </p>
+                  )}
+                </ErrorMessage>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  لینک
+                </label>
+                <Field
+                  name="link"
+                  type="text"
+                  as={Input}
+                  variant="form"
+                  rounded="xl"
+                  inputSize="lg"
+                  error={errors.link}
+                  placeholder="لینک صفحه:"
+                />
+                <ErrorMessage name="link">
                   {(msg) => (
                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
                       <AlertCircle size={14} />
