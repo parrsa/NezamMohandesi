@@ -189,30 +189,31 @@ export default function Categories() {
 
     return (
       <div
-        className={`w-full transition-all duration-200 ${levelStyle.bg} ${isHovered ? "shadow-sm" : ""}`}
+        className={`transition-all duration-200 ${levelStyle.bg} ${isHovered ? "shadow-sm" : ""}`}
         onMouseEnter={() => setHoveredKey(String(node.id))}
         onMouseLeave={() => setHoveredKey(null)}
       >
         <div
-          className={`flex items-center gap-3 py-2.5 px-4 border-b border-gray-100/60 ${levelStyle.border} ${!isMain ? levelStyle.indent : ""} ${!isMain ? "rounded-l-xl" : ""}`}
+          className={`grid grid-cols-12 gap-3 items-center py-2.5 px-4 border-b border-gray-100/60 ${levelStyle.border} ${!isMain ? levelStyle.indent : ""} ${!isMain ? "rounded-l-xl" : ""}`}
         >
-          {isMain ? (
-            <div className="flex-shrink-0 w-7 h-7 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-sm">
-              <span className="text-xs font-bold text-gray-500">
-                {rowIndex}
-              </span>
-            </div>
-          ) : (
-            <div className="flex-shrink-0 w-7"></div>
-          )}
-
-          <div
-            className={`flex-shrink-0 p-1.5 rounded-lg ${isHovered ? "bg-white shadow-sm" : "bg-white/60"} transition-all duration-200`}
-          >
-            {levelStyle.icon}
+          <div className="col-span-1 flex items-center gap-2">
+            {isMain ? (
+              <div className="flex-shrink-0 w-7 h-7 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-sm">
+                <span className="text-xs font-bold text-gray-500">
+                  {rowIndex}
+                </span>
+              </div>
+            ) : (
+              <div className="flex-shrink-0 w-7 h-7 rounded-lg bg-white/50 flex items-center justify-center">
+                {levelStyle.icon}
+              </div>
+            )}
           </div>
 
-          <div className="flex-1 flex items-center gap-2 min-w-0">
+          <div className="col-span-4 flex items-center gap-2 min-w-0">
+            <div className="flex-shrink-0 p-1.5 rounded-lg bg-white/60">
+              {levelStyle.icon}
+            </div>
             <span className={`text-sm truncate ${levelStyle.text}`}>
               {node.name}
             </span>
@@ -231,33 +232,35 @@ export default function Categories() {
             )}
           </div>
 
-          <div className={`flex items-center justify-start w-[30vw] `}>
-            <div className="px-2.5 py-1 bg-gray-50/80 rounded-lg border border-gray-100/50">
+          <div className="col-span-3 hidden lg:flex items-center">
+            <div className="py-1 px-2 w-full">
               <p className="text-xs text-gray-500 truncate">
                 {node.description || <span className="text-gray-300">—</span>}
               </p>
             </div>
           </div>
 
-          <div
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all duration-200 ${node.isActive ? "bg-emerald-50/80 border border-emerald-200/50" : "bg-red-50/80 border border-red-200/50"} ${isHovered ? "scale-105" : ""}`}
-          >
-            {node.isActive ? (
-              <BadgeCheck size={13} className="text-emerald-500" />
-            ) : (
-              <CircleOff size={13} className="text-red-500" />
-            )}
-            <span
-              className={`text-[10px] font-medium ${node.isActive ? "text-emerald-600" : "text-red-600"}`}
+          <div className="col-span-2 flex items-center">
+            <div
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all duration-200 ${node.isActive ? "bg-emerald-50/80 border border-emerald-200/50" : "bg-red-50/80 border border-red-200/50"} ${isHovered ? "scale-105" : ""}`}
             >
-              {node.isActive ? "فعال" : "غیرفعال"}
-            </span>
+              {node.isActive ? (
+                <BadgeCheck size={13} className="text-emerald-500" />
+              ) : (
+                <CircleOff size={13} className="text-red-500" />
+              )}
+              <span
+                className={`text-[10px] font-medium ${node.isActive ? "text-emerald-600" : "text-red-600"}`}
+              >
+                {node.isActive ? "فعال" : "غیرفعال"}
+              </span>
+            </div>
           </div>
 
-          <div
-            className={`flex items-center gap-0.5 flex-shrink-0 transition-all duration-300 ${isHovered ? "opacity-100" : "opacity-50"}`}
-          >
-            <div className="flex items-center gap-0.5 p-0.5 bg-white/80 rounded-lg border border-gray-100/50">
+          <div className="col-span-2 flex items-center justify-end">
+            <div
+              className={`flex items-center gap-0.5 p-0.5 bg-white/80 rounded-lg border border-gray-100/50 transition-all duration-300 ${isHovered ? "opacity-100" : "opacity-50"}`}
+            >
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -476,7 +479,6 @@ export default function Categories() {
                 width: 100%;
               }
 
-              /* خطوط راهنما - نازک‌تر و مرتب‌تر */
               .rc-tree .rc-tree-indent {
                 display: flex;
                 align-items: stretch;
@@ -509,7 +511,6 @@ export default function Categories() {
                 display: none;
               }
 
-              /* دکمه‌های گسترش - کوچک‌تر و مرتب */
               .rc-tree .rc-tree-switcher {
                 display: flex;
                 align-items: center;
@@ -536,7 +537,6 @@ export default function Categories() {
                 transform: rotate(-90deg);
               }
 
-              /* سطوح با عرض کمتر برای زیردسته‌ها */
               .level-0 .rc-tree-title {
                 padding-right: 0;
               }
@@ -553,7 +553,6 @@ export default function Categories() {
                 margin-right: 12px;
               }
 
-              /* زیردسته‌ها با عرض کمتر */
               .level-1 .rc-tree-node-content-wrapper {
                 width: 96% !important;
               }
@@ -564,7 +563,6 @@ export default function Categories() {
                 width: 88% !important;
               }
 
-              /* حاشیه رنگی برای زیردسته‌ها */
               .level-1 .rc-tree-title {
                 border-right: 2px solid rgba(16, 185, 129, 0.15);
                 border-radius: 0 8px 8px 0;
@@ -581,7 +579,6 @@ export default function Categories() {
                 padding-right: 12px;
               }
 
-              /* انیمیشن ملایم */
               .rc-tree .rc-tree-treenode {
                 animation: fadeIn 0.25s ease forwards;
                 opacity: 0;
@@ -597,6 +594,7 @@ export default function Categories() {
                 }
               }
             `}</style>
+
             <Tree
               treeData={rcTreeData}
               expandedKeys={expandedKeys}
