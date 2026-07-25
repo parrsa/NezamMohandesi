@@ -63,18 +63,6 @@ export function Header() {
       href: "/news",
       items: data?.items,
     },
-    {
-      id: "services",
-      label: "خدمات",
-      href: "/services",
-      items: [
-        { name: "آموزش", id: "/education" },
-        { name: "صدور پروانه", id: "/license" },
-        { name: "آزمون‌ها", id: "/exams" },
-        { name: "مشاوره", id: "/consulting" },
-      ],
-    },
-    { id: "magazine", label: "نشریه پیام مهندسی", href: "/magazine" },
     { id: "contact", label: "تماس با ما", href: "/contact" },
   ];
 

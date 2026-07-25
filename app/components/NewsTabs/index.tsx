@@ -87,7 +87,7 @@ export function NewsTabs() {
                 />
 
                 <div className="flex flex-col gap-2 h-full justify-between">
-                  {categoriesData?.items.map((tab: any, index: number) => (
+                  {categoriesData?.items?.map((tab: any, index: number) => (
                     <button
                       key={tab.id}
                       ref={(el) => {
