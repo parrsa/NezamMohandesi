@@ -1,6 +1,6 @@
 "use client";
 import { Menu, X, Search, ChevronDown } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
@@ -211,16 +211,21 @@ export function Header() {
                       exit={{ opacity: 0, y: -10 }}
                       className="absolute top-full right-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
                     >
-                      {item.items.map((subItem: any, idx: number) => (
-                        <Link
-                          key={idx}
-                          href={`${item.href}/${subItem?.id}`}
-                          onClick={() => setOpenDropdown(null)}
-                          className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                        >
-                          {subItem?.name}
-                        </Link>
-                      ))}
+                      {item.items.map((subItem: any, idx: number) => {
+                        return (
+                          <React.Fragment key={idx}>
+                            {subItem.isActive && (
+                              <Link
+                                href={`${item.href}/${subItem?.id}`}
+                                onClick={() => setOpenDropdown(null)}
+                                className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                              >
+                                {subItem?.name}
+                              </Link>
+                            )}
+                          </React.Fragment>
+                        );
+                      })}
                     </motion.div>
                   )}
                 </div>

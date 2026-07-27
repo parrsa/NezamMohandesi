@@ -10,7 +10,7 @@ export const contentSchema = yup.object().shape({
   summary: yup
     .string()
     .required("خلاصه الزامی است")
-    .min(20, "خلاصه باید حداقل ۲۰ کاراکتر باشد")
+    .min(10, "خلاصه باید حداقل 10 کاراکتر باشد")
     .max(200, "خلاصه باید حداکثر ۵۰ کاراکتر باشد"),
 
   body: yup

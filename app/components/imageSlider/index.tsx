@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
-const DateIcon = () => (
+export const DateIcon = () => (
   <svg
     className="mb-1"
     width="16"
@@ -104,12 +104,12 @@ const ImagesSlider: React.FC<ImagesSliderProps> = ({
       setTimeout(() => {
         setIsTransitioning(false);
         setCurrent(banners.length);
-      }, 500);
+      }, 700);
     } else if (current === extendedBanners.length - 1) {
       setTimeout(() => {
         setIsTransitioning(false);
         setCurrent(1);
-      }, 500);
+      }, 700);
     }
   }, [current, banners?.length]);
 
@@ -126,40 +126,47 @@ const ImagesSlider: React.FC<ImagesSliderProps> = ({
   return (
     <div className="flex flex-col gap-4 w-full">
       <div className="flex items-end overflow-hidden">
-        <div className="w-full max-w-full mx-auto relative rounded-xl cursor-pointer">
-          <div className="rounded-xl">
+        <div className="w-full max-w-full mx-auto relative rounded-xl cursor-pointer shadow-lg">
+          <div className="rounded-xl overflow-hidden">
             <div
               className="flex will-change-transform"
               style={{
                 transform: `translate3d(${current * 100}%, 0, 0)`,
                 transition: isTransitioning
-                  ? "transform 500ms ease-out"
+                  ? "transform 600ms cubic-bezier(0.4, 0, 0.2, 1)"
                   : "none",
               }}
             >
               {extendedBanners.map((banner, index) => (
                 <div
                   key={`${banner?.id}-${index}`}
-                  className="w-full h-48 bg-white rounded-xl flex items-center justify-center flex-shrink-0"
+                  className="w-full h-56 flex-shrink-0 relative"
                   style={{ minWidth: "100%" }}
                 >
-                  <div
-                    className={`w-full h-full flex items-center ${
-                      banner?.icon ? "justify-around" : ""
-                    }`}
-                  >
-                    <div className="flex flex-col gap-1 px-4">
-                      <span className="font-bold text-blue-800">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-xl"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent rounded-xl"></div>
+                  <div className="relative w-full h-full flex items-center justify-between p-6">
+                    <div className="flex flex-col gap-3 max-w-2xl">
+                      <h3 className="text-2xl font-bold text-gray-800 leading-tight">
                         {banner?.title}
-                      </span>
-                      <span className="text-gray-800 leading-7 text-sm">
+                      </h3>
+                      <p className="text-gray-600 leading-relaxed text-sm line-clamp-3">
                         {banner?.summary}
-                      </span>
-                      <div className="flex items-center gap-1">
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
                         <DateIcon />
-                        <p className="text-sm text-gray-600">{banner?.date}</p>
+                        <p className="text-sm text-gray-500">{banner?.date}</p>
                       </div>
                     </div>
+                    {banner?.icon && (
+                      <div className="flex-shrink-0 ml-4">
+                        <img
+                          src={banner.icon}
+                          alt={banner.title}
+                          className="w-40 h-40 object-cover rounded-xl shadow-md border-2 border-white/50"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -167,7 +174,7 @@ const ImagesSlider: React.FC<ImagesSliderProps> = ({
           </div>
         </div>
       </div>
-      <div className="-translate-x-1/2 flex gap-1">
+      <div className="flex justify-center gap-2 -mt-2">
         {banners.map((_, idx) => (
           <button
             key={idx}
@@ -175,8 +182,10 @@ const ImagesSlider: React.FC<ImagesSliderProps> = ({
               setIsTransitioning(true);
               setCurrent(idx + 1);
             }}
-            className={`w-3 h-3 rounded-full transition-all ${
-              idx === getRealIndex() ? "bg-blue-800" : "bg-transparent bg-white"
+            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+              idx === getRealIndex()
+                ? "bg-blue-600 w-8 shadow-md shadow-blue-200"
+                : "bg-gray-300 hover:bg-gray-400"
             }`}
           />
         ))}
