@@ -1,18 +1,38 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useGetContentById } from "@/app/core/services/Contents/useContents";
+import {
+  useGetContentById,
+  useViewContent,
+} from "@/app/core/services/Contents/useContents";
 import { useParams } from "next/navigation";
 import { DateIcon } from "@/app/components/imageSlider";
+import { showErrorToasts } from "@/app/lib/showErrorToastify";
 
 const FILE_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function NewsDetails() {
   const { slug, id } = useParams();
+  const hasViewed = useRef(false);
 
   const { data, isLoading, error } = useGetContentById(String(slug));
+  const { mutate: viewContent } = useViewContent();
+
+  useEffect(() => {
+    if (slug && !hasViewed.current) {
+      hasViewed.current = true;
+      viewContent(String(slug), {
+        onSuccess: () => {
+          console.log("بازدید با موفقیت ثبت شد");
+        },
+        onError: (error) => {
+          showErrorToasts(error);
+        },
+      });
+    }
+  }, [slug, viewContent]);
 
   if (isLoading) {
     return (

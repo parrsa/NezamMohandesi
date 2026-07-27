@@ -6,6 +6,7 @@ import {
   CreateContentApi,
   DeleteContentApi,
   EditContentApi,
+  ViewContentApi,
 } from "./useContentsApi";
 import { ParamValue } from "next/dist/server/request/params";
 
@@ -55,6 +56,16 @@ export const useDeleteContent = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: DeleteContentApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ContentsKeys.all });
+    },
+  });
+};
+
+export const useViewContent = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ViewContentApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ContentsKeys.all });
     },

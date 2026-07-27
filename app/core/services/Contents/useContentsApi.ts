@@ -65,3 +65,15 @@ export const DeleteContentApi = async (id: string) => {
     throw error;
   }
 };
+
+export const ViewContentApi = async (id: string) => {
+  if (id) {
+    try {
+      const response = await api.post(`api/Contents/${id}/view`);
+      return response.data.success;
+    } catch (error) {
+      console.error("Failed to view content:", error);
+      throw error;
+    }
+  }
+};
