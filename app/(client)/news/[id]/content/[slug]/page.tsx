@@ -3,7 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowIcon } from "@/app/(client)/introduction/assembly/[slug]/page";
 import { useGetContentById } from "@/app/core/services/Contents/useContents";
 import { useParams } from "next/navigation";
 import { DateIcon } from "@/app/components/imageSlider";
