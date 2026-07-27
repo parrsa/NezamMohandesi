@@ -31,7 +31,7 @@ const DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 export default function ContactPage() {
-  const position = [35.6997, 51.338] as [number, number];
+  const position = [35.759909331300555, 51.37721971283285] as [number, number];
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -182,7 +182,7 @@ export default function ContactPage() {
             <div>
               <h3 className="font-bold text-gray-800">موقعیت مکانی سازمان</h3>
               <p className="text-xs text-gray-400">
-                تهران، خیابان آزادی، نبش خیابان کارگر، پلاک ۱۲۳
+                تهران، شهرک غرب، خیابان مهستان، پلاک 10
               </p>
             </div>
           </div>
