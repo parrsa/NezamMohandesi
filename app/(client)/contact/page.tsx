@@ -11,6 +11,7 @@ import {
   MessageSquare,
   Building,
   Link2,
+  MapPinHouse,
 } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
@@ -41,41 +42,35 @@ export default function ContactPage() {
     {
       icon: <Phone className="w-5 h-5" />,
       title: "تلفن",
-      items: ["۰۲۱-۸۸۷۷۶۶۵۵", "۰۲۱-۸۸۷۷۶۶۵۶"],
-      description: "ساعت پاسخگویی: ۸ الی ۱۷",
+      items: ["426444"],
+      description:
+        "ساعت پذیرش ارباب رجوع: شنبه تا چهارشنبه از ساعت 08:00 تا 13:00",
     },
     {
       icon: <Mail className="w-5 h-5" />,
       title: "ایمیل",
-      items: ["info@teio.ir", "support@teio.ir"],
+      items: [" info@tceo.ir"],
       description: "پاسخگویی در اسرع وقت",
     },
     {
       icon: <MapPin className="w-5 h-5" />,
       title: "آدرس",
-      items: ["تهران، خیابان آزادی"],
-      description: "نبش خیابان کارگر، پلاک ۱۲۳",
+      items: ["تهران، شهرک غرب"],
+      description: "خیابان مهستان، پلاک 10",
     },
     {
       icon: <Clock className="w-5 h-5" />,
       title: "ساعت کاری",
-      items: ["شنبه تا چهارشنبه: ۸ الی ۱۷"],
-      description: "پنجشنبه: ۸ الی ۱۳",
+      items: ["شنبه تا چهارشنبه: 8 الی 13"],
+      description:
+        "ساعت پذیرش ارباب رجوع: شنبه تا چهارشنبه از ساعت 08:00 تا 13:00",
     },
-  ];
-
-  const quickLinks = [
-    { name: "نشریات", href: "/magazine" },
-    { name: "اخبار", href: "/news" },
-    { name: "ویدیوها", href: "/videos" },
-    { name: "تبلیغات", href: "/advertisements" },
-  ];
-
-  const socialNetworks = [
-    { icon: <Link2 className="w-5 h-5" />, name: "اینستاگرام", href: "#" },
-    { icon: <Link2 className="w-5 h-5" />, name: "تلگرام", href: "#" },
-    { icon: <Link2 className="w-5 h-5" />, name: "لینکدین", href: "#" },
-    { icon: <Link2 className="w-5 h-5" />, name: "یوتیوب", href: "#" },
+    {
+      icon: <MapPinHouse className="w-5 h-5" />,
+      title: "کد پستی",
+      items: ["1465763111"],
+      description: "خیابان مهستان، پلاک 10",
+    },
   ];
 
   const faqs = [
@@ -86,18 +81,11 @@ export default function ContactPage() {
     },
     {
       question: "ساعت کاری سازمان چگونه است؟",
-      answer:
-        "ساعت کاری سازمان از شنبه تا چهارشنبه ۸ الی ۱۷ و پنجشنبه ۸ الی ۱۳ می‌باشد.",
+      answer: "ساعت پذیرش ارباب رجوع: شنبه تا چهارشنبه از ساعت 08:00 تا 13:00",
     },
     {
       question: "آدرس سازمان کجاست؟",
-      answer:
-        "سازمان در تهران، خیابان آزادی، نبش خیابان کارگر، پلاک ۱۲۳ واقع شده است.",
-    },
-    {
-      question: "چگونه می‌توانم عضو سازمان شوم؟",
-      answer:
-        "برای عضویت در سازمان می‌توانید به بخش عضویت در وبسایت مراجعه کنید.",
+      answer: "تهران، شهرک غرب، خیابان مهستان، پلاک 10",
     },
   ];
 
@@ -167,7 +155,7 @@ export default function ContactPage() {
                 سوالات متداول
               </h3>
               <div className="space-y-3">
-                {faqs.slice(0, 2).map((faq, index) => (
+                {faqs.map((faq, index) => (
                   <details
                     key={index}
                     className="group bg-gray-50/50 rounded-lg p-3 hover:bg-blue-50/30 transition-colors duration-200"
