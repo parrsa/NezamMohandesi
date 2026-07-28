@@ -3,6 +3,9 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useGetAllSlider } from "@/app/core/services/Slider/useSlider";
+
+const FILE_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const slides = [
   {
@@ -23,14 +26,14 @@ export default function LandingPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
+  const { data, isLoading } = useGetAllSlider();
+
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % data.length);
   };
 
   const prevSlide = () => {
-    setCurrentIndex(
-      (prevIndex) => (prevIndex - 1 + slides.length) % slides.length,
-    );
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + data.length) % data.length);
   };
 
   const goToSlide = (index: number) => {
@@ -66,45 +69,48 @@ export default function LandingPage() {
           className="relative w-full h-full"
         >
           <Image
-            src={slides[currentIndex].image}
-            alt={`اسلاید ${currentIndex + 1}`}
-            fill
+            width={100}
+            height={100}
+            src={`${FILE_BASE_URL}${data?.[currentIndex].imageUrl}`}
+            alt={`اسلاید ${data?.[currentIndex].imageAlt}`}
             priority
-            className="object-cover"
+            className="object-cover w-full h-full"
+            quality={100}
           />
         </motion.div>
       </AnimatePresence>
 
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200 z-10"
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200 z-10"
       >
         <ChevronRight className="w-6 h-6" />
       </button>
-
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200 z-10"
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200 z-10"
       >
         <ChevronLeft className="w-6 h-6" />
       </button>
 
       <div className="absolute right-1 bottom-6 h-10 -translate-x-1/2 flex gap-3 z-50">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className="transition-all duration-200 focus:outline-none"
-          >
-            <div
-              className={`h-1 rounded-full transition-all duration-300 ${
-                currentIndex === index
-                  ? "w-8 bg-white"
-                  : "w-8 bg-white/50 hover:bg-white/70"
-              }`}
-            />
-          </button>
-        ))}
+        {data &&
+          data.length > 0 &&
+          data.map((_: any, index: number) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className="transition-all duration-200 focus:outline-none"
+            >
+              <div
+                className={`h-1 rounded-full transition-all duration-300 ${
+                  currentIndex === index
+                    ? "w-8 bg-white"
+                    : "w-8 bg-white/50 hover:bg-white/70"
+                }`}
+              />
+            </button>
+          ))}
       </div>
     </div>
   );

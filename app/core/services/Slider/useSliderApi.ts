@@ -2,7 +2,7 @@ import api from "../../config/api";
 
 export const GetAllSliderApi = async () => {
   try {
-    const response = await api.get("api/Sliders?position=0");
+    const response = await api.get(`api/Sliders?position=0`);
     return response.data;
   } catch (error) {
     console.error("Failed to get slider images:", error);
