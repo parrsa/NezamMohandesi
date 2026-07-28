@@ -95,7 +95,6 @@
 
 //     return <>{children}</>;
 // }
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -126,40 +125,31 @@ export default function SessionHandler({ children }: { children: React.ReactNode
     const pathname = usePathname();
     const router = useRouter();
     const [ready, setReady] = useState(false);
-    const [processingSession, setProcessingSession] = useState(false);
+    const [isRedirecting, setIsRedirecting] = useState(false);
 
     useEffect(() => {
         const checkSession = async () => {
+            if (isRedirecting) return;
+
             const params = new URLSearchParams(window.location.search);
             const sessionFromQuery = params.get(SESSION_QUERY_KEY);
 
             if (sessionFromQuery) {
-                setProcessingSession(true);
-                
+                setIsRedirecting(true);
                 setCookie(SESSION_COOKIE_NAME, sessionFromQuery, 1);
-                
-                try {
-                    localStorage.setItem(SESSION_COOKIE_NAME, sessionFromQuery);
-                } catch (e) {
-                }
-                
                 params.delete(SESSION_QUERY_KEY);
                 const base = window.location.origin + window.location.pathname;
                 const qs = params.toString();
                 const newUrl = qs ? `${base}?${qs}` : base;
                 window.history.replaceState({}, "", newUrl);
                 
-                setTimeout(() => {
-                    router.push("/admin");
-                    setProcessingSession(false);
-                }, 100);
+                window.location.href = "/admin";
                 return;
             }
 
             const sessionFromCookie = getCookie(SESSION_COOKIE_NAME);
-
             const isAdminPath = pathname?.startsWith('/admin');
-            
+
             if (!isAdminPath) {
                 setReady(true);
                 return;
@@ -175,33 +165,8 @@ export default function SessionHandler({ children }: { children: React.ReactNode
         };
 
         checkSession();
-    }, [pathname, router]);
-
-    if (processingSession) {
-        return (
-            <div className="min-h-screen flex flex-col justify-center items-center bg-linear-to-br from-gray-50 to-gray-200">
-                <div className="flex items-center mb-5">
-                    {[...Array(3)].map((_, i) => (
-                        <div
-                            key={i}
-                            className="w-3 h-3 mx-1.5 bg-blue-600 rounded-full"
-                            style={{
-                                animation: `bounce 1.4s infinite ease-in-out ${i * 0.16}s`
-                            }}
-                        />
-                    ))}
-                </div>
-                <p className="text-gray-800 text-lg font-semibold font-sans">
-                    در حال تکمیل فرآیند ورود...
-                </p>
-                <p className="text-gray-600 text-sm mt-2">
-                    در حال هدایت به پنل مدیریت
-                </p>
-            </div>
-        );
-    }
-
-    if (!ready && pathname?.startsWith('/admin')) {
+    }, [pathname, router, isRedirecting]);
+    if (pathname?.startsWith('/admin') && !ready && !isRedirecting) {
         return (
             <div className="min-h-screen flex flex-col justify-center items-center bg-linear-to-br from-gray-50 to-gray-200">
                 <div className="flex items-center mb-5">
