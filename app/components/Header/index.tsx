@@ -133,7 +133,7 @@ export function Header() {
             </Link>
 
             <div className="flex items-center gap-4">
-              <div className="hidden md:flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-400 focus-within:border-transparent">
+              {/* <div className="hidden md:flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-400 focus-within:border-transparent">
                 <button className="px-2 py-1.5 bg-gray-50 hover:bg-gray-100">
                   <Search className="w-4 h-4 text-gray-600" />
                 </button>
@@ -142,12 +142,10 @@ export function Header() {
                   placeholder="جستجو..."
                   className="px-3 py-1.5 text-sm w-48 outline-none"
                 />
-              </div>
+              </div> */}
 
               <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg">
-                <span className="font-medium text-sm">
-                  شماره تماس: 021 4264 4000
-                </span>
+                <span className="font-medium text-sm">شماره تماس: 426444</span>
               </div>
 
               <button
