@@ -50,6 +50,8 @@ import {
   TagIcon,
   PersonStanding,
   Group,
+  SlidersIcon,
+  Image,
 } from "lucide-react";
 
 export const menuItemsDashboard: any[] = [
@@ -77,6 +79,13 @@ export const menuItemsDashboard: any[] = [
     icon: Users,
     href: "/admin/societies",
   },
+  {
+    id: "banner",
+    label: "بنر ها",
+    icon: Image,
+    href: "/admin/slider",
+  },
+
   // {
   //   id: "advertising",
   //   label: "تعرفه تبلیغات",
