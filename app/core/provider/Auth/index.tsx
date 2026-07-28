@@ -12,6 +12,8 @@ interface User {
   userName: string;
   roleCodes: number[];
   permissionCodes: number[];
+  firstName: string;
+  lastName: string;
 }
 
 interface AuthContextType {

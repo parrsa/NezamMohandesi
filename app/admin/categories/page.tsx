@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Tree from "rc-tree";
 import {
   useCreateCategory,
@@ -27,6 +27,7 @@ import {
   Layers,
   Sparkles,
   Zap,
+  Scale,
 } from "lucide-react";
 import Link from "next/link";
 import { toastify } from "@/app/components/Toasts";
@@ -34,6 +35,8 @@ import { showErrorToasts } from "@/app/lib/showErrorToastify";
 import AddCategoriesModal from "./components/CreateCategoryModal";
 import DeleteCategoryModal from "./components/DeleteCategoryModal";
 import EditCategoriesModal from "./components/EditCategories";
+import { useHeaderAction } from "@/app/core/provider/HeaderActionProvider/HeaderAction";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface CategoryNode {
   id: number;
@@ -62,6 +65,8 @@ export default function Categories() {
   const [parentIdForAdd, setParentIdForAdd] = useState<string | null>(null);
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+
+  const { setAction, setActionSecound } = useHeaderAction();
 
   const {
     data: treeData,
@@ -176,6 +181,46 @@ export default function Categories() {
     };
     return styles[level as keyof typeof styles] || styles[2];
   };
+
+  useEffect(() => {
+    setAction(
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex items-center gap-3"
+      >
+        <div className="p-2.5 rounded-xl bg-linear-to-br from-slate-700 to-slate-800 shadow-lg">
+          <Scale size={22} className="text-white" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold bg-linear-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">
+            مدیریت دسته بندی
+          </h1>
+          <p className="text-xs text-slate-500">مدیریت دسته بندی ها</p>
+        </div>
+      </motion.div>,
+    );
+
+    setActionSecound(
+      <motion.button
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setIsAddModalOpen(true)}
+        className="relative group overflow-hidden flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-slate-700 to-slate-800 text-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 text-sm font-medium"
+      >
+        <span className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+        <Plus size={16} />
+        <span>دسته بندی جدید</span>
+      </motion.button>,
+    );
+
+    return () => {
+      setAction(null);
+      setActionSecound(null);
+    };
+  }, [setAction, setActionSecound]);
 
   const renderTitle = (
     node: CategoryNode,
@@ -378,23 +423,7 @@ export default function Categories() {
         <div className="absolute -top-10 -right-10 w-60 h-60 bg-blue-500/5 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-purple-500/5 rounded-full blur-3xl"></div>
 
-        <div className="relative flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg shadow-blue-200">
-              <FolderTree className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                مدیریت دسته‌بندی
-                <Sparkles size={16} className="text-yellow-400" />
-              </h1>
-              <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                {treeData?.length || 0} دسته‌بندی اصلی
-              </p>
-            </div>
-          </div>
-
+        <div className="flex items-center">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setExpandedKeys(allKeys)}
@@ -410,7 +439,7 @@ export default function Categories() {
               <ChevronLeft size={14} />
               بستن همه
             </button>
-            <button
+            {/* <button
               onClick={() => {
                 setParentIdForAdd(null);
                 setIsAddModalOpen(true);
@@ -419,7 +448,7 @@ export default function Categories() {
             >
               <Zap size={14} />
               دسته‌بندی جدید
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

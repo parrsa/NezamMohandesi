@@ -99,7 +99,16 @@
 //   );
 // }
 "use client";
-import { Search, Bell, User, LogOut, LogIn, Menu, Shield, Scale } from "lucide-react";
+import {
+  Search,
+  Bell,
+  User,
+  LogOut,
+  LogIn,
+  Menu,
+  Shield,
+  Scale,
+} from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -122,7 +131,6 @@ export function Header({ onMenuClick }: HeaderProps) {
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-slate-200 shadow-sm">
       <div className="flex items-center justify-between h-16 px-4 lg:px-6">
-
         <div className="flex items-center gap-4 flex-1">
           <button
             onClick={onMenuClick}
@@ -153,11 +161,6 @@ export function Header({ onMenuClick }: HeaderProps) {
             {actionSecound}
           </div>
 
-          <button className="relative p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors">
-            <Bell size={20} />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
-
           {user ? (
             <div className="relative">
               <motion.button
@@ -166,15 +169,12 @@ export function Header({ onMenuClick }: HeaderProps) {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="w-8 h-8 bg-amber-500/20 rounded-full flex items-center justify-center">
+                <div className="min-w-8 h-8 max-w-16 bg-amber-500/20 rounded-full flex items-center justify-center">
                   <User className="w-4 h-4 text-amber-400" />
                 </div>
                 <div className="hidden md:block text-right">
-                  <p className="text-sm font-medium text-white">
-                    {user?.fullName?.split(" ")[0] || user?.userName || "کاربر"}
-                  </p>
-                  <p className="text-xs text-slate-400">
-                    {isAdmin ? "مدیر سیستم" : "کاربر عادی"}
+                  <p className="text-sm font-medium text-white text-nowrap">
+                    {`${user?.firstName} ${user?.lastName}`}
                   </p>
                 </div>
               </motion.button>
@@ -188,8 +188,12 @@ export function Header({ onMenuClick }: HeaderProps) {
                     className="absolute left-0 mt-2 w-56 bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden z-50"
                   >
                     <div className="px-4 py-3 border-b border-slate-100">
-                      <p className="text-sm font-medium text-slate-800">{user?.fullName || user?.userName}</p>
-                      <p className="text-xs text-slate-500 mt-0.5">{"کاربر سامانه نظام"}</p>
+                      <p className="text-sm font-medium text-slate-800">
+                        {user?.fullName || user?.userName}
+                      </p>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        {"کاربر سامانه نظام"}
+                      </p>
                     </div>
                     <button
                       onClick={Logout}
